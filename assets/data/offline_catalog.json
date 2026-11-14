@@ -1,0 +1,39 @@
+{
+  "app": "الكامل",
+  "schemaVersion": 1,
+  "runtimePolicy": {
+    "networkRequired": false,
+    "contentSource": "bundled_assets",
+    "userDataStorage": "device_local",
+    "note": "يجب تضمين النصوص والبيانات والخطوط والصور والملفات الصوتية المطلوبة داخل التطبيق. لا يجوز اعتبار قسم مكتملًا قبل إضافة محتواه المحلي والتحقق من مصادره."
+  },
+  "sections": [
+    {"id": "quran", "title": "القرآن الكريم", "offline": true, "requiredContent": "نص القرآن كاملًا مع فهرس السور والآيات والصفحات الـ604 ومراجع النص"},
+    {"id": "visits", "title": "الزيارات", "offline": true, "requiredContent": "نصوص الزيارات كاملة مع التخريج والمصادر"},
+    {"id": "general_duas", "title": "الأدعية العامة", "offline": true, "requiredContent": "الأدعية مع المصادر، ومنها دعاء أبي حمزة الثمالي والجوشن الكبير والجوشن الصغير ودعاء الافتتاح"},
+    {"id": "daily_duas", "title": "أدعية الأيام", "offline": true, "requiredContent": "أدعية الأيام محليًا مع مصادرها"},
+    {"id": "night_prayer", "title": "تعليم صلاة الليل", "offline": true, "requiredContent": "خطوات الصلاة وشرح توضيحي محلي"},
+    {"id": "prayer_taqibat", "title": "تعقيبات الصلوات", "offline": true, "requiredContent": "التعقيبات الموثقة بعد الصلوات"},
+    {"id": "tasbeeh", "title": "المسبحة الإلكترونية", "offline": true, "requiredContent": "عداد محلي وحفظ التقدم"},
+    {"id": "prayer_times", "title": "مواقيت الصلاة", "offline": true, "requiredContent": "حساب محلي للمدن والإحداثيات وطريقة الحساب مع ضبط الإعدادات"},
+    {"id": "qibla", "title": "القبلة", "offline": true, "requiredContent": "حساب اتجاه القبلة محليًا عند توفر مستشعرات الجهاز"},
+    {"id": "sahifa", "title": "الصحيفة السجادية", "offline": true, "requiredContent": "النص الكامل مع المصادر"},
+    {"id": "nahj", "title": "نهج البلاغة", "offline": true, "requiredContent": "النص الكامل مع توثيق الشروح والمصادر"},
+    {"id": "ahlulbayt_wasaya", "title": "وصايا أهل البيت (عليهم السلام)", "offline": true, "requiredContent": "النصوص المنقولة ومراجعها وبيان الثابت والمنسوب والمختلف فيه"},
+    {"id": "occasions", "title": "المناسبات الإسلامية", "offline": true, "requiredContent": "تقويم هجري وميلادي ومناسبات محلية"},
+    {"id": "search", "title": "البحث والفهرسة", "offline": true, "requiredContent": "فهرسة محلية للنصوص دون اتصال"},
+    {"id": "favorites", "title": "المفضلة وآخر قراءة", "offline": true, "requiredContent": "حفظ محلي للمفضلة وموضع القراءة والتقدم"},
+    {"id": "reminders", "title": "مركز التنبيهات", "offline": true, "requiredContent": "تنبيهات محلية مجدولة على الجهاز"},
+    {"id": "backup", "title": "النسخ الاحتياطي والاستعادة", "offline": true, "requiredContent": "تصدير واستيراد بيانات المستخدم محليًا"},
+    {"id": "audio", "title": "الصوتيات", "offline": true, "requiredContent": "ملفات صوتية مرفقة بالتطبيق أو محفوظة محليًا"}
+  ],
+  "globalFeatures": [
+    "ساعة وتاريخ هجري وميلادي",
+    "عدادات التقدم والإنجاز",
+    "خمسة ثيمات لونية",
+    "أصوات ولمسات اختيارية",
+    "إعدادات وبيانات محفوظة على الجهاز",
+    "تشغيل الوظائف الأساسية دون اتصال بالإنترنت"
+  ],
+  "contentStatus": "catalog_only_content_must_be_added_and_source_checked"
+}
