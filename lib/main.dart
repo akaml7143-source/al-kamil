@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:qcf_quran_plus/qcf_quran_plus.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,6 @@ class AlKamilApp extends StatelessWidget {
           secondary: turquoise,
           surface: panelBlack,
         ),
-        fontFamily: 'sans-serif',
       ),
       home: const HomePage(),
     );
@@ -61,145 +61,163 @@ class HomePage extends StatelessWidget {
     _Section('الإعدادات', Icons.settings_rounded),
   ];
 
+  void _openSection(BuildContext context, _Section section) {
+    final Widget page = section.title == 'القرآن الكريم'
+        ? const QuranScreen()
+        : SectionPage(title: section.title);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: SafeArea(
-          child: CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(child: _buildHeader(context)),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 3,
-                        height: 19,
-                        decoration: BoxDecoration(
-                          color: turquoise,
-                          borderRadius: BorderRadius.circular(4),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxHeight < 680;
+              final headerHeight = compact ? 88.0 : 102.0;
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(10, 7, 10, 5),
+                child: Column(
+                  children: [
+                    _ShrineHeader(height: headerHeight),
+                    SizedBox(height: compact ? 7 : 10),
+                    Row(
+                      children: [
+                        Container(
+                          width: 3,
+                          height: 17,
+                          decoration: BoxDecoration(
+                            color: turquoise,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 9),
-                      const Text(
-                        'أقسام الكامل',
-                        style: TextStyle(
-                          color: ivory,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
+                        const SizedBox(width: 8),
+                        const Text(
+                          'أقسام الكامل',
+                          style: TextStyle(
+                            color: ivory,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      const Spacer(),
-                      const Text(
-                        'كل ما تحتاجه في مكان واحد',
-                        style: TextStyle(color: mutedIvory, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(12, 2, 12, 24),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final section = sections[index];
-                      return _SectionTile(
-                        section: section,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute<void>(
-                              builder: (_) => SectionPage(title: section.title),
-                            ),
+                        const Spacer(),
+                        const Text(
+                          'رفيق المعرفة والعبادة',
+                          style: TextStyle(color: mutedIvory, fontSize: 9),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Expanded(
+                      child: GridView.builder(
+                        padding: EdgeInsets.zero,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: sections.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 7,
+                          mainAxisSpacing: compact ? 5 : 7,
+                          childAspectRatio: compact ? 1.16 : 1.04,
+                        ),
+                        itemBuilder: (context, index) {
+                          final section = sections[index];
+                          return _SectionTile(
+                            section: section,
+                            compact: compact,
+                            onTap: () => _openSection(context, section),
                           );
                         },
-                      );
-                    },
-                    childCount: sections.length,
-                  ),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 9,
-                    crossAxisSpacing: 9,
-                    childAspectRatio: 1.02,
-                  ),
-                ),
-              ),
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 16),
-                  child: Center(
-                    child: Text(
-                      'الكامل • رفيق المعرفة والعبادة',
-                      style: TextStyle(
-                        color: Color(0xFF817968),
-                        fontSize: 10,
-                        letterSpacing: 0.3,
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 3),
+                    const Text(
+                      'الكامل • محتوى إسلامي في مكان واحد',
+                      style: TextStyle(
+                        color: Color(0xFF817968),
+                        fontSize: 9,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildHeader(BuildContext context) {
+class _ShrineHeader extends StatelessWidget {
+  const _ShrineHeader({required this.height});
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: 116,
-      margin: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+      height: height,
+      width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         gradient: const LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF29251B), Color(0xFF171819), Color(0xFF102322)],
+          colors: [Color(0xFF40331D), Color(0xFF171819), Color(0xFF102322)],
         ),
-        border: Border.all(color: gold.withValues(alpha: 0.48), width: 0.8),
+        border: Border.all(color: gold.withValues(alpha: 0.62), width: 0.9),
       ),
       child: Stack(
+        clipBehavior: Clip.hardEdge,
         children: [
           Positioned(
-            left: -18,
-            top: -30,
+            left: 2,
+            bottom: -26,
             child: Icon(
               Icons.mosque_rounded,
-              size: 150,
-              color: gold.withValues(alpha: 0.07),
+              size: height + 54,
+              color: gold.withValues(alpha: 0.11),
+            ),
+          ),
+          Positioned(
+            left: 25,
+            top: 8,
+            child: Icon(
+              Icons.auto_awesome,
+              size: 17,
+              color: gold.withValues(alpha: 0.75),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 Container(
-                  width: 64,
-                  height: 82,
+                  width: height - 18,
+                  height: height - 18,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.23),
-                    borderRadius: BorderRadius.circular(32),
-                    border: Border.all(color: gold.withValues(alpha: 0.65)),
+                    color: Colors.black.withValues(alpha: 0.26),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: gold.withValues(alpha: 0.72)),
                   ),
                   child: const Icon(
                     Icons.mosque_rounded,
-                    size: 35,
+                    size: 38,
                     color: gold,
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
+                const SizedBox(width: 13),
+                const Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'الكامل',
                         style: TextStyle(
                           color: ivory,
@@ -208,31 +226,26 @@ class HomePage extends StatelessWidget {
                           height: 1.1,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'رفيقك إلى المعرفة والعبادة',
-                        style: TextStyle(
-                          color: mutedIvory,
-                          fontSize: 11,
-                        ),
+                      SizedBox(height: 5),
+                      Text(
+                        'على نهج أمير المؤمنين (عليه السلام)',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: mutedIvory, fontSize: 10),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: 76,
-                        height: 2,
-                        decoration: BoxDecoration(
+                      SizedBox(height: 7),
+                      SizedBox(
+                        width: 82,
+                        child: Divider(
                           color: turquoise,
-                          borderRadius: BorderRadius.circular(2),
+                          thickness: 2,
+                          height: 2,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.auto_awesome,
-                  color: gold,
-                  size: 17,
-                ),
+                const Icon(Icons.auto_awesome, color: gold, size: 16),
               ],
             ),
           ),
@@ -244,7 +257,6 @@ class HomePage extends StatelessWidget {
 
 class _Section {
   const _Section(this.title, this.icon);
-
   final String title;
   final IconData icon;
 }
@@ -253,40 +265,42 @@ class _SectionTile extends StatelessWidget {
   const _SectionTile({
     required this.section,
     required this.onTap,
+    required this.compact,
   });
 
   final _Section section;
   final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: panelBlack,
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: gold.withValues(alpha: 0.27), width: 0.7),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: gold.withValues(alpha: 0.30), width: 0.7),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(section.icon, size: 23, color: gold),
-              const SizedBox(height: 7),
+              Icon(section.icon, size: compact ? 18 : 20, color: gold),
+              SizedBox(height: compact ? 3 : 5),
               Text(
                 section.title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   color: ivory,
-                  fontSize: 10.5,
+                  fontSize: compact ? 8.5 : 9.2,
                   fontWeight: FontWeight.w600,
-                  height: 1.3,
+                  height: 1.2,
                 ),
               ),
             ],
@@ -297,9 +311,204 @@ class _SectionTile extends StatelessWidget {
   }
 }
 
+class QuranScreen extends StatefulWidget {
+  const QuranScreen({super.key});
+
+  @override
+  State<QuranScreen> createState() => _QuranScreenState();
+}
+
+class _QuranScreenState extends State<QuranScreen> {
+  final PageController _pageController = PageController();
+  int _currentPage = 1;
+  bool _fontsReady = false;
+  bool _fontError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadQuranFonts();
+  }
+
+  Future<void> _loadQuranFonts() async {
+    try {
+      await QcfFontLoader.setupFontsAtStartup();
+      if (mounted) setState(() => _fontsReady = true);
+    } catch (_) {
+      if (mounted) setState(() => _fontError = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _goToPage(int page) {
+    final target = page.clamp(1, 604);
+    _pageController.jumpToPage(target - 1);
+    setState(() => _currentPage = target);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF4EBDD),
+        appBar: AppBar(
+          backgroundColor: royalBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+          title: const Text(
+            'القرآن الكريم',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+        ),
+        body: Column(
+          children: [
+            Container(
+              color: royalBlack,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                children: [
+                  IconButton(
+                    tooltip: 'الصفحة السابقة',
+                    onPressed: _currentPage > 1
+                        ? () => _goToPage(_currentPage - 1)
+                        : null,
+                    icon: const Icon(Icons.chevron_right, color: gold),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'الصفحة $_currentPage من 604',
+                        style: const TextStyle(color: ivory, fontSize: 13),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: 'الصفحة التالية',
+                    onPressed: _currentPage < 604
+                        ? () => _goToPage(_currentPage + 1)
+                        : null,
+                    icon: const Icon(Icons.chevron_left, color: gold),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _fontsReady
+                  ? QuranPageView(
+                      pageController: _pageController,
+                      isDarkMode: false,
+                      isTajweed: true,
+                      enableTwoPageLayout: false,
+                      pageBackgroundColor: const Color(0xFFFFFCF4),
+                      onPageChanged: (page) {
+                        setState(() => _currentPage = page + 1);
+                      },
+                    )
+                  : Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(color: gold),
+                            const SizedBox(height: 14),
+                            Text(
+                              _fontError
+                                  ? 'تعذّر تهيئة خط المصحف. أعد فتح التطبيق.'
+                                  : 'تهيئة صفحات المصحف والخطوط...',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: royalBlack,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+            ),
+            Container(
+              color: royalBlack,
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.menu_book, color: gold, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'مصحف حفص • أحكام التجويد الملوّنة',
+                      style: TextStyle(
+                        color: ivory.withValues(alpha: 0.9),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _showPagePicker(context),
+                    child: const Text(
+                      'انتقال',
+                      style: TextStyle(color: turquoise),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showPagePicker(BuildContext context) async {
+    final controller = TextEditingController(text: '$_currentPage');
+    final page = await showDialog<int>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: panelBlack,
+        title: const Text(
+          'الانتقال إلى صفحة',
+          style: TextStyle(color: ivory),
+        ),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          style: const TextStyle(color: ivory),
+          decoration: const InputDecoration(
+            hintText: 'من 1 إلى 604',
+            hintStyle: TextStyle(color: mutedIvory),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () {
+              final value = int.tryParse(controller.text.trim());
+              if (value != null && value >= 1 && value <= 604) {
+                Navigator.pop(dialogContext, value);
+              }
+            },
+            child: const Text('انتقال'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (page != null) _goToPage(page);
+  }
+}
+
 class SectionPage extends StatelessWidget {
   const SectionPage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -332,7 +541,7 @@ class SectionPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  'القسم قيد تجهيز محتواه الموثق للعمل دون إنترنت.',
+                  'يجري تجهيز المحتوى الموثق لهذا القسم ليعمل دون إنترنت.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: mutedIvory,
