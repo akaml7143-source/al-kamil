@@ -41,7 +41,7 @@ class AlKamilApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const List<_Section> sections = [
+  static const List<_Section> _sections = [
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('مواقيت الصلاة', Icons.access_time_rounded),
     _Section('الزيارات', Icons.account_balance_rounded),
@@ -117,7 +117,7 @@ class HomePage extends StatelessWidget {
                       child: GridView.builder(
                         padding: EdgeInsets.zero,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: sections.length,
+                        itemCount: _sections.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 4,
                           crossAxisSpacing: 7,
@@ -125,7 +125,7 @@ class HomePage extends StatelessWidget {
                           childAspectRatio: compact ? 1.16 : 1.04,
                         ),
                         itemBuilder: (context, index) {
-                          final section = sections[index];
+                          final section = _sections[index];
                           return _SectionTile(
                             section: section,
                             compact: compact,
@@ -332,7 +332,7 @@ class _QuranScreenState extends State<QuranScreen> {
 
   Future<void> _loadQuranFonts() async {
     try {
-      await QcfFontLoader.setupFontsAtStartup();
+      await QcfFontLoader.setupFontsAtStartup(onProgress: (_) {});
       if (mounted) setState(() => _fontsReady = true);
     } catch (_) {
       if (mounted) setState(() => _fontError = true);
@@ -402,6 +402,7 @@ class _QuranScreenState extends State<QuranScreen> {
               child: _fontsReady
                   ? QuranPageView(
                       pageController: _pageController,
+                      highlights: const <HighlightVerse>[],
                       isDarkMode: false,
                       isTajweed: true,
                       enableTwoPageLayout: false,
