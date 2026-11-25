@@ -13,6 +13,7 @@ dependencies:
   material_ui: ^1.8.0
   qcf_quran_plus: ^0.1.1
   shared_preferences: ^2.3.2
+  adhan_dart: ^2.0.1
 
 dev_dependencies:
   flutter_test:

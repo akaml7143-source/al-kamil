@@ -216,6 +216,47 @@ void main() {
     expect(sourceFinder, findsOneWidget);
   });
 
+  testWidgets('offline prayer times calculate, change city and persist settings',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('مواقيت الصلاة'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('الصلاة القادمة'), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_fajr')), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_sunrise')), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_dhuhr')), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_asr')), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_maghrib')), findsOneWidget);
+    expect(find.byKey(const Key('prayer_time_isha')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('prayer_city_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('البصرة').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('البصرة'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance())
+          .getString('prayer_times_city'),
+      'basra',
+    );
+
+    await tester.tap(find.byKey(const Key('prayer_method_dropdown')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('جامعة طهران').last);
+    await tester.pumpAndSettle();
+    expect(
+      (await SharedPreferences.getInstance())
+          .getString('prayer_times_method'),
+      'tehran',
+    );
+  });
+
   testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
       (tester) async {
     SharedPreferences.setMockInitialValues({});

@@ -1,0 +1,690 @@
+import 'dart:async';
+
+import 'package:adhan_dart/adhan_dart.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+const List<_PrayerCity> _iraqiCities = [
+  _PrayerCity('baghdad', 'بغداد', 33.3152, 44.3661),
+  _PrayerCity('basra', 'البصرة', 30.5085, 47.7804),
+  _PrayerCity('maysan', 'العمارة – ميسان', 31.8359, 47.1440),
+  _PrayerCity('najaf', 'النجف', 32.0003, 44.3354),
+  _PrayerCity('karbala', 'كربلاء', 32.6160, 44.0249),
+  _PrayerCity('nasiriyah', 'الناصرية – ذي قار', 31.0539, 46.2572),
+  _PrayerCity('kut', 'الكوت – واسط', 32.5128, 45.8182),
+  _PrayerCity('hillah', 'الحلة – بابل', 32.4837, 44.4274),
+  _PrayerCity('diwaniyah', 'الديوانية', 31.9929, 44.9255),
+  _PrayerCity('samawah', 'السماوة – المثنى', 31.3187, 45.2806),
+  _PrayerCity('kirkuk', 'كركوك', 35.4681, 44.3922),
+  _PrayerCity('mosul', 'الموصل – نينوى', 36.34, 43.13),
+  _PrayerCity('erbil', 'أربيل', 36.19, 44.01),
+  _PrayerCity('sulaymaniyah', 'السليمانية', 35.56, 45.44),
+  _PrayerCity('duhok', 'دهوك', 36.86, 42.99),
+  _PrayerCity('tikrit', 'تكريت – صلاح الدين', 34.61, 43.68),
+  _PrayerCity('ramadi', 'الرمادي – الأنبار', 33.42, 43.31),
+  _PrayerCity('baqubah', 'بعقوبة – ديالى', 33.75, 44.64),
+];
+
+class PrayerTimesScreen extends StatefulWidget {
+  const PrayerTimesScreen({super.key});
+
+  @override
+  State<PrayerTimesScreen> createState() => _PrayerTimesScreenState();
+}
+
+class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
+  static const _cityKey = 'prayer_times_city';
+  static const _latitudeKey = 'prayer_times_latitude';
+  static const _longitudeKey = 'prayer_times_longitude';
+  static const _methodKey = 'prayer_times_method';
+  static const _asrKey = 'prayer_times_hanafi_asr';
+
+  String _selectedCity = 'baghdad';
+  String _cityName = 'بغداد';
+  double _latitude = 33.3152;
+  double _longitude = 44.3661;
+  String _method = 'jafari';
+  bool _hanafiAsr = false;
+  bool _loading = true;
+  String? _error;
+  DateTime _now = DateTime.now();
+  PrayerTimes? _today;
+  PrayerTimes? _tomorrow;
+  Timer? _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+    _ticker = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (!mounted) return;
+      final current = DateTime.now();
+      if (current.year != _now.year ||
+          current.month != _now.month ||
+          current.day != _now.day) {
+        _now = current;
+        _calculateTimes();
+      } else {
+        setState(() => _now = current);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    final city = preferences.getString(_cityKey) ?? 'baghdad';
+    final savedCity = _iraqiCities.where((item) => item.id == city);
+    if (savedCity.isNotEmpty) {
+      final selected = savedCity.first;
+      _selectedCity = selected.id;
+      _cityName = selected.name;
+      _latitude = selected.latitude;
+      _longitude = selected.longitude;
+    } else if (city == 'custom') {
+      _selectedCity = 'custom';
+      _cityName = 'موقع مخصص';
+      _latitude = preferences.getDouble(_latitudeKey) ?? 33.3152;
+      _longitude = preferences.getDouble(_longitudeKey) ?? 44.3661;
+    }
+    _method = preferences.getString(_methodKey) ?? 'jafari';
+    _hanafiAsr = preferences.getBool(_asrKey) ?? false;
+    if (!mounted) return;
+    setState(() {
+      _loading = false;
+      _now = DateTime.now();
+    });
+    _calculateTimes();
+  }
+
+  CalculationParameters _calculationParameters() {
+    final parameters = _method == 'tehran'
+        ? CalculationMethodParameters.tehran()
+        : CalculationMethodParameters.jafari();
+    parameters.madhab = _hanafiAsr ? Madhab.hanafi : Madhab.shafi;
+    parameters.highLatitudeRule = HighLatitudeRule.middleOfTheNight;
+    return parameters;
+  }
+
+  PrayerTimes _calculateFor(DateTime date) {
+    return PrayerTimes(
+      coordinates: Coordinates(_latitude, _longitude),
+      date: DateTime(date.year, date.month, date.day),
+      calculationParameters: _calculationParameters(),
+      precision: false,
+    );
+  }
+
+  void _calculateTimes() {
+    try {
+      final current = DateTime.now();
+      _today = _calculateFor(current);
+      _tomorrow = _calculateFor(current.add(const Duration(days: 1)));
+      _error = null;
+    } catch (_) {
+      _today = null;
+      _tomorrow = null;
+      _error = 'تعذّر حساب المواقيت لهذه الإحداثيات. تحقق من الموقع المختار.';
+    }
+    if (mounted) setState(() => _now = DateTime.now());
+  }
+
+  Future<void> _saveSettings() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_cityKey, _selectedCity);
+    await preferences.setDouble(_latitudeKey, _latitude);
+    await preferences.setDouble(_longitudeKey, _longitude);
+    await preferences.setString(_methodKey, _method);
+    await preferences.setBool(_asrKey, _hanafiAsr);
+  }
+
+  Future<void> _selectCity(String? id) async {
+    if (id == null) return;
+    if (id == 'custom') {
+      await _editCoordinates();
+      return;
+    }
+    final city = _iraqiCities.firstWhere((item) => item.id == id);
+    setState(() {
+      _selectedCity = city.id;
+      _cityName = city.name;
+      _latitude = city.latitude;
+      _longitude = city.longitude;
+    });
+    await _saveSettings();
+    _calculateTimes();
+  }
+
+  Future<void> _editCoordinates() async {
+    final latitudeController =
+        TextEditingController(text: _latitude.toStringAsFixed(4));
+    final longitudeController =
+        TextEditingController(text: _longitude.toStringAsFixed(4));
+    final result = await showDialog<List<double>>(
+      context: context,
+      builder: (dialogContext) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          backgroundColor: panelBlack,
+          title: const Text('إدخال الإحداثيات',
+              style: TextStyle(color: gold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'أدخل خط العرض وخط الطول للموقع. تبقى الإحداثيات محفوظة على جهازك.',
+                style: TextStyle(color: mutedIvory, height: 1.7),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                key: const Key('prayer_latitude_input'),
+                controller: latitudeController,
+                keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
+                style: const TextStyle(color: ivory),
+                decoration: const InputDecoration(
+                  labelText: 'خط العرض (Latitude)',
+                  labelStyle: TextStyle(color: turquoise),
+                ),
+              ),
+              TextField(
+                key: const Key('prayer_longitude_input'),
+                controller: longitudeController,
+                keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
+                style: const TextStyle(color: ivory),
+                decoration: const InputDecoration(
+                  labelText: 'خط الطول (Longitude)',
+                  labelStyle: TextStyle(color: turquoise),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('إلغاء'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final latitude = double.tryParse(
+                  latitudeController.text.trim().replaceAll(',', '.'),
+                );
+                final longitude = double.tryParse(
+                  longitudeController.text.trim().replaceAll(',', '.'),
+                );
+                if (latitude == null ||
+                    longitude == null ||
+                    latitude < -90 ||
+                    latitude > 90 ||
+                    longitude < -180 ||
+                    longitude > 180) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    const SnackBar(
+                      content: Text('أدخل إحداثيات صحيحة ضمن الحدود الجغرافية.'),
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(dialogContext, [latitude, longitude]);
+              },
+              child: const Text('حفظ الموقع'),
+            ),
+          ],
+        ),
+      ),
+    );
+    latitudeController.dispose();
+    longitudeController.dispose();
+    if (result == null || !mounted) return;
+    setState(() {
+      _selectedCity = 'custom';
+      _cityName = 'موقع مخصص';
+      _latitude = result[0];
+      _longitude = result[1];
+    });
+    await _saveSettings();
+    _calculateTimes();
+  }
+
+  Future<void> _selectMethod(String? value) async {
+    if (value == null) return;
+    setState(() => _method = value);
+    await _saveSettings();
+    _calculateTimes();
+  }
+
+  Future<void> _selectAsr(bool value) async {
+    setState(() => _hanafiAsr = value);
+    await _saveSettings();
+    _calculateTimes();
+  }
+
+  DateTime? _nextPrayerTime() {
+    if (_today == null || _tomorrow == null) return null;
+    final entries = [
+      _today!.fajr.toLocal(),
+      _today!.dhuhr.toLocal(),
+      _today!.asr.toLocal(),
+      _today!.maghrib.toLocal(),
+      _today!.isha.toLocal(),
+    ];
+    for (final time in entries) {
+      if (time.isAfter(_now)) return time;
+    }
+    return _tomorrow!.fajr.toLocal();
+  }
+
+  String _nextPrayerName() {
+    if (_today == null) return 'الصلاة القادمة';
+    final entries = [
+      ('الفجر', _today!.fajr.toLocal()),
+      ('الظهر', _today!.dhuhr.toLocal()),
+      ('العصر', _today!.asr.toLocal()),
+      ('المغرب', _today!.maghrib.toLocal()),
+      ('العشاء', _today!.isha.toLocal()),
+    ];
+    for (final entry in entries) {
+      if (entry.$2.isAfter(_now)) return entry.$1;
+    }
+    return 'الفجر';
+  }
+
+  String _arabicDigits(String value) {
+    const digits = '٠١٢٣٤٥٦٧٨٩';
+    return value.split('').map((character) {
+      final number = int.tryParse(character);
+      return number == null ? character : digits[number];
+    }).join();
+  }
+
+  String _formatTime(DateTime time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return _arabicDigits(hour + ':' + minute);
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+      'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+    ];
+    return _arabicDigits(date.day.toString()) + ' ' +
+        months[date.month - 1] + ' ' + _arabicDigits(date.year.toString());
+  }
+
+  String _formatCountdown(DateTime? target) {
+    if (target == null) return '—';
+    var difference = target.difference(_now);
+    if (difference.isNegative) difference = Duration.zero;
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes.remainder(60);
+    final seconds = difference.inSeconds.remainder(60);
+    return _arabicDigits(hours.toString().padLeft(2, '0')) + ':' +
+        _arabicDigits(minutes.toString().padLeft(2, '0')) + ':' +
+        _arabicDigits(seconds.toString().padLeft(2, '0'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final nextTime = _nextPrayerTime();
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: const Text('مواقيت الصلاة'),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+          actions: [
+            IconButton(
+              key: const Key('prayer_times_refresh'),
+              tooltip: 'تحديث المواقيت',
+              onPressed: _loading ? null : _calculateTimes,
+              icon: const Icon(Icons.refresh_rounded),
+            ),
+          ],
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 28),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(17),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF3B301D), panelBlack, Color(0xFF102322)],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                      ),
+                      border: Border.all(color: gold.withValues(alpha: 0.55)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on_rounded,
+                                color: turquoise, size: 19),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                _cityName,
+                                key: const Key('prayer_current_city'),
+                                style: const TextStyle(
+                                  color: ivory,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.wifi_off_rounded,
+                                color: mutedIvory, size: 16),
+                            const SizedBox(width: 4),
+                            const Text('حساب دون إنترنت',
+                                style: TextStyle(
+                                    color: mutedIvory, fontSize: 10)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(_formatDate(_now),
+                            style: const TextStyle(
+                                color: mutedIvory, fontSize: 12)),
+                        const SizedBox(height: 16),
+                        const Text('الصلاة القادمة',
+                            style: TextStyle(
+                                color: mutedIvory, fontSize: 12)),
+                        const SizedBox(height: 4),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _nextPrayerName(),
+                                style: const TextStyle(
+                                  color: gold,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              _formatCountdown(nextTime),
+                              key: const Key('prayer_next_countdown'),
+                              style: const TextStyle(
+                                color: turquoise,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (nextTime != null) ...[
+                          const SizedBox(height: 4),
+                          Text('موعدها ' + _formatTime(nextTime),
+                              style: const TextStyle(
+                                  color: ivory, fontSize: 12)),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  if (_error != null)
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3A2020),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(_error!,
+                          style: const TextStyle(color: ivory)),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: panelBlack,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: gold.withValues(alpha: 0.25)),
+                      ),
+                      child: Column(
+                        children: [
+                          for (final prayer in [
+                            _PrayerEntry('الفجر', Icons.nights_stay_rounded,
+                                _today!.fajr.toLocal(), 'fajr'),
+                            _PrayerEntry('الشروق', Icons.wb_twilight_rounded,
+                                _today!.sunrise.toLocal(), 'sunrise',
+                                isSunrise: true),
+                            _PrayerEntry('الظهر', Icons.wb_sunny_rounded,
+                                _today!.dhuhr.toLocal(), 'dhuhr'),
+                            _PrayerEntry('العصر', Icons.wb_sunny_outlined,
+                                _today!.asr.toLocal(), 'asr'),
+                            _PrayerEntry('المغرب', Icons.wb_twilight_rounded,
+                                _today!.maghrib.toLocal(), 'maghrib'),
+                            _PrayerEntry('العشاء', Icons.dark_mode_rounded,
+                                _today!.isha.toLocal(), 'isha'),
+                          ])
+                            _PrayerTimeTile(
+                              entry: prayer,
+                              highlighted: !prayer.isSunrise &&
+                                  prayer.time == nextTime,
+                              formattedTime: _formatTime(prayer.time),
+                            ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: panelBlack,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: turquoise.withValues(alpha: 0.3)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('إعدادات المواقيت',
+                            style: TextStyle(
+                                color: gold,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          key: const Key('prayer_city_dropdown'),
+                          initialValue: _selectedCity,
+                          dropdownColor: panelBlack,
+                          style: const TextStyle(color: ivory),
+                          decoration: const InputDecoration(
+                            labelText: 'المدينة',
+                            labelStyle: TextStyle(color: turquoise),
+                            border: OutlineInputBorder(),
+                          ),
+                          items: [
+                            for (final city in _iraqiCities)
+                              DropdownMenuItem(
+                                  value: city.id, child: Text(city.name)),
+                            const DropdownMenuItem(
+                                value: 'custom',
+                                child: Text('إحداثيات مخصصة…')),
+                          ],
+                          onChanged: _selectCity,
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          key: const Key('prayer_method_dropdown'),
+                          initialValue: _method,
+                          dropdownColor: panelBlack,
+                          style: const TextStyle(color: ivory),
+                          decoration: const InputDecoration(
+                            labelText: 'طريقة الحساب الفلكي',
+                            labelStyle: TextStyle(color: turquoise),
+                            border: OutlineInputBorder(),
+                          ),
+                          items: const [
+                            DropdownMenuItem(
+                                value: 'jafari',
+                                child: Text('الجعفري – مؤسسة ليوا، قم')),
+                            DropdownMenuItem(
+                                value: 'tehran',
+                                child: Text('جامعة طهران')),
+                          ],
+                          onChanged: _selectMethod,
+                        ),
+                        const SizedBox(height: 8),
+                        SwitchListTile(
+                          key: const Key('prayer_hanafi_asr_switch'),
+                          contentPadding: EdgeInsets.zero,
+                          value: _hanafiAsr,
+                          activeColor: turquoise,
+                          title: const Text(
+                            'حساب وقت العصر بالطريقة الحنفية',
+                            style: TextStyle(color: ivory, fontSize: 12),
+                          ),
+                          subtitle: const Text(
+                            'إيقافه يستخدم الحساب القياسي (ظل بمقدار واحد)',
+                            style: TextStyle(color: mutedIvory, fontSize: 10),
+                          ),
+                          onChanged: _selectAsr,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'الإحداثيات: ' +
+                              _latitude.toStringAsFixed(4) +
+                              '، ' +
+                              _longitude.toStringAsFixed(4),
+                          style: const TextStyle(
+                              color: mutedIvory, fontSize: 10),
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          key: const Key('prayer_custom_location_button'),
+                          onPressed: _editCoordinates,
+                          icon: const Icon(Icons.edit_location_alt_rounded),
+                          label: const Text('إدخال موقع بالإحداثيات'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: turquoise,
+                            side: BorderSide(
+                                color: turquoise.withValues(alpha: 0.5)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF29251D),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'تنبيه مهم: هذه مواقيت فلكية تقديرية محسوبة محلياً، وقد تختلف دقائق عن الجداول الرسمية بحسب الإحداثيات وطريقة الحساب والاحتياط. وقت المغرب المحسوب فلكياً لا يحسم وحده الحكم الفقهي لدخول المغرب؛ راجع توقيت مكتب مرجع تقليدك، ولا سيما مسألة زوال الحمرة المشرقية. لا يحتاج هذا القسم إلى الإنترنت أو إذن الموقع؛ اختر مدينتك أو أدخل إحداثياتها يدوياً.',
+                      style: TextStyle(
+                          color: ivory, height: 1.9, fontSize: 11),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'مصدر الخوارزمية: مكتبة Adhan Dart 2.0.1، الحسابات الفلكية وفق معادلات Jean Meeus. طريقة الجعفري – قم: فجر 16°، عشاء 14°، ومغرب عند انخفاض الشمس 4° تحت الأفق. طريقة طهران: فجر 17.7°، عشاء 14°، ومغرب 4.5°.',
+                    style: TextStyle(
+                        color: mutedIvory, height: 1.8, fontSize: 10),
+                  ),
+                  const SelectableText(
+                    'https://pub.dev/packages/adhan_dart',
+                    style: TextStyle(color: turquoise, fontSize: 10),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _PrayerCity {
+  const _PrayerCity(this.id, this.name, this.latitude, this.longitude);
+  final String id;
+  final String name;
+  final double latitude;
+  final double longitude;
+}
+
+class _PrayerEntry {
+  const _PrayerEntry(this.name, this.icon, this.time, this.id,
+      {this.isSunrise = false});
+  final String name;
+  final IconData icon;
+  final DateTime time;
+  final String id;
+  final bool isSunrise;
+}
+
+class _PrayerTimeTile extends StatelessWidget {
+  const _PrayerTimeTile({
+    required this.entry,
+    required this.highlighted,
+    required this.formattedTime,
+  });
+
+  final _PrayerEntry entry;
+  final bool highlighted;
+  final String formattedTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = highlighted ? turquoise : ivory;
+    return Container(
+      key: Key('prayer_time_' + entry.id),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
+      decoration: BoxDecoration(
+        color: highlighted
+            ? turquoise.withValues(alpha: 0.08)
+            : Colors.transparent,
+        border: Border(
+          bottom: BorderSide(color: gold.withValues(alpha: 0.12)),
+        ),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(entry.icon,
+              color: entry.isSunrise ? mutedIvory : gold, size: 21),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              entry.name,
+              style: TextStyle(
+                color: color,
+                fontSize: 15,
+                fontWeight: highlighted ? FontWeight.bold : FontWeight.w600,
+              ),
+            ),
+          ),
+          Text(
+            formattedTime,
+            style: TextStyle(
+              color: color,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          if (highlighted) ...[
+            const SizedBox(width: 6),
+            const Icon(Icons.notifications_active_rounded,
+                color: turquoise, size: 16),
+          ],
+        ],
+      ),
+    );
+  }
+}
