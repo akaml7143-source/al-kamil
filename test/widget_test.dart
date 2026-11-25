@@ -25,7 +25,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('0'), findsOneWidget);
-    await tester.tap(find.text('سبّح'));
+    final tasbeehButton = find.ancestor(
+      of: find.text('سبّح'),
+      matching: find.byType(FilledButton),
+    );
+    await tester.ensureVisible(tasbeehButton);
+    await tester.pumpAndSettle();
+    await tester.tap(tasbeehButton);
     await tester.pumpAndSettle();
     expect(find.text('1'), findsOneWidget);
     expect(
