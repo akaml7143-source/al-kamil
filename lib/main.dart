@@ -823,6 +823,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                         child: Column(
                           children: const [
+                            // ignore: unnecessary_const
                             const Icon(
                               Icons.auto_awesome,
                               color: gold,
