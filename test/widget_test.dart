@@ -203,12 +203,17 @@ void main() {
       isTrue,
     );
 
-    // Ensure the source widget is brought into view without a drag gesture;
-    // the test viewport can be shorter than the reader's full content.
+    // Scroll from a known point inside the test viewport. The reader uses
+    // a lazy ListView, so the source text is created only after scrolling.
     final sourceFinder = find.textContaining('sistani.org/arabic/book/23/1900/');
+    for (var attempt = 0; attempt < 20 && sourceFinder.evaluate().isEmpty; attempt++) {
+      await tester.dragFrom(
+        const Offset(400, 500),
+        const Offset(0, -350),
+      );
+      await tester.pumpAndSettle();
+    }
     expect(sourceFinder, findsOneWidget);
-    await tester.ensureVisible(sourceFinder);
-    await tester.pumpAndSettle();
   });
 
   testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
