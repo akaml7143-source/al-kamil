@@ -577,7 +577,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           key: const Key('prayer_city_dropdown'),
                           onPressed: _chooseCity,
                           icon: const Icon(Icons.location_city_rounded),
-                          label: Text('اختيار المدينة: ' + _cityName),
+                          label: Text('اختيار المدينة: $_cityName'),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _ivory,
                             side: BorderSide(color: _gold.withValues(alpha: 0.4)),
@@ -589,10 +589,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           onPressed: _chooseMethod,
                           icon: const Icon(Icons.tune_rounded),
                           label: Text(
-                            'طريقة الحساب: ' +
-                                (_method == 'tehran'
-                                    ? 'جامعة طهران'
-                                    : 'الجعفري – مؤسسة ليوا، قم'),
+                            'طريقة الحساب: ${_method == 'tehran' ? 'جامعة طهران' : 'الجعفري – مؤسسة ليوا، قم'},
                           ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _ivory,
