@@ -835,8 +835,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                         child: Column(
                           children: const [
-                            // ignore: prefer_const_constructors, unnecessary_const
-                            const Icon(
+                            Icon(
                               Icons.auto_awesome,
                               color: gold,
                               size: 28,
@@ -1338,7 +1337,6 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
 
 class _LibraryItemDetail extends StatelessWidget {
   const _LibraryItemDetail({
-    super.key,
     required this.item,
     required this.isFavorite,
     required this.onToggleFavorite,
