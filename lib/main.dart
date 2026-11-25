@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter/services.dart';
 import 'package:qcf_quran_plus/qcf_quran_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1089,14 +1090,14 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
     _LibraryItem(id: 'visit_ashura', title: 'زيارة عاشوراء', description: 'زيارة الإمام الحسين (عليه السلام)', source: 'مفاتيح الجنان، الشيخ عباس القمي، الزيارة الأولى: زيارة عاشوراء المشهورة، ص 665–669. تختلف بعض الألفاظ بين الطبعات والنسخ.',),
     _LibraryItem(id: 'visit_warith', title: 'زيارة وارث', description: 'زيارة الإمام الحسين (عليه السلام)', source: 'مفاتيح الجنان، الشيخ عباس القمي، الزيارة السابعة: زيارة وارث، ص 630–632؛ وينقل المؤلف أصلها عن مصباح المتهجد للشيخ الطوسي.'),
     _LibraryItem(id: 'visit_amin', title: 'زيارة أمين الله', description: 'زيارة جامعة', source: 'مفاتيح الجنان، الشيخ عباس القمي، الزيارة الثانية المعروفة بأمين الله، ص 526–527.'),
-    _LibraryItem(id: 'visit_jamia', title: 'الزيارة الجامعة الكبيرة', description: 'زيارة جامعة للأئمة (عليهم السلام)', source: 'المصدر والتخريج: يُستكمل بعد مراجعة النص والطبعة'),
+    _LibraryItem(id: 'visit_jamia', title: 'الزيارة الجامعة الكبيرة', description: 'زيارة جامعة للأئمة (عليهم السلام)', source: 'وردت في كتاب من لا يحضره الفقيه للشيخ الصدوق، ج 2، وفي تهذيب الأحكام للشيخ الطوسي، ج 6. النص قيد المطابقة الحرفية مع نسخة معتمدة قبل إتاحته.'),
   ],
   'الأدعية العامة': [
     _LibraryItem(id: 'dua_kumayl', title: 'دعاء كميل', description: 'من الأدعية المشهورة في ليالي الجمعة', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
     _LibraryItem(id: 'dua_tawassul', title: 'دعاء التوسل', description: 'التوسل إلى الله تعالى', source: 'مفاتيح الجنان، الشيخ عباس القمي، الباب الأول، الفصل السابع، الثاني: التوسل، ص 194؛ وينقل المؤلف روايته عن العلامة المجلسي.'),
     _LibraryItem(id: 'dua_ahd', title: 'دعاء العهد', description: 'دعاء العهد', source: 'مفاتيح الجنان، الشيخ عباس القمي، الباب الخاص بزيارة صاحب الزمان، الثالث: دعاء العهد، ص 775–776؛ توجد فروق لفظية يسيرة بين النسخ.'),
     _LibraryItem(id: 'dua_iftitah', title: 'دعاء الافتتاح', description: 'من أدعية شهر رمضان', source: 'مفاتيح الجنان، الشيخ عباس القمي، أعمال شهر رمضان العامة، الدعاء الحادي عشر: دعاء الافتتاح، ص 290.'),
-    _LibraryItem(id: 'dua_nudba', title: 'دعاء الندبة', description: 'دعاء الندبة', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
+    _LibraryItem(id: 'dua_nudba', title: 'دعاء الندبة', description: 'يُستحب الدعاء به في الأعياد الأربعة وفق نقل مفاتيح الجنان', source: 'مفاتيح الجنان، الشيخ عباس القمي، ضمن أعمال سرداب الغيبة، ص 637–640 في النسخة المصورة على مكتبة رافد. النص الكامل قيد المطابقة صفحةً صفحة قبل إتاحته.'),
     _LibraryItem(id: 'dua_abu_hamza', title: 'دعاء أبي حمزة الثمالي', description: 'من أدعية أسحار شهر رمضان', source: 'المصدر والتخريج قيد المراجعة'),
     _LibraryItem(id: 'dua_jawshan', title: 'دعاء الجوشن الكبير', description: 'دعاء الجوشن الكبير', source: 'المصدر والتخريج قيد المراجعة'),
     _LibraryItem(id: 'dua_mashlul', title: 'دعاء المشلول', description: 'دعاء المشلول', source: 'المصدر والتخريج قيد المراجعة'),
@@ -1457,7 +1458,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
   }
 }
 
-class _LibraryItemDetail extends StatelessWidget {
+class _LibraryItemDetail extends StatefulWidget {
   const _LibraryItemDetail({
     required this.item,
     required this.isFavorite,
@@ -1469,21 +1470,89 @@ class _LibraryItemDetail extends StatelessWidget {
   final VoidCallback onToggleFavorite;
 
   @override
+  State<_LibraryItemDetail> createState() => _LibraryItemDetailState();
+}
+
+class _LibraryItemDetailState extends State<_LibraryItemDetail> {
+  static const int _minimumFontSize = 14;
+  static const int _maximumFontSize = 36;
+  static const int _defaultFontSize = 18;
+
+  int _fontSize = _defaultFontSize;
+
+  String? get _verifiedText => _verifiedPrayerTexts[widget.item.id];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFontSize();
+  }
+
+  Future<void> _loadFontSize() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final savedSize = preferences.getInt('reader_font_size') ?? _defaultFontSize;
+      if (!mounted) return;
+      setState(() => _fontSize = savedSize.clamp(_minimumFontSize, _maximumFontSize));
+    } catch (_) {
+      // Keep the reader available with its default font size.
+    }
+  }
+
+  Future<void> _changeFontSize(int delta) async {
+    final nextSize = (_fontSize + delta).clamp(_minimumFontSize, _maximumFontSize);
+    setState(() => _fontSize = nextSize);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setInt('reader_font_size', nextSize);
+  }
+
+  Future<void> _copyText() async {
+    final text = _verifiedText;
+    if (text == null || text.trim().isEmpty) return;
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('تم نسخ النص إلى الحافظة')),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final text = _verifiedText;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
         appBar: AppBar(
-          title: Text(item.title),
+          title: Text(widget.item.title),
           backgroundColor: panelBlack,
           foregroundColor: gold,
           actions: [
             IconButton(
-              tooltip: isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
-              onPressed: onToggleFavorite,
+              tooltip: 'تصغير الخط',
+              onPressed: _fontSize > _minimumFontSize
+                  ? () => _changeFontSize(-1)
+                  : null,
+              icon: const Icon(Icons.text_decrease_rounded),
+            ),
+            Center(
+              child: Text(
+                '$_fontSize',
+                style: const TextStyle(color: ivory, fontSize: 12),
+              ),
+            ),
+            IconButton(
+              tooltip: 'تكبير الخط',
+              onPressed: _fontSize < _maximumFontSize
+                  ? () => _changeFontSize(1)
+                  : null,
+              icon: const Icon(Icons.text_increase_rounded),
+            ),
+            IconButton(
+              tooltip: widget.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+              onPressed: widget.onToggleFavorite,
               icon: Icon(
-                isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                widget.isFavorite ? Icons.bookmark : Icons.bookmark_border,
                 color: gold,
               ),
             ),
@@ -1493,7 +1562,7 @@ class _LibraryItemDetail extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           children: [
             Text(
-              item.title,
+              widget.item.title,
               style: const TextStyle(
                 color: gold,
                 fontSize: 23,
@@ -1502,28 +1571,62 @@ class _LibraryItemDetail extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              item.description,
+              widget.item.description,
               style: const TextStyle(color: ivory, fontSize: 15),
             ),
             const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: panelBlack,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: gold.withValues(alpha: 0.35)),
+            if (text != null && text.trim().isNotEmpty) ...[
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'النص',
+                      style: TextStyle(
+                        color: gold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  TextButton.icon(
+                    onPressed: _copyText,
+                    icon: const Icon(Icons.copy_rounded, size: 18),
+                    label: const Text('نسخ النص'),
+                    style: TextButton.styleFrom(foregroundColor: turquoise),
+                  ),
+                ],
               ),
-              child: SelectableText(
-                _verifiedPrayerTexts[item.id] ??
-                    'هذا النص قيد المطابقة النهائية، ولن نعرض نصاً غير متحقق منه.',
-                textAlign: TextAlign.justify,
-                style: const TextStyle(
-                  color: ivory,
-                  height: 2.0,
-                  fontSize: 16,
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: panelBlack,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: gold.withValues(alpha: 0.35)),
+                ),
+                child: SelectableText(
+                  text,
+                  textAlign: TextAlign.justify,
+                  style: TextStyle(
+                    color: ivory,
+                    height: 2.0,
+                    fontSize: _fontSize.toDouble(),
+                  ),
                 ),
               ),
-            ),
+            ] else
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: panelBlack,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: turquoise.withValues(alpha: 0.3)),
+                ),
+                child: const Text(
+                  'النص الكامل قيد المطابقة مع المصدر، لذلك لم نعرض نصاً جزئياً أو غير متحقق منه.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: ivory, height: 1.9, fontSize: 14),
+                ),
+              ),
             const SizedBox(height: 18),
             const Text(
               'بيانات المصدر',
@@ -1535,7 +1638,7 @@ class _LibraryItemDetail extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              item.source,
+              widget.item.source,
               style: const TextStyle(color: ivory, height: 1.8),
             ),
           ],

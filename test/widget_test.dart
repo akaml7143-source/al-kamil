@@ -112,4 +112,28 @@ void main() {
     expect(find.textContaining('اللّهُمَّ إِنّا نَشْكُو إِلَيْكَ فَقْدَ نَبِيِّنا'), findsOneWidget);
   });
 
+
+  testWidgets('reader font size can be increased and persists locally',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الزيارات'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('18'), findsOneWidget);
+    await tester.tap(find.byTooltip('تكبير الخط'));
+    await tester.pumpAndSettle();
+    expect(find.text('19'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getInt('reader_font_size'),
+      19,
+    );
+  });
+
+
 }
