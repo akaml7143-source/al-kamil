@@ -192,6 +192,17 @@ class HomePage extends StatelessWidget {
     final Widget page = switch (section.title) {
       'القرآن الكريم' => const QuranScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
+      'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
+      'آخر قراءة' => const LibrarySectionScreen(title: 'آخر قراءة'),
+      'الزيارات' ||
+      'الأدعية العامة' ||
+      'أدعية الأيام' ||
+      'تعقيبات الصلوات' ||
+      'الصحيفة السجادية' ||
+      'نهج البلاغة' ||
+      'وصايا أهل البيت' ||
+      'تعليم صلاة الليل' ||
+      'الصوتيات' => LibrarySectionScreen(title: section.title),
       _ => SectionPage(title: section.title),
     };
     Navigator.of(context).push(
@@ -1054,6 +1065,358 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                   ),
                 ),
               ),
+      ),
+    );
+  }
+}
+
+class _LibraryItem {
+  const _LibraryItem({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.source,
+  });
+
+  final String id;
+  final String title;
+  final String description;
+  final String source;
+}
+
+const Map<String, List<_LibraryItem>> _libraryItems = {
+  'الزيارات': [
+    _LibraryItem(id: 'visit_ashura', title: 'زيارة عاشوراء', description: 'زيارة الإمام الحسين (عليه السلام)', source: 'المصدر والتخريج: يُستكمل بعد مراجعة النص والطبعة'),
+    _LibraryItem(id: 'visit_warith', title: 'زيارة وارث', description: 'زيارة الإمام الحسين (عليه السلام)', source: 'المصدر والتخريج: يُستكمل بعد مراجعة النص والطبعة'),
+    _LibraryItem(id: 'visit_amin', title: 'زيارة أمين الله', description: 'زيارة جامعة', source: 'المصدر والتخريج: يُستكمل بعد مراجعة النص والطبعة'),
+    _LibraryItem(id: 'visit_jamia', title: 'الزيارة الجامعة الكبيرة', description: 'زيارة جامعة للأئمة (عليهم السلام)', source: 'المصدر والتخريج: يُستكمل بعد مراجعة النص والطبعة'),
+  ],
+  'الأدعية العامة': [
+    _LibraryItem(id: 'dua_kumayl', title: 'دعاء كميل', description: 'من الأدعية المشهورة في ليالي الجمعة', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
+    _LibraryItem(id: 'dua_tawassul', title: 'دعاء التوسل', description: 'التوسل إلى الله تعالى', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'dua_ahd', title: 'دعاء العهد', description: 'دعاء العهد', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
+    _LibraryItem(id: 'dua_iftitah', title: 'دعاء الافتتاح', description: 'من أدعية شهر رمضان', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
+    _LibraryItem(id: 'dua_nudba', title: 'دعاء الندبة', description: 'دعاء الندبة', source: 'مفتاح الجنان؛ يلزم تثبيت بيانات الطبعة والموضع'),
+    _LibraryItem(id: 'dua_abu_hamza', title: 'دعاء أبي حمزة الثمالي', description: 'من أدعية أسحار شهر رمضان', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'dua_jawshan', title: 'دعاء الجوشن الكبير', description: 'دعاء الجوشن الكبير', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'dua_mashlul', title: 'دعاء المشلول', description: 'دعاء المشلول', source: 'المصدر والتخريج قيد المراجعة'),
+  ],
+  'أدعية الأيام': [
+    _LibraryItem(id: 'day_saturday', title: 'دعاء يوم السبت', description: 'الأعمال والأدعية الخاصة بيوم السبت', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_sunday', title: 'دعاء يوم الأحد', description: 'الأعمال والأدعية الخاصة بيوم الأحد', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_monday', title: 'دعاء يوم الاثنين', description: 'الأعمال والأدعية الخاصة بيوم الاثنين', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_tuesday', title: 'دعاء يوم الثلاثاء', description: 'الأعمال والأدعية الخاصة بيوم الثلاثاء', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_wednesday', title: 'دعاء يوم الأربعاء', description: 'الأعمال والأدعية الخاصة بيوم الأربعاء', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_thursday', title: 'دعاء يوم الخميس', description: 'الأعمال والأدعية الخاصة بيوم الخميس', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'day_friday', title: 'دعاء يوم الجمعة', description: 'الأعمال والأدعية الخاصة بيوم الجمعة', source: 'المصدر والتخريج قيد المراجعة'),
+  ],
+  'تعقيبات الصلوات': [
+    _LibraryItem(id: 'taqib_fajr', title: 'تعقيبات صلاة الفجر', description: 'الأذكار والأعمال بعد صلاة الفجر', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'taqib_dhuhr', title: 'تعقيبات الظهر', description: 'الأذكار والأعمال بعد صلاة الظهر', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'taqib_asr', title: 'تعقيبات العصر', description: 'الأذكار والأعمال بعد صلاة العصر', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'taqib_maghrib', title: 'تعقيبات المغرب', description: 'الأذكار والأعمال بعد صلاة المغرب', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'taqib_isha', title: 'تعقيبات العشاء', description: 'الأذكار والأعمال بعد صلاة العشاء', source: 'المصدر والتخريج قيد المراجعة'),
+  ],
+  'الصحيفة السجادية': [
+    _LibraryItem(id: 'sahifa_intro', title: 'فهرس أدعية الصحيفة', description: 'فهرس موضوعي للصحيفة السجادية', source: 'الصحيفة السجادية؛ تُضاف أرقام الأدعية بعد المطابقة'),
+  ],
+  'نهج البلاغة': [
+    _LibraryItem(id: 'nahj_sermons', title: 'الخطب', description: 'فهرس خطب نهج البلاغة', source: 'نهج البلاغة؛ تُضاف أرقام الخطب بعد المطابقة'),
+    _LibraryItem(id: 'nahj_letters', title: 'الكتب والرسائل', description: 'فهرس كتب ورسائل أمير المؤمنين (عليه السلام)', source: 'نهج البلاغة؛ تُضاف أرقام الكتب بعد المطابقة'),
+    _LibraryItem(id: 'nahj_wisdom', title: 'الحِكَم', description: 'فهرس الحكم والكلمات القصار', source: 'نهج البلاغة؛ تُضاف الأرقام بعد المطابقة'),
+  ],
+  'وصايا أهل البيت': [
+    _LibraryItem(id: 'wasaya_worship', title: 'العبادة والتقوى', description: 'نصوص في العبادة ومراقبة الله', source: 'تُذكر المصادر والأسانيد وحالة النسبة لكل نص على حدة'),
+    _LibraryItem(id: 'wasaya_akhlaq', title: 'الأخلاق وحسن المعاملة', description: 'نصوص في الأخلاق والحقوق', source: 'تُذكر المصادر والأسانيد وحالة النسبة لكل نص على حدة'),
+    _LibraryItem(id: 'wasaya_knowledge', title: 'العلم وطلب المعرفة', description: 'نصوص في العلم والتعلّم', source: 'تُذكر المصادر والأسانيد وحالة النسبة لكل نص على حدة'),
+  ],
+  'تعليم صلاة الليل': [
+    _LibraryItem(id: 'night_overview', title: 'التعريف بصلاة الليل', description: 'مدخل إلى صلاة الليل وأهميتها', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
+    _LibraryItem(id: 'night_steps', title: 'ترتيب الصلاة', description: 'عرض تعليمي مرتب للركعات والأعمال', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
+    _LibraryItem(id: 'night_qunut', title: 'القنوت والأدعية', description: 'مواضع القنوت والأدعية', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
+  ],
+  'الصوتيات': [
+    _LibraryItem(id: 'audio_library', title: 'مكتبة التلاوات والأدعية', description: 'إدارة الملفات الصوتية المحفوظة على الجهاز', source: 'لا توجد تسجيلات مرفقة في هذه النسخة بعد'),
+  ],
+};
+
+class LibrarySectionScreen extends StatefulWidget {
+  const LibrarySectionScreen({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<LibrarySectionScreen> createState() => _LibrarySectionScreenState();
+}
+
+class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  Set<String> _favorites = {};
+  String? _lastReadId;
+  bool _loading = true;
+  String _query = '';
+
+  List<_LibraryItem> get _allItems =>
+      _libraryItems.values.expand((items) => items).toList();
+
+  List<_LibraryItem> get _visibleItems {
+    final source = widget.title == 'المفضلة'
+        ? _allItems.where((item) => _favorites.contains(item.id)).toList()
+        : widget.title == 'آخر قراءة'
+            ? _allItems.where((item) => item.id == _lastReadId).toList()
+            : _libraryItems[widget.title] ?? <_LibraryItem>[];
+    if (_query.trim().isEmpty) return source;
+    final query = _query.trim().toLowerCase();
+    return source
+        .where((item) =>
+            item.title.toLowerCase().contains(query) ||
+            item.description.toLowerCase().contains(query))
+        .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLocalData();
+  }
+
+  Future<void> _loadLocalData() async {
+    final preferences = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _favorites = preferences.getStringList('library_favorites')?.toSet() ?? {};
+      _lastReadId = preferences.getString('library_last_read');
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggleFavorite(_LibraryItem item) async {
+    final next = Set<String>.from(_favorites);
+    if (!next.add(item.id)) next.remove(item.id);
+    setState(() => _favorites = next);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList('library_favorites', next.toList());
+  }
+
+  Future<void> _openItem(_LibraryItem item) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('library_last_read', item.id);
+    if (!mounted) return;
+    setState(() => _lastReadId = item.id);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LibraryItemDetail(
+          item: item,
+          isFavorite: _favorites.contains(item.id),
+          onToggleFavorite: () => _toggleFavorite(item),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final items = _visibleItems;
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) => setState(() => _query = value),
+                      style: const TextStyle(color: ivory),
+                      decoration: InputDecoration(
+                        hintText: 'ابحث في هذا القسم...',
+                        hintStyle: const TextStyle(color: mutedIvory),
+                        prefixIcon: const Icon(Icons.search, color: gold),
+                        filled: true,
+                        fillColor: panelBlack,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: items.isEmpty
+                        ? Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Text(
+                                widget.title == 'المفضلة'
+                                    ? 'لم تضف عناصر إلى المفضلة بعد.'
+                                    : widget.title == 'آخر قراءة'
+                                        ? 'سيظهر هنا آخر عنصر فتحته من المكتبة.'
+                                        : 'لا توجد نتائج مطابقة.',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: mutedIvory,
+                                  height: 1.8,
+                                ),
+                              ),
+                            ),
+                          )
+                        : ListView.separated(
+                            padding: const EdgeInsets.fromLTRB(14, 4, 14, 20),
+                            itemCount: items.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              final favorite = _favorites.contains(item.id);
+                              return Card(
+                                color: panelBlack,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  side: BorderSide(
+                                    color: gold.withValues(alpha: 0.24),
+                                  ),
+                                ),
+                                child: ListTile(
+                                  onTap: () => _openItem(item),
+                                  leading: const Icon(
+                                    Icons.menu_book_rounded,
+                                    color: gold,
+                                  ),
+                                  title: Text(
+                                    item.title,
+                                    style: const TextStyle(
+                                      color: ivory,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    item.description,
+                                    style: const TextStyle(
+                                      color: mutedIvory,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    tooltip: favorite
+                                        ? 'إزالة من المفضلة'
+                                        : 'إضافة إلى المفضلة',
+                                    onPressed: () => _toggleFavorite(item),
+                                    icon: Icon(
+                                      favorite
+                                          ? Icons.bookmark
+                                          : Icons.bookmark_border,
+                                      color: gold,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class LibraryItemDetail extends StatelessWidget {
+  const LibraryItemDetail({
+    super.key,
+    required this.item,
+    required this.isFavorite,
+    required this.onToggleFavorite,
+  });
+
+  final _LibraryItem item;
+  final bool isFavorite;
+  final VoidCallback onToggleFavorite;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: Text(item.title),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          actions: [
+            IconButton(
+              tooltip: isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+              onPressed: onToggleFavorite,
+              icon: Icon(
+                isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                color: gold,
+              ),
+            ),
+          ],
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(20),
+          children: [
+            Text(
+              item.title,
+              style: const TextStyle(
+                color: gold,
+                fontSize: 23,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              item.description,
+              style: const TextStyle(color: ivory, fontSize: 15),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: panelBlack,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: gold.withValues(alpha: 0.35)),
+              ),
+              child: const Text(
+                'هذا مدخل في فهرس المكتبة. لم يُدرج النص الكامل هنا بعد؛ لن نعرض نصاً دينياً غير مطابق للمصدر. ستضاف المادة بعد مراجعة النص والتخريج وبيانات الطبعة.',
+                style: TextStyle(
+                  color: mutedIvory,
+                  height: 1.9,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'بيانات المصدر',
+              style: TextStyle(
+                color: gold,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.source,
+              style: const TextStyle(color: ivory, height: 1.8),
+            ),
+          ],
+        ),
       ),
     );
   }
