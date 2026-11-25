@@ -834,14 +834,14 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                           ),
                         ),
                         child: Column(
-                          children: const [
-                            Icon(
+                          children: [
+                            const Icon(
                               Icons.auto_awesome,
                               color: gold,
                               size: 28,
                             ),
-                            SizedBox(height: 8),
-                            Text(
+                            const SizedBox(height: 8),
+                            const Text(
                               'وَاذْكُرُوا اللَّهَ كَثِيرًا',
                               style: TextStyle(
                                 color: gold,
@@ -849,8 +849,8 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 5),
-                            Text(
+                            const SizedBox(height: 5),
+                            const Text(
                               'عداد مستقل لكل ذكر، مع حفظ تلقائي على جهازك',
                               textAlign: TextAlign.center,
                               style: TextStyle(
