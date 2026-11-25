@@ -1,4 +1,5 @@
 import 'prayer_times_screen.dart';
+import 'qibla_screen.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:qcf_quran_plus/qcf_quran_plus.dart';
@@ -195,6 +196,7 @@ class HomePage extends StatelessWidget {
     final Widget page = switch (section.title) {
       'القرآن الكريم' => const QuranScreen(),
       'مواقيت الصلاة' => const PrayerTimesScreen(),
+      'القبلة' => const QiblaScreen(),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
