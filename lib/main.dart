@@ -952,7 +952,6 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                                     color: gold,
                                     fontSize: 48,
                                     fontWeight: FontWeight.bold,
-                                    fontFeatures: [FontFeature.tabularFigures()],
                                   ),
                                 ),
                                 Text(
