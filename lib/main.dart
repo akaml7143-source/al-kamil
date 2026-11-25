@@ -1189,7 +1189,7 @@ const String _commonTaqibatText = '''
 ''';
 
 const Map<String, String> _verifiedPrayerTexts = {
-  'taqib_fajr': _commonTaqibatText + '''
+  'taqib_fajr': '''${_commonTaqibatText}
 
 خصوصية تعقيب صلاة الفجر
 يُستحب الجلوس في مصلّى صلاة الصبح إلى طلوع الشمس مع الاشتغال بذكر الله تعالى. هذا عمل مستحب، وليس شرطاً لصحة الصلاة، ولا يلزم من تعذّر عليه الجلوس.
