@@ -168,4 +168,29 @@ void main() {
   });
 
 
+
+  testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تعليم صلاة الليل'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('الصورة المشهورة: ١١ ركعة؛ ثمانٍ نافلة الليل، ثم ركعتا الشفع، ثم ركعة الوتر.'), findsOneWidget);
+    expect(find.text('وقت صلاة الليل'), findsOneWidget);
+    await tester.tap(find.text('وقت صلاة الليل'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('night_prayer_step_0')));
+    await tester.pumpAndSettle();
+
+    expect(
+      (await SharedPreferences.getInstance())
+          .getStringList('night_prayer_completed_steps'),
+      contains('0'),
+    );
+  });
+
 }

@@ -193,6 +193,7 @@ class HomePage extends StatelessWidget {
   void _openSection(BuildContext context, _Section section) {
     final Widget page = switch (section.title) {
       'القرآن الكريم' => const QuranScreen(),
+      'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
       'آخر قراءة' => const LibrarySectionScreen(title: 'آخر قراءة'),
@@ -203,7 +204,6 @@ class HomePage extends StatelessWidget {
       'الصحيفة السجادية' ||
       'نهج البلاغة' ||
       'وصايا أهل البيت' ||
-      'تعليم صلاة الليل' ||
       'الصوتيات' => LibrarySectionScreen(title: section.title),
       _ => SectionPage(title: section.title),
     };
@@ -1717,6 +1717,290 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
       ),
     );
   }
+}
+
+
+class NightPrayerTutorialScreen extends StatefulWidget {
+  const NightPrayerTutorialScreen({super.key});
+
+  @override
+  State<NightPrayerTutorialScreen> createState() => _NightPrayerTutorialScreenState();
+}
+
+class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
+  static const String _progressKey = 'night_prayer_completed_steps';
+  static const List<_NightPrayerLesson> _lessons = [
+    _NightPrayerLesson(
+      title: 'وقت صلاة الليل',
+      summary: 'يبدأ وقتها من أول الليل، والأفضل بعد منتصف الليل، وكلما اقترب السحر من الفجر كان أفضل.',
+      detail: 'إذا فاتك أفضل الوقت فلا تجعل ذلك سبباً لترك النافلة؛ راجع أحكام مرجع التقليد في وقتها عند الحاجة.',
+    ),
+    _NightPrayerLesson(
+      title: 'الركعات الثماني: نافلة الليل',
+      summary: 'صلِّ أربع صلوات، كل صلاة ركعتان، بتشهد وتسليم بعد الركعة الثانية.',
+      detail: 'تكون النية نافلة الليل. تؤدّى كل ركعتين بصورة صلاة الصبح من حيث الركوع والسجود والتشهد والتسليم. ويجوز في النافلة الاكتفاء بقراءة الحمد وفق المصدر الفقهي المذكور.',
+    ),
+    _NightPrayerLesson(
+      title: 'ركعتا الشفع',
+      summary: 'بعد الركعات الثماني، صلِّ ركعتين بنية الشفع، ثم التشهد والتسليم.',
+      detail: 'في هذا العرض وفق استفتاءات مكتب السيد السيستاني: لا قنوت في الشفع. تفاصيل القراءة والأحكام تُراجع في الرسالة العملية.',
+    ),
+    _NightPrayerLesson(
+      title: 'ركعة الوتر',
+      summary: 'صلِّ ركعة واحدة بنية الوتر، ثم أتمّ الركوع والسجود والتشهد والتسليم.',
+      detail: 'يُستحب القنوت قبل الركوع. لا يشترط ذكر خاص للقنوت، ويجوز الدعاء بما تيسّر.',
+    ),
+    _NightPrayerLesson(
+      title: 'مستحبات قنوت الوتر',
+      summary: 'من المستحبات: الدعاء لأربعين مؤمناً، والاستغفار للنفس سبعين مرة، وقول «هذا مقام العائذ بك من النار» سبع مرات، ثم «العفو» ثلاثمائة مرة.',
+      detail: 'هذه الأعداد مستحبة وليست شرطاً لصحة الصلاة، ولا يلزم ترك الوتر إذا لم تستطع الإتيان بها كلها. يمكنك الدعاء بما تيسّر.',
+    ),
+    _NightPrayerLesson(
+      title: 'التخفيف عند ضيق الوقت',
+      summary: 'يجوز الاقتصار على الشفع والوتر، بل على الوتر وحدها وفق الاستفتاء المذكور.',
+      detail: 'لا تجعل عدم القدرة على أداء الركعات كلها سبباً لترك ما تستطيع. راجع فتوى مرجعك في التفاصيل.',
+    ),
+  ];
+
+  Set<int> _completed = {};
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    final preferences = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _completed =
+          preferences.getStringList(_progressKey)?.map(int.parse).toSet() ?? {};
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggleLesson(int index, bool checked) async {
+    final next = Set<int>.from(_completed);
+    if (checked) {
+      next.add(index);
+    } else {
+      next.remove(index);
+    }
+    setState(() => _completed = next);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(
+      _progressKey,
+      next.map((value) => value.toString()).toList()..sort(),
+    );
+  }
+
+  Future<void> _resetProgress() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(_progressKey);
+    if (mounted) setState(() => _completed = {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = _completed.length;
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: const Text('تعليم صلاة الليل'),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(14, 16, 14, 28),
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF3B301D), panelBlack],
+                        begin: Alignment.topRight,
+                        end: Alignment.bottomLeft,
+                      ),
+                      border: Border.all(color: gold.withValues(alpha: 0.55)),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'صلاة الليل',
+                          style: TextStyle(
+                            color: gold,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'الصورة المشهورة: ١١ ركعة؛ ثمانٍ نافلة الليل، ثم ركعتا الشفع، ثم ركعة الوتر.',
+                          style: TextStyle(color: ivory, height: 1.9),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: panelBlack,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: turquoise.withValues(alpha: 0.4)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                'متابعة التعلّم',
+                                style: TextStyle(
+                                  color: ivory,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '$progress من \${_lessons.length}',
+                              style: const TextStyle(color: gold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 9),
+                        LinearProgressIndicator(
+                          value: progress / _lessons.length,
+                          minHeight: 7,
+                          borderRadius: BorderRadius.circular(8),
+                          backgroundColor: royalBlack,
+                          color: turquoise,
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'علّم الدرس بعد قراءته؛ هذا سجل تعلّم محلي على جهازك فقط.',
+                          style: TextStyle(color: mutedIvory, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  for (var index = 0; index < _lessons.length; index++)
+                    Card(
+                      key: ValueKey('night_prayer_lesson_$index'),
+                      color: panelBlack,
+                      margin: const EdgeInsets.only(bottom: 9),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        side: BorderSide(color: gold.withValues(alpha: 0.22)),
+                      ),
+                      child: ExpansionTile(
+                        iconColor: gold,
+                        collapsedIconColor: turquoise,
+                        title: Text(
+                          _lessons[index].title,
+                          style: const TextStyle(
+                            color: ivory,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(
+                          _lessons[index].summary,
+                          style: const TextStyle(
+                            color: mutedIvory,
+                            height: 1.7,
+                            fontSize: 12,
+                          ),
+                        ),
+                        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                        children: [
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              _lessons[index].detail,
+                              style: const TextStyle(
+                                color: ivory,
+                                height: 1.9,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          CheckboxListTile(
+                            key: Key('night_prayer_step_$index'),
+                            value: _completed.contains(index),
+                            onChanged: (value) =>
+                                _toggleLesson(index, value ?? false),
+                            activeColor: turquoise,
+                            checkColor: royalBlack,
+                            contentPadding: EdgeInsets.zero,
+                            controlAffinity: ListTileControlAffinity.leading,
+                            title: const Text(
+                              'تمت قراءة هذا الدرس',
+                              style: TextStyle(color: turquoise, fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: progress == 0 ? null : _resetProgress,
+                    icon: const Icon(Icons.restart_alt_rounded),
+                    label: const Text('إعادة ضبط متابعة التعلّم'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: gold,
+                      side: BorderSide(color: gold.withValues(alpha: 0.5)),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF29251D),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'تنبيه فقهي: هذا الدرس يعرض مثالاً تعليمياً وفق الاستفتاءات المنشورة في موقع مكتب السيد علي السيستاني، وليس حكماً موحّداً لجميع المراجع. ينبغي للمكلّف الرجوع إلى مرجع تقليده في التفاصيل.',
+                      style: TextStyle(color: ivory, height: 1.9, fontSize: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'المصدر: موقع مكتب السيد السيستاني، استفتاء «صلاة الليل» وكتاب «المسائل المنتخبة»، أحكام النوافل اليومية.',
+                    style: TextStyle(color: mutedIvory, height: 1.8, fontSize: 11),
+                  ),
+                  const SelectableText(
+                    'https://www.sistani.org/arabic/qa/0552/\\nhttps://www.sistani.org/arabic/book/13/565/',
+                    style: TextStyle(color: turquoise, fontSize: 11, height: 1.8),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}
+
+class _NightPrayerLesson {
+  const _NightPrayerLesson({
+    required this.title,
+    required this.summary,
+    required this.detail,
+  });
+
+  final String title;
+  final String summary;
+  final String detail;
 }
 
 class SectionPage extends StatelessWidget {
