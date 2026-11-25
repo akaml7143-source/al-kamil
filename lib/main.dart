@@ -1479,13 +1479,60 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
   static const int _defaultFontSize = 18;
 
   int _fontSize = _defaultFontSize;
+  late bool _isFavorite;
+  late final TextEditingController _readerSearchController;
+  String _readerSearch = '';
 
   String? get _verifiedText => _verifiedPrayerTexts[widget.item.id];
 
   @override
   void initState() {
     super.initState();
+    _isFavorite = widget.isFavorite;
+    _readerSearchController = TextEditingController();
     _loadFontSize();
+  }
+
+  @override
+  void dispose() {
+    _readerSearchController.dispose();
+    super.dispose();
+  }
+
+  int _countMatches(String text, String query) {
+    if (query.trim().isEmpty) return 0;
+    return RegExp(RegExp.escape(query.trim()), caseSensitive: false)
+        .allMatches(text)
+        .length;
+  }
+
+  List<TextSpan> _highlightedSpans(String text) {
+    final query = _readerSearch.trim();
+    if (query.isEmpty) return [TextSpan(text: text)];
+    final expression = RegExp(RegExp.escape(query), caseSensitive: false);
+    final spans = <TextSpan>[];
+    var cursor = 0;
+    for (final match in expression.allMatches(text)) {
+      if (match.start > cursor) {
+        spans.add(TextSpan(text: text.substring(cursor, match.start)));
+      }
+      spans.add(TextSpan(
+        text: text.substring(match.start, match.end),
+        style: TextStyle(
+          backgroundColor: gold.withValues(alpha: 0.38),
+          color: ivory,
+          fontWeight: FontWeight.bold,
+        ),
+      ));
+      cursor = match.end;
+    }
+    if (cursor < text.length) spans.add(TextSpan(text: text.substring(cursor)));
+    return spans;
+  }
+
+  void _toggleFavorite() {
+    setState(() => _isFavorite = !_isFavorite);
+    widget.onToggleFavorite();
   }
 
   Future<void> _loadFontSize() async {
@@ -1549,10 +1596,10 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
               icon: const Icon(Icons.text_increase_rounded),
             ),
             IconButton(
-              tooltip: widget.isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
-              onPressed: widget.onToggleFavorite,
+              tooltip: _isFavorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+              onPressed: _toggleFavorite,
               icon: Icon(
-                widget.isFavorite ? Icons.bookmark : Icons.bookmark_border,
+                _isFavorite ? Icons.bookmark : Icons.bookmark_border,
                 color: gold,
               ),
             ),
@@ -1576,6 +1623,28 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
             ),
             const SizedBox(height: 20),
             if (text != null && text.trim().isNotEmpty) ...[
+              TextField(
+                key: const Key('reader_text_search'),
+                controller: _readerSearchController,
+                onChanged: (value) => setState(() => _readerSearch = value),
+                style: const TextStyle(color: ivory),
+                decoration: InputDecoration(
+                  hintText: 'ابحث داخل هذا النص...',
+                  hintStyle: const TextStyle(color: mutedIvory),
+                  prefixIcon: const Icon(Icons.manage_search, color: turquoise),
+                  suffixText: _readerSearch.trim().isEmpty
+                      ? null
+                      : 'النتائج: ${_countMatches(text, _readerSearch)}',
+                  suffixStyle: const TextStyle(color: gold, fontSize: 11),
+                  filled: true,
+                  fillColor: panelBlack,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   const Expanded(
@@ -1603,14 +1672,16 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: gold.withValues(alpha: 0.35)),
                 ),
-                child: SelectableText(
-                  text,
-                  textAlign: TextAlign.justify,
-                  style: TextStyle(
-                    color: ivory,
-                    height: 2.0,
-                    fontSize: _fontSize.toDouble(),
+                child: SelectableText.rich(
+                  TextSpan(
+                    style: TextStyle(
+                      color: ivory,
+                      height: 2.0,
+                      fontSize: _fontSize.toDouble(),
+                    ),
+                    children: _highlightedSpans(text),
                   ),
+                  textAlign: TextAlign.justify,
                 ),
               ),
             ] else

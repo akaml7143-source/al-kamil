@@ -136,4 +136,35 @@ void main() {
   });
 
 
+
+  testWidgets('reader search highlights matches and bookmark updates immediately',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الزيارات'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('إضافة إلى المفضلة'));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('إزالة من المفضلة'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getStringList('library_favorites'),
+      contains('visit_ashura'),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('reader_text_search')),
+      'السَّلامُ عَلَيْكَ',
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('النتائج:'), findsOneWidget);
+    expect(find.textContaining('النتائج: 0'), findsNothing);
+  });
+
+
 }
