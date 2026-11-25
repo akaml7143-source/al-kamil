@@ -203,14 +203,12 @@ void main() {
       isTrue,
     );
 
-    // The source is near the bottom of a lazily built ListView.
+    // Ensure the source widget is brought into view without a drag gesture;
+    // the test viewport can be shorter than the reader's full content.
     final sourceFinder = find.textContaining('sistani.org/arabic/book/23/1900/');
-    await tester.scrollUntilVisible(
-      sourceFinder,
-      300,
-      scrollable: find.byType(Scrollable).last,
-    );
     expect(sourceFinder, findsOneWidget);
+    await tester.ensureVisible(sourceFinder);
+    await tester.pumpAndSettle();
   });
 
   testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
