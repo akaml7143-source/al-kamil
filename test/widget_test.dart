@@ -235,7 +235,11 @@ void main() {
     expect(find.byKey(const Key('prayer_time_isha')), findsOneWidget);
 
     final cityButton = find.byKey(const Key('prayer_city_dropdown'));
-    await tester.ensureVisible(cityButton);
+    await tester.scrollUntilVisible(
+      cityButton,
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.pumpAndSettle();
     await tester.tap(cityButton);
     await tester.pumpAndSettle();
@@ -250,7 +254,11 @@ void main() {
     );
 
     final methodButton = find.byKey(const Key('prayer_method_dropdown'));
-    await tester.ensureVisible(methodButton);
+    await tester.scrollUntilVisible(
+      methodButton,
+      400,
+      scrollable: find.byType(Scrollable).last,
+    );
     await tester.pumpAndSettle();
     await tester.tap(methodButton);
     await tester.pumpAndSettle();
