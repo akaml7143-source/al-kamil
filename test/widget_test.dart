@@ -33,4 +33,26 @@ void main() {
       1,
     );
   });
+
+  testWidgets('library favorites and last-read item are stored locally',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('الزيارات'));
+    await tester.pumpAndSettle();
+    expect(find.text('زيارة عاشوراء'), findsOneWidget);
+    await tester.tap(find.byTooltip('إضافة إلى المفضلة').first);
+    await tester.pumpAndSettle();
+
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getStringList('library_favorites'), contains('visit_ashura'));
+
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+    expect(preferences.getString('library_last_read'), 'visit_ashura');
+  });
 }
