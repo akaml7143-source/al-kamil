@@ -828,8 +828,8 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                               color: gold,
                               size: 28,
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
+                            SizedBox(height: 8),
+                            Text(
                               'وَاذْكُرُوا اللَّهَ كَثِيرًا',
                               style: TextStyle(
                                 color: gold,
@@ -837,8 +837,8 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 5),
-                            const Text(
+                            SizedBox(height: 5),
+                            Text(
                               'عداد مستقل لكل ذكر، مع حفظ تلقائي على جهازك',
                               textAlign: TextAlign.center,
                               style: TextStyle(
