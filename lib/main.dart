@@ -172,6 +172,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static const List<_Section> _sections = [
+    _Section('البحث الشامل', Icons.search_rounded),
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('مواقيت الصلاة', Icons.access_time_rounded),
     _Section('الزيارات', Icons.account_balance_rounded),
@@ -197,6 +198,7 @@ class HomePage extends StatelessWidget {
       'القرآن الكريم' => const QuranScreen(),
       'مواقيت الصلاة' => const PrayerTimesScreen(),
       'القبلة' => const QiblaScreen(),
+      'البحث الشامل' => const GlobalSearchScreen(),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
@@ -2116,6 +2118,229 @@ class _NightPrayerLesson {
   final String title;
   final String summary;
   final String detail;
+}
+
+
+String _normalizeLocalSearch(String value) {
+  return value
+      .toLowerCase()
+      .replaceAll(RegExp(r'[\\u064B-\\u065F\\u0670\\u0640]'), '')
+      .replaceAll('أ', 'ا')
+      .replaceAll('إ', 'ا')
+      .replaceAll('آ', 'ا')
+      .replaceAll('ى', 'ي')
+      .replaceAll('ة', 'ه')
+      .trim();
+}
+
+class GlobalSearchScreen extends StatefulWidget {
+  const GlobalSearchScreen({super.key});
+
+  @override
+  State<GlobalSearchScreen> createState() => _GlobalSearchScreenState();
+}
+
+class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
+  final TextEditingController _controller = TextEditingController();
+  Set<String> _favorites = {};
+  bool _loading = true;
+  String _query = '';
+
+  List<_LibraryItem> get _results {
+    final normalized = _normalizeLocalSearch(_query);
+    if (normalized.isEmpty) return <_LibraryItem>[];
+    return _libraryItems.values
+        .expand((items) => items)
+        .where((item) {
+          final searchable = _normalizeLocalSearch([
+            item.title,
+            item.description,
+            item.source,
+            _verifiedPrayerTexts[item.id] ?? '',
+          ].join(' '));
+          return searchable.contains(normalized);
+        })
+        .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final preferences = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _favorites =
+          preferences.getStringList('library_favorites')?.toSet() ?? {};
+      _loading = false;
+    });
+  }
+
+  Future<void> _toggleFavorite(_LibraryItem item) async {
+    final next = Set<String>.from(_favorites);
+    if (!next.add(item.id)) next.remove(item.id);
+    setState(() => _favorites = next);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList('library_favorites', next.toList()..sort());
+  }
+
+  Future<void> _openItem(_LibraryItem item) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString('library_last_read', item.id);
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _LibraryItemDetail(
+          item: item,
+          isFavorite: _favorites.contains(item.id),
+          onToggleFavorite: () => _toggleFavorite(item),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final results = _results;
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: const Text('البحث الشامل'),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+                    child: TextField(
+                      key: const Key('global_local_search'),
+                      controller: _controller,
+                      autofocus: true,
+                      onChanged: (value) => setState(() => _query = value),
+                      style: const TextStyle(color: ivory, fontSize: 15),
+                      decoration: InputDecoration(
+                        hintText: 'ابحث في الزيارات والأدعية والتعقيبات...',
+                        hintStyle: const TextStyle(color: mutedIvory),
+                        prefixIcon: const Icon(Icons.search, color: gold),
+                        suffixIcon: _query.isEmpty
+                            ? null
+                            : IconButton(
+                                tooltip: 'مسح البحث',
+                                onPressed: () {
+                                  _controller.clear();
+                                  setState(() => _query = '');
+                                },
+                                icon: const Icon(Icons.close, color: mutedIvory),
+                              ),
+                        filled: true,
+                        fillColor: panelBlack,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        _query.trim().isEmpty
+                            ? 'يبحث محلياً في عناوين النصوص ومتونها ومصادرها.'
+                            : 'عدد النتائج: ${results.length}',
+                        style: const TextStyle(color: mutedIvory, fontSize: 12),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: _query.trim().isEmpty
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(28),
+                              child: Text(
+                                'اكتب كلمة أو عبارة للبحث في محتوى التطبيق المحفوظ على جهازك.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: mutedIvory, height: 1.9),
+                              ),
+                            ),
+                          )
+                        : results.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'لا توجد نتائج مطابقة في المحتوى المتاح حالياً.',
+                                  style: TextStyle(color: mutedIvory),
+                                ),
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
+                                itemCount: results.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 8),
+                                itemBuilder: (context, index) {
+                                  final item = results[index];
+                                  final hasText =
+                                      (_verifiedPrayerTexts[item.id] ?? '').isNotEmpty;
+                                  return Card(
+                                    color: panelBlack,
+                                    margin: EdgeInsets.zero,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(13),
+                                      side: BorderSide(
+                                        color: gold.withValues(alpha: 0.22),
+                                      ),
+                                    ),
+                                    child: ListTile(
+                                      onTap: () => _openItem(item),
+                                      title: Text(
+                                        item.title,
+                                        style: const TextStyle(
+                                          color: ivory,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        child: Text(
+                                          item.description,
+                                          style: const TextStyle(
+                                            color: mutedIvory,
+                                            height: 1.6,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                      trailing: Icon(
+                                        hasText
+                                            ? Icons.menu_book_rounded
+                                            : Icons.info_outline_rounded,
+                                        color: hasText ? turquoise : mutedIvory,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
 }
 
 class SectionPage extends StatelessWidget {

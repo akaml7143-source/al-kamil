@@ -300,6 +300,42 @@ void main() {
   });
 
 
+
+  testWidgets('global offline search finds a verified dua by title and opens its text',
+      (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('البحث الشامل'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('global_local_search')),
+      'دعاء العهد',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('دعاء العهد'), findsOneWidget);
+    expect(find.textContaining('عدد النتائج: 1'), findsOneWidget);
+
+    await tester.tap(find.text('دعاء العهد'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'),
+      findsOneWidget,
+    );
+    expect(
+      (await SharedPreferences.getInstance()).getString('library_last_read'),
+      'dua_ahd',
+    );
+  });
+
   test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
     final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
     final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
