@@ -184,6 +184,7 @@ class HomePage extends StatelessWidget {
     _Section('القبلة', Icons.explore_rounded),
     _Section('الصوتيات', Icons.headphones_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
+    _Section('آخر قراءة', Icons.history_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
     _Section('الإعدادات', Icons.settings_rounded),
   ];
