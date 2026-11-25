@@ -1,10 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:al_kamil/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('shows Al-Kamil home screen', (tester) async {
+  testWidgets('welcome screen enters the Al-Kamil home screen', (tester) async {
+    SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const AlKamilApp());
-    expect(find.text('الكامل'), findsWidgets);
+    await tester.pumpAndSettle();
+    expect(find.text('تفضّل بالدخول'), findsOneWidget);
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    expect(find.text('أقسام الكامل'), findsOneWidget);
     expect(find.text('القرآن الكريم'), findsOneWidget);
   });
 }
