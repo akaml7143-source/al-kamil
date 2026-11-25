@@ -243,7 +243,14 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(cityButton);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('البصرة').last);
+    final basraOption = find.text('البصرة');
+    await tester.scrollUntilVisible(
+      basraOption,
+      180,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(basraOption.last);
     await tester.pumpAndSettle();
 
     expect(find.text('البصرة'), findsOneWidget);
