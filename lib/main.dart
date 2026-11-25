@@ -835,7 +835,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                         child: Column(
                           children: const [
-                            Icon(
+                            const Icon(
                               Icons.auto_awesome,
                               color: gold,
                               size: 28,
