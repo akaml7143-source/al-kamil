@@ -194,7 +194,6 @@ void main() {
     expect(find.textContaining('تسبيح الزهراء'), findsOneWidget);
     expect(find.textContaining('اللهُ أَكْبَرُ — ٣٤ مرة'), findsOneWidget);
     expect(find.textContaining('إلى طلوع الشمس'), findsAtLeastNWidgets(1));
-    expect(find.textContaining('sistani.org/arabic/book/23/1900/'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('taqibat_progress_toggle')));
     await tester.pumpAndSettle();
@@ -203,6 +202,15 @@ void main() {
           .getBool('taqibat_completed_taqib_fajr'),
       isTrue,
     );
+
+    // The source is near the bottom of a lazily built ListView.
+    final sourceFinder = find.textContaining('sistani.org/arabic/book/23/1900/');
+    await tester.scrollUntilVisible(
+      sourceFinder,
+      300,
+      scrollable: find.byType(Scrollable).last,
+    );
+    expect(sourceFinder, findsOneWidget);
   });
 
   testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
