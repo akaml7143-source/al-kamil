@@ -1112,11 +1112,11 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
     _LibraryItem(id: 'day_friday', title: 'دعاء يوم الجمعة', description: 'الأعمال والأدعية الخاصة بيوم الجمعة', source: 'المصدر والتخريج قيد المراجعة'),
   ],
   'تعقيبات الصلوات': [
-    _LibraryItem(id: 'taqib_fajr', title: 'تعقيبات صلاة الفجر', description: 'الأذكار والأعمال بعد صلاة الفجر', source: 'المصدر والتخريج قيد المراجعة'),
-    _LibraryItem(id: 'taqib_dhuhr', title: 'تعقيبات الظهر', description: 'الأذكار والأعمال بعد صلاة الظهر', source: 'المصدر والتخريج قيد المراجعة'),
-    _LibraryItem(id: 'taqib_asr', title: 'تعقيبات العصر', description: 'الأذكار والأعمال بعد صلاة العصر', source: 'المصدر والتخريج قيد المراجعة'),
-    _LibraryItem(id: 'taqib_maghrib', title: 'تعقيبات المغرب', description: 'الأذكار والأعمال بعد صلاة المغرب', source: 'المصدر والتخريج قيد المراجعة'),
-    _LibraryItem(id: 'taqib_isha', title: 'تعقيبات العشاء', description: 'الأذكار والأعمال بعد صلاة العشاء', source: 'المصدر والتخريج قيد المراجعة'),
+    _LibraryItem(id: 'taqib_fajr', title: 'تعقيبات صلاة الفجر', description: 'التعقيب المشترك بعد الفريضة، مع فضيلة الجلوس للذكر إلى طلوع الشمس', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1692–1694. الأذكار المذكورة مستحبات وليست واجبات. https://www.sistani.org/arabic/book/23/1900/'),
+    _LibraryItem(id: 'taqib_dhuhr', title: 'تعقيبات صلاة الظهر', description: 'الأذكار والأدعية المأثورة بعد فريضة الظهر', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
+    _LibraryItem(id: 'taqib_asr', title: 'تعقيبات صلاة العصر', description: 'الأذكار والأدعية المأثورة بعد فريضة العصر', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
+    _LibraryItem(id: 'taqib_maghrib', title: 'تعقيبات صلاة المغرب', description: 'الأذكار والأدعية المأثورة بعد فريضة المغرب', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
+    _LibraryItem(id: 'taqib_isha', title: 'تعقيبات صلاة العشاء', description: 'الأذكار والأدعية المأثورة بعد فريضة العشاء', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
   ],
   'الصحيفة السجادية': [
     _LibraryItem(id: 'sahifa_intro', title: 'فهرس أدعية الصحيفة', description: 'فهرس موضوعي للصحيفة السجادية', source: 'الصحيفة السجادية؛ تُضاف أرقام الأدعية بعد المطابقة'),
@@ -1142,7 +1142,62 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
 };
 
 
+const String _commonTaqibatText = '''
+تنبيه فقهي
+هذا عرض للتعقيبات المستحبة وفق النص المنشور في موقع مكتب السيد السيستاني. الأذكار الآتية ليست واجبة ولا تتوقف صحة الصلاة عليها، ولا يلزم الإتيان بها كلها. يمكن اختيار ما يتيسر.
+
+١ ـ التكبير بعد التسليم
+يُستحب التكبير ثلاث مرات بعد التسليم، مع رفع اليدين.
+
+٢ ـ تسبيح الزهراء (عليها السلام)
+اللهُ أَكْبَرُ — ٣٤ مرة
+الْحَمْدُ لِلَّهِ — ٣٣ مرة
+سُبْحَانَ اللَّهِ — ٣٣ مرة
+المجموع: ١٠٠ ذكر. والترتيب المذكور هو الأولى.
+
+٣ ـ ذكر التوحيد
+لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ وَحْدَهُ، أَنْجَزَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَأَعَزَّ جُنْدَهُ، وَغَلَبَ الْأَحْزَابَ وَحْدَهُ، فَلَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ حَيٌّ لَا يَمُوتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
+
+٤ ـ دعاء الهداية والبركة
+اللَّهُمَّ اهْدِنِي مِنْ عِنْدِكَ، وَأَفِضْ عَلَيَّ مِنْ فَضْلِكَ، وَانْشُرْ عَلَيَّ مِنْ رَحْمَتِكَ، وَأَنْزِلْ عَلَيَّ مِنْ بَرَكَاتِكَ.
+
+٥ ـ الذكر الجامع
+سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ.
+ورد في المصدر استحباب الإتيان به مائة مرة أو أربعين أو ثلاثين مرة.
+
+٦ ـ دعاء الاستعاذة والرجاء
+اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِ مُحَمَّدٍ، وَأَجِرْنِي مِنَ النَّارِ، وَارْزُقْنِي الْجَنَّةَ، وَزَوِّجْنِي مِنَ الْحُورِ الْعِينِ.
+
+٧ ـ دعاء العافية
+اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ كُلِّ خَيْرٍ أَحَاطَ بِهِ عِلْمُكَ، وَأَعُوذُ بِكَ مِنْ كُلِّ شَرٍّ أَحَاطَ بِهِ عِلْمُكَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ عَافِيَتَكَ فِي أُمُورِي كُلِّهَا، وَأَعُوذُ بِكَ مِنْ خِزْيِ الدُّنْيَا وَعَذَابِ الْآخِرَةِ.
+
+٨ ـ قراءة قرآنية
+يذكر المصدر قراءة سورة الحمد، وآية الكرسي، وآية (شَهِدَ اللَّهُ أَنَّهُ لَا إِلَٰهَ إِلَّا هُوَ...) من سورة آل عمران (١٨)، وآية (قُلِ اللَّهُمَّ مَالِكَ الْمُلْكِ...) من سورة آل عمران (٢٦).
+
+٩ ـ الاستغفار
+قبل أن يغيّر المصلي جلسته، يُستحب أن يقول ثلاث مرات:
+أَسْتَغْفِرُ اللَّهَ الَّذِي لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ذُو الْجَلَالِ وَالْإِكْرَامِ، وَأَتُوبُ إِلَيْهِ.
+
+١٠ ـ الشهادتان والإقرار بالأئمة
+يذكر المصدر استحباب الشهادتين والإقرار بالأئمة (عليهم السلام) ضمن التعقيب.
+
+١١ ـ سجود الشكر
+يُستحب سجود الشكر بعد كل صلاة، فريضة كانت أو نافلة.
+
+ملاحظة علمية
+هذه مجموعة منتقاة من التعقيبات المذكورة في فصل فقهي. نقلها في الكتاب لا يعني أننا حققنا أسانيد كل رواية على حدة. لم نضف نصوصاً منسوبة بلا مصدر، ولم ننسب هذه المجموعة العامة إلى صلاة بعينها.
+''';
+
 const Map<String, String> _verifiedPrayerTexts = {
+  'taqib_fajr': _commonTaqibatText + '''
+
+خصوصية تعقيب صلاة الفجر
+يُستحب الجلوس في مصلّى صلاة الصبح إلى طلوع الشمس مع الاشتغال بذكر الله تعالى. هذا عمل مستحب، وليس شرطاً لصحة الصلاة، ولا يلزم من تعذّر عليه الجلوس.
+''',
+  'taqib_dhuhr': _commonTaqibatText,
+  'taqib_asr': _commonTaqibatText,
+  'taqib_maghrib': _commonTaqibatText,
+  'taqib_isha': _commonTaqibatText,
   'visit_ashura': '''
 السَّلامُ عَلَيْكَ يا أَبا عَبْدِ اللهِ، السَّلامُ عَلَيْكَ يا ابْنَ رَسُولِ اللهِ، السَّلامُ عَلَيْكَ يا ابْنَ أَمِيرِ المُؤْمِنِينَ وَابْنَ سَيِّدِ الوَصِيِّينَ، السَّلامُ عَلَيْكَ يا ابْنَ فاطِمَةَ سَيِّدَةِ نِساءِ العالَمِينَ، السَّلامُ عَلَيْكَ يا ثارَ اللهِ وَابْنَ ثارِهِ وَالوِتْرَ المَوْتُورَ، السَّلامُ عَلَيْكَ وَعَلَى الأَرْواحِ الَّتِي حَلَّتْ بِفِنائِكَ، عَلَيْكُمْ مِنِّي جَميعاً سَلامُ اللهِ أَبَداً ما بَقِيتُ وَبَقِيَ اللَّيْلُ وَالنَّهارُ.
 
@@ -1482,6 +1537,10 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
   late bool _isFavorite;
   late final TextEditingController _readerSearchController;
   String _readerSearch = '';
+  bool _taqibCompleted = false;
+
+  bool get _isTaqibat => widget.item.id.startsWith('taqib_');
+  String get _taqibProgressKey => 'taqibat_completed_${widget.item.id}';
 
   String? get _verifiedText => _verifiedPrayerTexts[widget.item.id];
 
@@ -1491,12 +1550,29 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
     _isFavorite = widget.isFavorite;
     _readerSearchController = TextEditingController();
     _loadFontSize();
+    _loadTaqibProgress();
   }
 
   @override
   void dispose() {
     _readerSearchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadTaqibProgress() async {
+    if (!_isTaqibat) return;
+    final preferences = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _taqibCompleted = preferences.getBool(_taqibProgressKey) ?? false;
+    });
+  }
+
+  Future<void> _toggleTaqibProgress() async {
+    final next = !_taqibCompleted;
+    setState(() => _taqibCompleted = next);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setBool(_taqibProgressKey, next);
   }
 
   int _countMatches(String text, String query) {
@@ -1622,6 +1698,41 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
               style: const TextStyle(color: ivory, fontSize: 15),
             ),
             const SizedBox(height: 20),
+            if (_isTaqibat) ...[
+              Container(
+                key: const Key('taqibat_progress_card'),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: panelBlack,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: turquoise.withValues(alpha: 0.45)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _taqibCompleted
+                            ? 'تم تسجيل إتمام تعقيبات هذه الصلاة على جهازك'
+                            : 'تابع قراءتك واحفظ إنجازك لهذه الصلاة',
+                        style: const TextStyle(color: ivory, height: 1.6),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton.tonalIcon(
+                      key: const Key('taqibat_progress_toggle'),
+                      onPressed: _toggleTaqibProgress,
+                      icon: Icon(
+                        _taqibCompleted
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked,
+                      ),
+                      label: Text(_taqibCompleted ? 'تم' : 'إتمام'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+            ],
             if (text != null && text.trim().isNotEmpty) ...[
               TextField(
                 key: const Key('reader_text_search'),

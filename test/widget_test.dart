@@ -169,6 +169,42 @@ void main() {
 
 
 
+  testWidgets('prayer taqibat show sourced offline text and save progress per prayer',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تعقيبات الصلوات'));
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'تعقيبات صلاة الفجر',
+      'تعقيبات صلاة الظهر',
+      'تعقيبات صلاة العصر',
+      'تعقيبات صلاة المغرب',
+      'تعقيبات صلاة العشاء',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('تعقيبات صلاة الفجر'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('تسبيح الزهراء'), findsOneWidget);
+    expect(find.textContaining('اللهُ أَكْبَرُ — ٣٤ مرة'), findsOneWidget);
+    expect(find.textContaining('إلى طلوع الشمس'), findsOneWidget);
+    expect(find.textContaining('sistani.org/arabic/book/23/1900/'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('taqibat_progress_toggle')));
+    await tester.pumpAndSettle();
+    expect(
+      (await SharedPreferences.getInstance())
+          .getBool('taqibat_completed_taqib_fajr'),
+      isTrue,
+    );
+  });
+
   testWidgets('night prayer tutorial explains the rakah structure and saves lesson progress',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
