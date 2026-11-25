@@ -311,6 +311,12 @@ void main() {
 
   testWidgets('Qibla screen calculates direction offline and saves selected city',
       (tester) async {
+    // Show all home-grid rows so the Qibla tile is built in this widget test.
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const AlKamilApp());
     await tester.pumpAndSettle();
