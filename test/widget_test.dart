@@ -57,5 +57,27 @@ void main() {
     await tester.tap(find.text('زيارة عاشوراء').first);
     await tester.pumpAndSettle();
     expect(preferences.getString('library_last_read'), 'visit_ashura');
+    expect(
+      find.textContaining('السَّلامُ عَلَيْكَ يا أَبا عَبْدِ اللهِ'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('verified tawassul prayer text is available offline',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الأدعية العامة'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('دعاء التوسل'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.textContaining('اللّهُمَّ إِنِّي أَسْأَلُكَ وَأَتَوَجَّهُ إِلَيْكَ'),
+      findsOneWidget,
+    );
   });
 }
