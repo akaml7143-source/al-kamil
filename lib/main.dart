@@ -189,9 +189,11 @@ class HomePage extends StatelessWidget {
   ];
 
   void _openSection(BuildContext context, _Section section) {
-    final Widget page = section.title == 'القرآن الكريم'
-        ? const QuranScreen()
-        : SectionPage(title: section.title);
+    final Widget page = switch (section.title) {
+      'القرآن الكريم' => const QuranScreen(),
+      'المسبحة الإلكترونية' => const TasbeehScreen(),
+      _ => SectionPage(title: section.title),
+    };
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => page),
     );
@@ -632,6 +634,428 @@ class _QuranScreenState extends State<QuranScreen> {
     );
     controller.dispose();
     if (page != null) _goToPage(page);
+  }
+}
+
+class _DhikrOption {
+  const _DhikrOption({
+    required this.id,
+    required this.title,
+    required this.target,
+    required this.description,
+  });
+
+  final String id;
+  final String title;
+  final int target;
+  final String description;
+}
+
+class TasbeehScreen extends StatefulWidget {
+  const TasbeehScreen({super.key});
+
+  @override
+  State<TasbeehScreen> createState() => _TasbeehScreenState();
+}
+
+class _TasbeehScreenState extends State<TasbeehScreen> {
+  static const List<_DhikrOption> _options = [
+    _DhikrOption(
+      id: 'takbir',
+      title: 'الله أكبر',
+      target: 34,
+      description: 'من تسبيح الزهراء (عليها السلام)',
+    ),
+    _DhikrOption(
+      id: 'hamd',
+      title: 'الحمد لله',
+      target: 33,
+      description: 'من تسبيح الزهراء (عليها السلام)',
+    ),
+    _DhikrOption(
+      id: 'tasbih',
+      title: 'سبحان الله',
+      target: 33,
+      description: 'من تسبيح الزهراء (عليها السلام)',
+    ),
+    _DhikrOption(
+      id: 'salawat',
+      title: 'اللهم صلّ على محمد وآل محمد',
+      target: 100,
+      description: 'الصلاة على محمد وآل محمد',
+    ),
+    _DhikrOption(
+      id: 'istighfar',
+      title: 'أستغفر الله ربي وأتوب إليه',
+      target: 100,
+      description: 'الاستغفار',
+    ),
+  ];
+
+  final Map<String, int> _counts = {};
+  String _selectedId = 'takbir';
+  bool _loading = true;
+
+  _DhikrOption get _selected =>
+      _options.firstWhere((option) => option.id == _selectedId);
+
+  int get _count => _counts[_selectedId] ?? 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCounts();
+  }
+
+  Future<void> _loadCounts() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final savedSelection = preferences.getString('tasbeeh_selected');
+      for (final option in _options) {
+        _counts[option.id] =
+            preferences.getInt('tasbeeh_count_${option.id}') ?? 0;
+      }
+      if (mounted) {
+        setState(() {
+          if (_options.any((option) => option.id == savedSelection)) {
+            _selectedId = savedSelection!;
+          }
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _saveCount(String id, int count) async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setInt('tasbeeh_count_$id', count);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تعذّر حفظ العدد على الجهاز')),
+        );
+      }
+    }
+  }
+
+  void _increment() {
+    final next = _count + 1;
+    setState(() => _counts[_selectedId] = next);
+    _saveCount(_selectedId, next);
+  }
+
+  void _decrement() {
+    if (_count == 0) return;
+    final next = _count - 1;
+    setState(() => _counts[_selectedId] = next);
+    _saveCount(_selectedId, next);
+  }
+
+  Future<void> _resetCount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: panelBlack,
+        title: const Text('تصفير العداد', style: TextStyle(color: ivory)),
+        content: const Text(
+          'هل تريد تصفير عداد هذا الذكر فقط؟',
+          style: TextStyle(color: mutedIvory),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('تصفير'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _counts[_selectedId] = 0);
+    await _saveCount(_selectedId, 0);
+  }
+
+  void _selectDhikr(String? id) {
+    if (id == null) return;
+    setState(() => _selectedId = id);
+    SharedPreferences.getInstance().then(
+      (preferences) => preferences.setString('tasbeeh_selected', id),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (_count % _selected.target) / _selected.target;
+    final completed = _count > 0 && _count % _selected.target == 0;
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: AppBar(
+          title: const Text('المسبحة الإلكترونية'),
+          backgroundColor: panelBlack,
+          foregroundColor: gold,
+          centerTitle: true,
+        ),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: panelBlack,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: gold.withValues(alpha: 0.45),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome,
+                              color: gold,
+                              size: 28,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'وَاذْكُرُوا اللَّهَ كَثِيرًا',
+                              style: TextStyle(
+                                color: gold,
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            const Text(
+                              'عداد مستقل لكل ذكر، مع حفظ تلقائي على جهازك',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: mutedIvory,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: const Text(
+                          'اختر الذكر',
+                          style: TextStyle(
+                            color: ivory,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        decoration: BoxDecoration(
+                          color: panelBlack,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: gold.withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedId,
+                            isExpanded: true,
+                            dropdownColor: panelBlack,
+                            style: const TextStyle(
+                              color: ivory,
+                              fontSize: 15,
+                            ),
+                            items: _options
+                                .map(
+                                  (option) => DropdownMenuItem<String>(
+                                    value: option.id,
+                                    child: Text(option.title),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: _selectDhikr,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      Text(
+                        _selected.description,
+                        style: const TextStyle(
+                          color: mutedIvory,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Container(
+                        width: 236,
+                        height: 236,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: panelBlack,
+                          border: Border.all(color: gold, width: 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: gold.withValues(alpha: 0.10),
+                              blurRadius: 24,
+                              spreadRadius: 3,
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 210,
+                              height: 210,
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 5,
+                                backgroundColor: mutedIvory.withValues(
+                                  alpha: 0.12,
+                                ),
+                                valueColor:
+                                    const AlwaysStoppedAnimation<Color>(
+                                  turquoise,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  'العدد',
+                                  style: TextStyle(
+                                    color: mutedIvory,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  '$_count',
+                                  key: const ValueKey('tasbeeh-count'),
+                                  style: const TextStyle(
+                                    color: gold,
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.bold,
+                                    fontFeatures: [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                                Text(
+                                  'الهدف: ${_selected.target}',
+                                  style: const TextStyle(
+                                    color: mutedIvory,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      if (completed)
+                        const Text(
+                          'أحسنت، أتممت العدد المحدد',
+                          style: TextStyle(
+                            color: turquoise,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      else
+                        const Text(
+                          'استمر بالذكر، تقبّل الله أعمالكم',
+                          style: TextStyle(color: mutedIvory, fontSize: 12),
+                        ),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 58,
+                        child: FilledButton.icon(
+                          onPressed: _increment,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: gold,
+                            foregroundColor: royalBlack,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          icon: const Icon(Icons.touch_app_rounded, size: 22),
+                          label: const Text(
+                            'سبّح',
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _count > 0 ? _decrement : null,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: turquoise,
+                                side: const BorderSide(color: turquoise),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                              ),
+                              icon: const Icon(Icons.undo_rounded),
+                              label: const Text('تراجع عن ضغطة'),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _count > 0 ? _resetCount : null,
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: gold,
+                                side: BorderSide(
+                                  color: gold.withValues(alpha: 0.7),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13,
+                                ),
+                              ),
+                              icon: const Icon(Icons.restart_alt_rounded),
+                              label: const Text('تصفير'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      const Text(
+                        'كل ذكر له عدّاده الخاص، ولا يؤثر تغيير الذكر في الأعداد المحفوظة.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: mutedIvory,
+                          fontSize: 11,
+                          height: 1.7,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+      ),
+    );
   }
 }
 
