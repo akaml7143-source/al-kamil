@@ -835,7 +835,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                         child: Column(
                           children: const [
-                            // ignore: unnecessary_const
+                            // ignore: prefer_const_constructors, unnecessary_const
                             const Icon(
                               Icons.auto_awesome,
                               color: gold,
@@ -1206,7 +1206,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
     setState(() => _lastReadId = item.id);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => LibraryItemDetail(
+        builder: (_) => _LibraryItemDetail(
           item: item,
           isFavorite: _favorites.contains(item.id),
           onToggleFavorite: () => _toggleFavorite(item),
@@ -1279,7 +1279,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                         : ListView.separated(
                             padding: const EdgeInsets.fromLTRB(14, 4, 14, 20),
                             itemCount: items.length,
-                            separatorBuilder: (_, _) =>
+                            separatorBuilder: (context, index) =>
                                 const SizedBox(height: 8),
                             itemBuilder: (context, index) {
                               final item = items[index];
@@ -1336,7 +1336,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
   }
 }
 
-class LibraryItemDetail extends StatelessWidget {
+class _LibraryItemDetail extends StatelessWidget {
   const LibraryItemDetail({
     super.key,
     required this.item,
