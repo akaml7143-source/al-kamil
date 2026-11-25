@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:al_kamil/main.dart';
+import 'package:al_kamil/qibla_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -296,6 +297,46 @@ void main() {
           .getStringList('night_prayer_completed_steps'),
       contains('0'),
     );
+  });
+
+
+  test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
+    final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
+    final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
+    expect(baghdadBearing, inInclusiveRange(180, 260));
+    expect(basraBearing, inInclusiveRange(180, 260));
+    expect(baghdadBearing, lessThan(360));
+    expect(basraBearing, greaterThanOrEqualTo(0));
+  });
+
+  testWidgets('Qibla screen calculates direction offline and saves selected city',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('القبلة'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('اتجاه القبلة'), findsOneWidget);
+    expect(find.text('بغداد'), findsOneWidget);
+    expect(find.byKey(const Key('qibla_bearing')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('qibla_city_picker')));
+    await tester.pumpAndSettle();
+    final basra = find.byKey(const Key('qibla_city_basra'));
+    await tester.ensureVisible(basra);
+    await tester.pumpAndSettle();
+    await tester.tap(basra);
+    await tester.pumpAndSettle();
+
+    expect(find.text('البصرة'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getString('qibla_city'),
+      'basra',
+    );
+    expect(find.byKey(const Key('qibla_bearing')), findsOneWidget);
   });
 
 }
