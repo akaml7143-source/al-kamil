@@ -80,4 +80,36 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('Dua al-Ahd is available offline', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الأدعية العامة'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('دعاء العهد'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'), findsOneWidget);
+    expect(find.textContaining('العَجَلَ العَجَلَ يا مَوْلايَ يا صاحِبَ الزَّمانِ'), findsOneWidget);
+  });
+
+  testWidgets('Dua al-Iftitah is available offline through its final passage',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الأدعية العامة'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('دعاء الافتتاح'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('اللّهُمَّ إِنِّي أَفْتَتِحُ الثَّناءَ'), findsOneWidget);
+    expect(find.textContaining('اللّهُمَّ إِنّا نَشْكُو إِلَيْكَ فَقْدَ نَبِيِّنا'), findsOneWidget);
+  });
+
 }
