@@ -89,7 +89,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('الأدعية العامة'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('دعاء العهد'));
+    await tester.tap(find.text('دعاء العهد').first);
     await tester.pumpAndSettle();
 
     expect(find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'), findsOneWidget);
