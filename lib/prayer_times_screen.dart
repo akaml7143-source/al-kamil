@@ -287,6 +287,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
               children: [
                 for (final city in _iraqiCities)
                   InkWell(
+                    key: ValueKey('prayer_city_${city.id}'),
                     onTap: () => Navigator.pop(dialogContext, city.id),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
