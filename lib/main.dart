@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:qcf_quran_plus/qcf_quran_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,133 @@ class AlKamilApp extends StatelessWidget {
           surface: panelBlack,
         ),
       ),
-      home: const HomePage(),
+      home: const WelcomeGate(),
+    );
+  }
+}
+
+
+class WelcomeGate extends StatefulWidget {
+  const WelcomeGate({super.key});
+
+  @override
+  State<WelcomeGate> createState() => _WelcomeGateState();
+}
+
+class _WelcomeGateState extends State<WelcomeGate> {
+  bool? _hasEntered;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEntryState();
+  }
+
+  Future<void> _loadEntryState() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      if (mounted) {
+        setState(() => _hasEntered = preferences.getBool('has_entered_app') ?? false);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _hasEntered = false);
+    }
+  }
+
+  Future<void> _enter() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setBool('has_entered_app', true);
+    } catch (_) {
+      // The app remains usable even if local preference storage is unavailable.
+    }
+    if (mounted) setState(() => _hasEntered = true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasEntered == null) {
+      return const Scaffold(
+        backgroundColor: royalBlack,
+        body: Center(child: CircularProgressIndicator(color: gold)),
+      );
+    }
+    if (_hasEntered!) return const HomePage();
+
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 148,
+                    height: 148,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: panelBlack,
+                      border: Border.all(color: gold, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gold.withValues(alpha: 0.12),
+                          blurRadius: 28,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.mosque_rounded, color: gold, size: 76),
+                  ),
+                  const SizedBox(height: 28),
+                  const Text(
+                    'تطبيق الكامل',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: gold,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'موسوعة الأدعية والزيارات وتعاليم أهل البيت (عليهم السلام)',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: ivory, fontSize: 15, height: 1.9),
+                  ),
+                  const SizedBox(height: 38),
+                  SizedBox(
+                    width: 220,
+                    height: 52,
+                    child: FilledButton(
+                      onPressed: _enter,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: gold,
+                        foregroundColor: royalBlack,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'تفضّل بالدخول',
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'يعمل دون الحاجة إلى إنشاء حساب',
+                    style: TextStyle(color: mutedIvory, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
