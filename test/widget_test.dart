@@ -321,10 +321,10 @@ void main() {
       'دعاء العهد',
     );
     await tester.pumpAndSettle();
-    expect(find.text('دعاء العهد'), findsOneWidget);
+    expect(find.text('دعاء العهد'), findsNWidgets(3));
     expect(find.textContaining('عدد النتائج: 1'), findsOneWidget);
 
-    await tester.tap(find.text('دعاء العهد'));
+    await tester.tap(find.widgetWithText(ListTile, 'دعاء العهد'));
     await tester.pumpAndSettle();
     expect(
       find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'),
