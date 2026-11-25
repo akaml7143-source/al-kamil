@@ -822,8 +822,8 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                           ),
                         ),
                         child: Column(
-                          children: [
-                            const Icon(
+                          children: const [
+                            Icon(
                               Icons.auto_awesome,
                               color: gold,
                               size: 28,
@@ -850,9 +850,9 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                       ),
                       const SizedBox(height: 22),
-                      Align(
+                      const Align(
                         alignment: Alignment.centerRight,
-                        child: const Text(
+                        child: Text(
                           'اختر الذكر',
                           style: TextStyle(
                             color: ivory,
