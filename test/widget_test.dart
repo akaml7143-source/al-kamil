@@ -234,7 +234,10 @@ void main() {
     expect(find.byKey(const Key('prayer_time_maghrib')), findsOneWidget);
     expect(find.byKey(const Key('prayer_time_isha')), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('prayer_city_dropdown')));
+    final cityButton = find.byKey(const Key('prayer_city_dropdown'));
+    await tester.ensureVisible(cityButton);
+    await tester.pumpAndSettle();
+    await tester.tap(cityButton);
     await tester.pumpAndSettle();
     await tester.tap(find.text('البصرة').last);
     await tester.pumpAndSettle();
@@ -246,7 +249,10 @@ void main() {
       'basra',
     );
 
-    await tester.tap(find.byKey(const Key('prayer_method_dropdown')));
+    final methodButton = find.byKey(const Key('prayer_method_dropdown'));
+    await tester.ensureVisible(methodButton);
+    await tester.pumpAndSettle();
+    await tester.tap(methodButton);
     await tester.pumpAndSettle();
     await tester.tap(find.text('جامعة طهران').last);
     await tester.pumpAndSettle();
