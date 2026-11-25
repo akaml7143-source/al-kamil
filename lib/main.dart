@@ -1337,7 +1337,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
 }
 
 class _LibraryItemDetail extends StatelessWidget {
-  const LibraryItemDetail({
+  const _LibraryItemDetail({
     super.key,
     required this.item,
     required this.isFavorite,
