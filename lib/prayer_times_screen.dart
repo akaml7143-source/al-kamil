@@ -597,7 +597,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        SwitchListTile(
+                        Material(
+                          color: _panelBlack,
+                          child: SwitchListTile(
                           key: const Key('prayer_hanafi_asr_switch'),
                           contentPadding: EdgeInsets.zero,
                           value: _hanafiAsr,
@@ -611,6 +613,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                             style: TextStyle(color: _mutedIvory, fontSize: 10),
                           ),
                           onChanged: _selectAsr,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(
