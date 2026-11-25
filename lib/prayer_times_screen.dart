@@ -177,15 +177,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       builder: (dialogContext) => Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          backgroundColor: panelBlack,
+          backgroundColor: _panelBlack,
           title: const Text('إدخال الإحداثيات',
-              style: TextStyle(color: gold)),
+              style: TextStyle(color: _gold)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
                 'أدخل خط العرض وخط الطول للموقع. تبقى الإحداثيات محفوظة على جهازك.',
-                style: TextStyle(color: mutedIvory, height: 1.7),
+                style: TextStyle(color: _mutedIvory, height: 1.7),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -193,10 +193,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 controller: latitudeController,
                 keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
-                style: const TextStyle(color: ivory),
+                style: const TextStyle(color: _ivory),
                 decoration: const InputDecoration(
                   labelText: 'خط العرض (Latitude)',
-                  labelStyle: TextStyle(color: turquoise),
+                  labelStyle: TextStyle(color: _turquoise),
                 ),
               ),
               TextField(
@@ -204,10 +204,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                 controller: longitudeController,
                 keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
-                style: const TextStyle(color: ivory),
+                style: const TextStyle(color: _ivory),
                 decoration: const InputDecoration(
                   labelText: 'خط الطول (Longitude)',
-                  labelStyle: TextStyle(color: turquoise),
+                  labelStyle: TextStyle(color: _turquoise),
                 ),
               ),
             ],
@@ -340,11 +340,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: royalBlack,
+        backgroundColor: _royalBlack,
         appBar: AppBar(
           title: const Text('مواقيت الصلاة'),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
+          backgroundColor: _panelBlack,
+          foregroundColor: _gold,
           centerTitle: true,
           actions: [
             IconButton(
@@ -356,7 +356,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
           ],
         ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator(color: gold))
+            ? const Center(child: CircularProgressIndicator(color: _gold))
             : ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 28),
                 children: [
@@ -365,11 +365,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF3B301D), panelBlack, Color(0xFF102322)],
+                        colors: [Color(0xFF3B301D), _panelBlack, Color(0xFF102322)],
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
                       ),
-                      border: Border.all(color: gold.withValues(alpha: 0.55)),
+                      border: Border.all(color: _gold.withValues(alpha: 0.55)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,35 +377,35 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         Row(
                           children: [
                             const Icon(Icons.location_on_rounded,
-                                color: turquoise, size: 19),
+                                color: _turquoise, size: 19),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
                                 _cityName,
                                 key: const Key('prayer_current_city'),
                                 style: const TextStyle(
-                                  color: ivory,
+                                  color: _ivory,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
                             const Icon(Icons.wifi_off_rounded,
-                                color: mutedIvory, size: 16),
+                                color: _mutedIvory, size: 16),
                             const SizedBox(width: 4),
                             const Text('حساب دون إنترنت',
                                 style: TextStyle(
-                                    color: mutedIvory, fontSize: 10)),
+                                    color: _mutedIvory, fontSize: 10)),
                           ],
                         ),
                         const SizedBox(height: 8),
                         Text(_formatDate(_now),
                             style: const TextStyle(
-                                color: mutedIvory, fontSize: 12)),
+                                color: _mutedIvory, fontSize: 12)),
                         const SizedBox(height: 16),
                         const Text('الصلاة القادمة',
                             style: TextStyle(
-                                color: mutedIvory, fontSize: 12)),
+                                color: _mutedIvory, fontSize: 12)),
                         const SizedBox(height: 4),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -414,7 +414,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                               child: Text(
                                 _nextPrayerName(),
                                 style: const TextStyle(
-                                  color: gold,
+                                  color: _gold,
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -424,7 +424,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                               _formatCountdown(nextTime),
                               key: const Key('prayer_next_countdown'),
                               style: const TextStyle(
-                                color: turquoise,
+                                color: _turquoise,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 fontFeatures: [FontFeature.tabularFigures()],
@@ -436,7 +436,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           const SizedBox(height: 4),
                           Text('موعدها ${_formatTime(nextTime)}',
                               style: const TextStyle(
-                                  color: ivory, fontSize: 12)),
+                                  color: _ivory, fontSize: 12)),
                         ],
                       ],
                     ),
@@ -450,15 +450,15 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(_error!,
-                          style: const TextStyle(color: ivory)),
+                          style: const TextStyle(color: _ivory)),
                     )
                   else
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: panelBlack,
+                        color: _panelBlack,
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(color: gold.withValues(alpha: 0.25)),
+                        border: Border.all(color: _gold.withValues(alpha: 0.25)),
                       ),
                       child: Column(
                         children: [
@@ -490,27 +490,27 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: panelBlack,
+                      color: _panelBlack,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: turquoise.withValues(alpha: 0.3)),
+                      border: Border.all(color: _turquoise.withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('إعدادات المواقيت',
                             style: TextStyle(
-                                color: gold,
+                                color: _gold,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
                         DropdownButtonFormField<String>(
                           key: const Key('prayer_city_dropdown'),
                           initialValue: _selectedCity,
-                          dropdownColor: panelBlack,
-                          style: const TextStyle(color: ivory),
+                          dropdownColor: _panelBlack,
+                          style: const TextStyle(color: _ivory),
                           decoration: const InputDecoration(
                             labelText: 'المدينة',
-                            labelStyle: TextStyle(color: turquoise),
+                            labelStyle: TextStyle(color: _turquoise),
                             border: OutlineInputBorder(),
                           ),
                           items: [
@@ -527,11 +527,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         DropdownButtonFormField<String>(
                           key: const Key('prayer_method_dropdown'),
                           initialValue: _method,
-                          dropdownColor: panelBlack,
-                          style: const TextStyle(color: ivory),
+                          dropdownColor: _panelBlack,
+                          style: const TextStyle(color: _ivory),
                           decoration: const InputDecoration(
                             labelText: 'طريقة الحساب الفلكي',
-                            labelStyle: TextStyle(color: turquoise),
+                            labelStyle: TextStyle(color: _turquoise),
                             border: OutlineInputBorder(),
                           ),
                           items: const [
@@ -549,14 +549,14 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           key: const Key('prayer_hanafi_asr_switch'),
                           contentPadding: EdgeInsets.zero,
                           value: _hanafiAsr,
-                          activeColor: turquoise,
+                          activeThumbColor: _turquoise,
                           title: const Text(
                             'حساب وقت العصر بالطريقة الحنفية',
-                            style: TextStyle(color: ivory, fontSize: 12),
+                            style: TextStyle(color: _ivory, fontSize: 12),
                           ),
                           subtitle: const Text(
                             'إيقافه يستخدم الحساب القياسي (ظل بمقدار واحد)',
-                            style: TextStyle(color: mutedIvory, fontSize: 10),
+                            style: TextStyle(color: _mutedIvory, fontSize: 10),
                           ),
                           onChanged: _selectAsr,
                         ),
@@ -564,7 +564,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         Text(
                           'الإحداثيات: ${_latitude.toStringAsFixed(4)}، ${_longitude.toStringAsFixed(4)}',
                           style: const TextStyle(
-                              color: mutedIvory, fontSize: 10),
+                              color: _mutedIvory, fontSize: 10),
                         ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
@@ -573,9 +573,9 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           icon: const Icon(Icons.edit_location_alt_rounded),
                           label: const Text('إدخال موقع بالإحداثيات'),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: turquoise,
+                            foregroundColor: _turquoise,
                             side: BorderSide(
-                                color: turquoise.withValues(alpha: 0.5)),
+                                color: _turquoise.withValues(alpha: 0.5)),
                           ),
                         ),
                       ],
@@ -591,18 +591,18 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     child: const Text(
                       'تنبيه مهم: هذه مواقيت فلكية تقديرية محسوبة محلياً، وقد تختلف دقائق عن الجداول الرسمية بحسب الإحداثيات وطريقة الحساب والاحتياط. وقت المغرب المحسوب فلكياً لا يحسم وحده الحكم الفقهي لدخول المغرب؛ راجع توقيت مكتب مرجع تقليدك، ولا سيما مسألة زوال الحمرة المشرقية. لا يحتاج هذا القسم إلى الإنترنت أو إذن الموقع؛ اختر مدينتك أو أدخل إحداثياتها يدوياً.',
                       style: TextStyle(
-                          color: ivory, height: 1.9, fontSize: 11),
+                          color: _ivory, height: 1.9, fontSize: 11),
                     ),
                   ),
                   const SizedBox(height: 10),
                   const Text(
                     'مصدر الخوارزمية: مكتبة Adhan Dart 2.0.1، الحسابات الفلكية وفق معادلات Jean Meeus. طريقة الجعفري – قم: فجر 16°، عشاء 14°، ومغرب عند انخفاض الشمس 4° تحت الأفق. طريقة طهران: فجر 17.7°، عشاء 14°، ومغرب 4.5°.',
                     style: TextStyle(
-                        color: mutedIvory, height: 1.8, fontSize: 10),
+                        color: _mutedIvory, height: 1.8, fontSize: 10),
                   ),
                   const SelectableText(
                     'https://pub.dev/packages/adhan_dart',
-                    style: TextStyle(color: turquoise, fontSize: 10),
+                    style: TextStyle(color: _turquoise, fontSize: 10),
                   ),
                 ],
               ),
@@ -642,23 +642,23 @@ class _PrayerTimeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = highlighted ? turquoise : ivory;
+    final color = highlighted ? _turquoise : _ivory;
     return Container(
       key: Key('prayer_time_${entry.id}'),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
       decoration: BoxDecoration(
         color: highlighted
-            ? turquoise.withValues(alpha: 0.08)
+            ? _turquoise.withValues(alpha: 0.08)
             : Colors.transparent,
         border: Border(
-          bottom: BorderSide(color: gold.withValues(alpha: 0.12)),
+          bottom: BorderSide(color: _gold.withValues(alpha: 0.12)),
         ),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
           Icon(entry.icon,
-              color: entry.isSunrise ? mutedIvory : gold, size: 21),
+              color: entry.isSunrise ? _mutedIvory : _gold, size: 21),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -682,7 +682,7 @@ class _PrayerTimeTile extends StatelessWidget {
           if (highlighted) ...[
             const SizedBox(width: 6),
             const Icon(Icons.notifications_active_rounded,
-                color: turquoise, size: 16),
+                color: _turquoise, size: 16),
           ],
         ],
       ),
