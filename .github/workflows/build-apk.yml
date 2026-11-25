@@ -38,6 +38,16 @@ jobs:
       - name: Generate Android platform project
         run: flutter create --platforms=android --org=org.alkamil --project-name=al_kamil .
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: Install Flutter packages
         run: flutter pub get
 
@@ -50,8 +60,21 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Build release APK with transient network retries
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if flutter build apk --release; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "Gradle download/build attempt $attempt failed; waiting before retry..."
+              sleep $((attempt * 30))
+            fi
+          done
+          echo "APK build failed after 3 attempts."
+          exit 1
 
       - name: Verify APK exists
         run: |
