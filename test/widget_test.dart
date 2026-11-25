@@ -249,7 +249,7 @@ void main() {
     await tester.tap(basraOption);
     await tester.pumpAndSettle();
 
-    expect(find.text('البصرة'), findsOneWidget);
+    expect(find.text('اختيار المدينة: البصرة'), findsOneWidget);
     expect(
       (await SharedPreferences.getInstance())
           .getString('prayer_times_city'),
