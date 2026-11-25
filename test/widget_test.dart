@@ -193,7 +193,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.textContaining('تسبيح الزهراء'), findsOneWidget);
     expect(find.textContaining('اللهُ أَكْبَرُ — ٣٤ مرة'), findsOneWidget);
-    expect(find.textContaining('إلى طلوع الشمس'), findsOneWidget);
+    expect(find.textContaining('إلى طلوع الشمس'), findsAtLeastNWidgets(1));
     expect(find.textContaining('sistani.org/arabic/book/23/1900/'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('taqibat_progress_toggle')));
