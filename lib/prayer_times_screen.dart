@@ -272,6 +272,76 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     _calculateTimes();
   }
 
+  Future<void> _chooseCity() async {
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          backgroundColor: _panelBlack,
+          title: const Text('اختر المدينة', style: TextStyle(color: _gold)),
+          content: SizedBox(
+            width: 320,
+            height: 390,
+            child: ListView(
+              children: [
+                for (final city in _iraqiCities)
+                  InkWell(
+                    onTap: () => Navigator.pop(dialogContext, city.id),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      child: Text(city.name, style: const TextStyle(color: _ivory)),
+                    ),
+                  ),
+                InkWell(
+                  onTap: () => Navigator.pop(dialogContext, 'custom'),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                    child: Text('إحداثيات مخصصة…', style: TextStyle(color: _turquoise)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (selected != null) await _selectCity(selected);
+  }
+
+  Future<void> _chooseMethod() async {
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          backgroundColor: _panelBlack,
+          title: const Text('طريقة الحساب الفلكي', style: TextStyle(color: _gold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in [
+                ('jafari', 'الجعفري – مؤسسة ليوا، قم'),
+                ('tehran', 'جامعة طهران'),
+              ])
+                InkWell(
+                  onTap: () => Navigator.pop(dialogContext, option.$1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(option.$2, style: const TextStyle(color: _ivory)),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (selected != null) await _selectMethod(selected);
+  }
+
   DateTime? _nextPrayerTime() {
     if (_today == null || _tomorrow == null) return null;
     final entries = [
@@ -503,46 +573,31 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold)),
                         const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
+                        OutlinedButton.icon(
                           key: const Key('prayer_city_dropdown'),
-                          initialValue: _selectedCity,
-                          dropdownColor: _panelBlack,
-                          style: const TextStyle(color: _ivory),
-                          decoration: const InputDecoration(
-                            labelText: 'المدينة',
-                            labelStyle: TextStyle(color: _turquoise),
-                            border: OutlineInputBorder(),
+                          onPressed: _chooseCity,
+                          icon: const Icon(Icons.location_city_rounded),
+                          label: Text('اختيار المدينة: ' + _cityName),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _ivory,
+                            side: BorderSide(color: _gold.withValues(alpha: 0.4)),
                           ),
-                          items: [
-                            for (final city in _iraqiCities)
-                              DropdownMenuItem(
-                                  value: city.id, child: Text(city.name)),
-                            const DropdownMenuItem(
-                                value: 'custom',
-                                child: Text('إحداثيات مخصصة…')),
-                          ],
-                          onChanged: _selectCity,
                         ),
-                        const SizedBox(height: 12),
-                        DropdownButtonFormField<String>(
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
                           key: const Key('prayer_method_dropdown'),
-                          initialValue: _method,
-                          dropdownColor: _panelBlack,
-                          style: const TextStyle(color: _ivory),
-                          decoration: const InputDecoration(
-                            labelText: 'طريقة الحساب الفلكي',
-                            labelStyle: TextStyle(color: _turquoise),
-                            border: OutlineInputBorder(),
+                          onPressed: _chooseMethod,
+                          icon: const Icon(Icons.tune_rounded),
+                          label: Text(
+                            'طريقة الحساب: ' +
+                                (_method == 'tehran'
+                                    ? 'جامعة طهران'
+                                    : 'الجعفري – مؤسسة ليوا، قم'),
                           ),
-                          items: const [
-                            DropdownMenuItem(
-                                value: 'jafari',
-                                child: Text('الجعفري – مؤسسة ليوا، قم')),
-                            DropdownMenuItem(
-                                value: 'tehran',
-                                child: Text('جامعة طهران')),
-                          ],
-                          onChanged: _selectMethod,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _ivory,
+                            side: BorderSide(color: _gold.withValues(alpha: 0.4)),
+                          ),
                         ),
                         const SizedBox(height: 8),
                         SwitchListTile(
