@@ -1,8 +1,15 @@
 import 'dart:async';
 
 import 'package:adhan_dart/adhan_dart.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+const Color _royalBlack = Color(0xFF101112);
+const Color _panelBlack = Color(0xFF1B1D1F);
+const Color _gold = Color(0xFFD8B66A);
+const Color _turquoise = Color(0xFF55C5BC);
+const Color _ivory = Color(0xFFF5F0E5);
+const Color _mutedIvory = Color(0xFFC9C2B5);
 
 const List<_PrayerCity> _iraqiCities = [
   _PrayerCity('baghdad', 'بغداد', 33.3152, 44.3661),
@@ -306,7 +313,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
   String _formatTime(DateTime time) {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
-    return _arabicDigits(hour + ':' + minute);
+    return _arabicDigits('$hour:$minute');
   }
 
   String _formatDate(DateTime date) {
@@ -314,8 +321,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
       'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
       'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
     ];
-    return _arabicDigits(date.day.toString()) + ' ' +
-        months[date.month - 1] + ' ' + _arabicDigits(date.year.toString());
+    return '${_arabicDigits(date.day.toString())} ${months[date.month - 1]} ${_arabicDigits(date.year.toString())}';
   }
 
   String _formatCountdown(DateTime? target) {
@@ -325,9 +331,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
     final hours = difference.inHours;
     final minutes = difference.inMinutes.remainder(60);
     final seconds = difference.inSeconds.remainder(60);
-    return _arabicDigits(hours.toString().padLeft(2, '0')) + ':' +
-        _arabicDigits(minutes.toString().padLeft(2, '0')) + ':' +
-        _arabicDigits(seconds.toString().padLeft(2, '0'));
+    return '${_arabicDigits(hours.toString().padLeft(2, '0'))}:${_arabicDigits(minutes.toString().padLeft(2, '0'))}:${_arabicDigits(seconds.toString().padLeft(2, '0'))}';
   }
 
   @override
@@ -430,7 +434,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         ),
                         if (nextTime != null) ...[
                           const SizedBox(height: 4),
-                          Text('موعدها ' + _formatTime(nextTime),
+                          Text('موعدها ${_formatTime(nextTime)}',
                               style: const TextStyle(
                                   color: ivory, fontSize: 12)),
                         ],
@@ -558,10 +562,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'الإحداثيات: ' +
-                              _latitude.toStringAsFixed(4) +
-                              '، ' +
-                              _longitude.toStringAsFixed(4),
+                          'الإحداثيات: ${_latitude.toStringAsFixed(4)}، ${_longitude.toStringAsFixed(4)}',
                           style: const TextStyle(
                               color: mutedIvory, fontSize: 10),
                         ),
@@ -643,7 +644,7 @@ class _PrayerTimeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = highlighted ? turquoise : ivory;
     return Container(
-      key: Key('prayer_time_' + entry.id),
+      key: Key('prayer_time_${entry.id}'),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 13),
       decoration: BoxDecoration(
         color: highlighted
