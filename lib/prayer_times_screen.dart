@@ -589,7 +589,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                           onPressed: _chooseMethod,
                           icon: const Icon(Icons.tune_rounded),
                           label: Text(
-                            'طريقة الحساب: ${_method == 'tehran' ? 'جامعة طهران' : 'الجعفري – مؤسسة ليوا، قم'},
+                            "طريقة الحساب: ${_method == 'tehran' ? 'جامعة طهران' : 'الجعفري – مؤسسة ليوا، قم'}",
                           ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _ivory,
