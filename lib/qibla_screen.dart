@@ -47,7 +47,7 @@ const List<QiblaCity> qiblaCities = [
 /// Initial great-circle bearing from a location to the Kaaba, clockwise from true north.
 double calculateQiblaBearing(double latitude, double longitude) {
   final lat1 = latitude * math.pi / 180;
-  final lat2 = _kaabaLatitude * math.pi / 180;
+  const lat2 = _kaabaLatitude * math.pi / 180;
   final deltaLongitude = (_kaabaLongitude - longitude) * math.pi / 180;
   final y = math.sin(deltaLongitude) * math.cos(lat2);
   final x = math.cos(lat1) * math.sin(lat2) -
