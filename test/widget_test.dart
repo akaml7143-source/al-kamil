@@ -285,7 +285,7 @@ void main() {
     await tester.tap(find.text('تعليم صلاة الليل'));
     await tester.pumpAndSettle();
 
-    expect(find.text('الصورة المشهورة: ١١ ركعة؛ ثمانٍ نافلة الليل، ثم ركعتا الشفع، ثم ركعة الوتر.'), findsOneWidget);
+    expect(find.text('صلاة الليل ١١ ركعة: ٨ ركعات نافلة الليل، وركعتا الشفع، وركعة الوتر.'), findsOneWidget);
     expect(find.text('وقت صلاة الليل'), findsOneWidget);
     expect(find.text('أولاً: الركعات الثماني – نافلة الليل'), findsOneWidget);
     expect(find.text('ثانياً: ركعتا الشفع'), findsOneWidget);
@@ -297,12 +297,15 @@ void main() {
     expect(find.text('نهج البلاغة'), findsNothing);
     expect(find.text('الصوتيات'), findsNothing);
     expect(find.text('آخر قراءة'), findsNothing);
-    await tester.tap(find.text('وقت صلاة الليل'));
+    final firstLesson = find.byKey(const Key('night_prayer_step_0'));
+    await tester.ensureVisible(firstLesson);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('night_prayer_step_0')));
+    await tester.tap(firstLesson);
     await tester.pumpAndSettle();
 
     final istighfarButton = find.byKey(const Key('night_prayer_counter_istighfar_increment'));
+    await tester.ensureVisible(istighfarButton);
+    await tester.pumpAndSettle();
     await tester.tap(istighfarButton);
     await tester.pumpAndSettle();
     expect(find.text('1 / 70'), findsOneWidget);
