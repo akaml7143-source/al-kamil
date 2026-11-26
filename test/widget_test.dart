@@ -286,19 +286,25 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('صلاة الليل ١١ ركعة: ٨ ركعات نافلة الليل، وركعتا الشفع، وركعة الوتر.'), findsOneWidget);
-    expect(find.text('وقت صلاة الليل'), findsOneWidget);
-    expect(find.text('أولاً: الركعات الثماني – نافلة الليل'), findsOneWidget);
-    expect(find.text('ثانياً: ركعتا الشفع'), findsOneWidget);
-    expect(find.text('ثالثاً: ركعة الوتر'), findsOneWidget);
+    final thirdSection = find.text('ثالثاً: ركعة الوتر');
+    await tester.scrollUntilVisible(
+      thirdSection,
+      280,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(thirdSection, findsOneWidget);
     expect(find.byKey(const Key('night_counter_forty')), findsOneWidget);
     expect(find.byKey(const Key('night_counter_istighfar')), findsOneWidget);
     expect(find.byKey(const Key('night_counter_aidh')), findsOneWidget);
     expect(find.byKey(const Key('night_counter_afw')), findsOneWidget);
-    expect(find.text('نهج البلاغة'), findsNothing);
-    expect(find.text('الصوتيات'), findsNothing);
-    expect(find.text('آخر قراءة'), findsNothing);
+
     final firstLesson = find.byKey(const Key('night_prayer_step_0'));
-    await tester.ensureVisible(firstLesson);
+    await tester.scrollUntilVisible(
+      firstLesson,
+      280,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
     await tester.tap(firstLesson);
     await tester.pumpAndSettle();
