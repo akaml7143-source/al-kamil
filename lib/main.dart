@@ -489,18 +489,22 @@ class _HomeRoundAction extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: ivory, size: 23),
-              const SizedBox(height: 3),
-              Text(label, style: const TextStyle(color: mutedIvory, fontSize: 10)),
-            ],
+  Widget build(BuildContext context) => Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: _TwilightGlassPanel(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            radius: 16,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: ivory, size: 23),
+                const SizedBox(height: 3),
+                Text(label, style: const TextStyle(color: mutedIvory, fontSize: 10)),
+              ],
+            ),
           ),
         ),
       );
@@ -514,13 +518,13 @@ class _HomePillAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.white.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(18),
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
-          child: Padding(
+          child: _TwilightGlassPanel(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            radius: 18,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -543,22 +547,46 @@ class _HomeNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
-            decoration: BoxDecoration(
-              color: selected ? turquoise.withValues(alpha: 0.22) : Colors.transparent,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: selected ? ivory : mutedIvory, size: 21),
-                const SizedBox(height: 3),
-                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: selected ? ivory : mutedIvory, fontSize: 9, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
-              ],
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Ink(
+              padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: selected
+                    ? LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          turquoise.withValues(alpha: 0.24),
+                          const Color(0xFF8069D4).withValues(alpha: 0.13),
+                        ],
+                      )
+                    : null,
+                border: selected
+                    ? Border.all(color: twilightBorder, width: 0.8)
+                    : null,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(icon, color: selected ? ivory : mutedIvory, size: 21),
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: selected ? ivory : mutedIvory,
+                      fontSize: 9,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
