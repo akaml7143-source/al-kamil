@@ -1353,7 +1353,12 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                           'استمر بالذكر، تقبّل الله أعمالكم',
                           style: TextStyle(color: mutedIvory, fontSize: 12),
                         ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 18),
+                      _TwilightGlassPanel(
+                        padding: const EdgeInsets.all(14),
+                        radius: 20,
+                        child: Column(
+                          children: [
                       SizedBox(
                         width: double.infinity,
                         height: 58,
@@ -1420,6 +1425,9 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                           color: mutedIvory,
                           fontSize: 11,
                           height: 1.7,
+                        ),
+                      ),
+                          ],
                         ),
                       ),
                     ],
