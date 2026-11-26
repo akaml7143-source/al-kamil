@@ -237,9 +237,7 @@ class HomePage extends StatelessWidget {
       'وصايا أهل البيت' => LibrarySectionScreen(title: section.title),
       _ => SectionPage(title: section.title),
     };
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => page),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
   }
 
   @override
@@ -247,82 +245,323 @@ class HomePage extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        extendBody: true,
         body: SafeArea(
+          bottom: false,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final compact = constraints.maxHeight < 680;
-              final headerHeight = compact ? 88.0 : 102.0;
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(10, 7, 10, 5),
-                child: Column(
-                  children: [
-                    _ShrineHeader(height: headerHeight),
-                    SizedBox(height: compact ? 7 : 10),
-                    Row(
-                      children: [
-                        Container(
-                          width: 3,
-                          height: 17,
-                          decoration: BoxDecoration(
-                            color: turquoise,
-                            borderRadius: BorderRadius.circular(4),
+              final compact = constraints.maxHeight < 700;
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 112),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        Row(
+                          children: [
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFB7A7FF), Color(0xFF6C5BB5)],
+                                ),
+                                border: Border.all(color: twilightBorder),
+                              ),
+                              child: const Icon(Icons.person_rounded, color: ivory, size: 24),
+                            ),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('السلام عليكم', style: TextStyle(color: ivory, fontSize: 19, fontWeight: FontWeight.w700)),
+                                  SizedBox(height: 2),
+                                  Text('أهلاً بك في تطبيق الكامل', style: TextStyle(color: mutedIvory, fontSize: 11)),
+                                ],
+                              ),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(24),
+                                onTap: () => _openSection(context, const _Section('البحث الشامل', Icons.search_rounded)),
+                                child: _TwilightGlassPanel(
+                                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                                  radius: 22,
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('بحث', style: TextStyle(color: mutedIvory, fontSize: 12)),
+                                      SizedBox(width: 9),
+                                      Icon(Icons.search_rounded, color: ivory, size: 19),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: compact ? 14 : 19),
+                        _TwilightGlassPanel(
+                          padding: const EdgeInsets.fromLTRB(17, 16, 17, 15),
+                          radius: 25,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Expanded(
+                                    child: Text('مواقيت الصلاة', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
+                                  ),
+                                  Container(
+                                    width: 42,
+                                    height: 42,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withValues(alpha: 0.13),
+                                      border: Border.all(color: twilightBorder),
+                                    ),
+                                    child: const Icon(Icons.access_time_rounded, color: ivory, size: 22),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              const Text('تابع أوقات الصلاة حسب مدينتك، وانتقل بسهولة إلى اتجاه القبلة', style: TextStyle(color: mutedIvory, fontSize: 12, height: 1.6)),
+                              const SizedBox(height: 13),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      onPressed: () => _openSection(context, const _Section('مواقيت الصلاة', Icons.access_time_rounded)),
+                                      icon: const Icon(Icons.arrow_back_rounded, size: 17),
+                                      label: const Text('عرض المواقيت'),
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: const Color(0xFF8069D4),
+                                        foregroundColor: ivory,
+                                        padding: const EdgeInsets.symmetric(vertical: 11),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 9),
+                                  _HomeRoundAction(
+                                    icon: Icons.explore_rounded,
+                                    label: 'القبلة',
+                                    onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded)),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'أقسام الكامل',
-                          style: TextStyle(
-                            color: ivory,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                        SizedBox(height: compact ? 12 : 16),
+                        _TwilightGlassPanel(
+                          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                          radius: 23,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text('وردك وقراءتك', style: TextStyle(color: ivory, fontSize: 18, fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 5),
+                                    const Text('المصحف الشريف والأذكار والمسبحة الإلكترونية', style: TextStyle(color: mutedIvory, fontSize: 11, height: 1.5)),
+                                    const SizedBox(height: 10),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 7,
+                                      children: [
+                                        _HomePillAction(
+                                          icon: Icons.menu_book_rounded,
+                                          label: 'القرآن الكريم',
+                                          onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded)),
+                                        ),
+                                        _HomePillAction(
+                                          icon: Icons.radio_button_checked_rounded,
+                                          label: 'الأذكار',
+                                          onTap: () => _openSection(context, const _Section('المسبحة الإلكترونية', Icons.radio_button_checked_rounded)),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 62,
+                                height: 62,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [Color(0xFFD9D0FF), Color(0xFF8069D4)],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(color: turquoise.withValues(alpha: 0.24), blurRadius: 18),
+                                  ],
+                                ),
+                                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF30264F), size: 30),
+                              ),
+                            ],
                           ),
                         ),
-                        const Spacer(),
-                        const Text(
-                          'رفيق المعرفة والعبادة',
-                          style: TextStyle(color: mutedIvory, fontSize: 9),
+                        SizedBox(height: compact ? 13 : 17),
+                        Row(
+                          children: [
+                            const Text('أقسام الكامل', style: TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.w700)),
+                            const Spacer(),
+                            Text('${_sections.length} قسماً', style: const TextStyle(color: mutedIvory, fontSize: 10)),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Expanded(
-                      child: GridView.builder(
-                        padding: EdgeInsets.zero,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _sections.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 7,
-                          mainAxisSpacing: compact ? 5 : 7,
-                          childAspectRatio: compact ? 1.16 : 1.04,
+                        const SizedBox(height: 10),
+                        _TwilightGlassPanel(
+                          padding: const EdgeInsets.all(10),
+                          radius: 24,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _sections.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 9,
+                              childAspectRatio: compact ? 0.95 : 0.9,
+                            ),
+                            itemBuilder: (context, index) {
+                              final section = _sections[index];
+                              return _SectionTile(
+                                section: section,
+                                compact: true,
+                                onTap: () => _openSection(context, section),
+                              );
+                            },
+                          ),
                         ),
-                        itemBuilder: (context, index) {
-                          final section = _sections[index];
-                          return _SectionTile(
-                            section: section,
-                            compact: compact,
-                            onTap: () => _openSection(context, section),
-                          );
-                        },
-                      ),
+                        const SizedBox(height: 14),
+                        const Center(
+                          child: Text(
+                            'الكامل • موسوعة الأدعية والزيارات وتعاليم أهل البيت (عليهم السلام)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Color(0xFFAAA5C8), fontSize: 10, height: 1.5),
+                          ),
+                        ),
+                      ]),
                     ),
-                    const SizedBox(height: 3),
-                    const Text(
-                      'الكامل • محتوى إسلامي في مكان واحد',
-                      style: TextStyle(
-                        color: Color(0xFF9A96B8),
-                        fontSize: 9,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          minimum: const EdgeInsets.fromLTRB(14, 0, 14, 9),
+          child: _TwilightGlassPanel(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 8),
+            radius: 25,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _HomeNavItem(icon: Icons.home_rounded, label: 'الرئيسية', selected: true, onTap: () {}),
+                _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
+                _HomeNavItem(icon: Icons.explore_rounded, label: 'القبلة', onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded))),
+                _HomeNavItem(icon: Icons.auto_awesome_rounded, label: 'المكتبة', onTap: () => _openSection(context, const _Section('الزيارات', Icons.account_balance_rounded))),
+                _HomeNavItem(icon: Icons.person_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _HomeRoundAction extends StatelessWidget {
+  const _HomeRoundAction({required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: ivory, size: 23),
+              const SizedBox(height: 3),
+              Text(label, style: const TextStyle(color: mutedIvory, fontSize: 10)),
+            ],
+          ),
+        ),
+      );
+}
+
+class _HomePillAction extends StatelessWidget {
+  const _HomePillAction({required this.icon, required this.label, required this.onTap});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.white.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: ivory, size: 15),
+                const SizedBox(width: 5),
+                Text(label, style: const TextStyle(color: ivory, fontSize: 10)),
+              ],
+            ),
+          ),
+        ),
+      );
+}
+
+class _HomeNavItem extends StatelessWidget {
+  const _HomeNavItem({required this.icon, required this.label, required this.onTap, this.selected = false});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) => Expanded(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 2),
+            decoration: BoxDecoration(
+              color: selected ? turquoise.withValues(alpha: 0.22) : Colors.transparent,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: selected ? ivory : mutedIvory, size: 21),
+                const SizedBox(height: 3),
+                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: selected ? ivory : mutedIvory, fontSize: 9, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
+              ],
+            ),
+          ),
+        ),
+      );
 }
 
 class _ShrineHeader extends StatelessWidget {
