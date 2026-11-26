@@ -2175,13 +2175,9 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                   ),
                 ],
               ),
-              Container(
+              _TwilightGlassPanel(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: panelBlack,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: gold.withValues(alpha: 0.35)),
-                ),
+                radius: 18,
                 child: SelectableText.rich(
                   TextSpan(
                     style: TextStyle(
@@ -2195,13 +2191,9 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                 ),
               ),
             ] else
-              Container(
+              _TwilightGlassPanel(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: panelBlack,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: turquoise.withValues(alpha: 0.3)),
-                ),
+                radius: 18,
                 child: const Text(
                   'النص الكامل قيد المطابقة مع المصدر، لذلك لم نعرض نصاً جزئياً أو غير متحقق منه.',
                   textAlign: TextAlign.center,
