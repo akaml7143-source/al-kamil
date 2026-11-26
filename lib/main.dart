@@ -2099,10 +2099,10 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
             const SizedBox(height: 16),
             if (_isTaqibat) ...[
               _TwilightGlassPanel(
-                key: const Key('taqibat_progress_card'),
                 padding: const EdgeInsets.all(14),
                 radius: 17,
                 child: Row(
+                  key: const Key('taqibat_progress_card'),
                   children: [
                     Expanded(
                       child: Text(
