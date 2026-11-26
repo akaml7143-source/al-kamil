@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:material_ui/material_ui.dart';
@@ -205,7 +206,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
             : ListView(
                 padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
                 children: [
-                  Container(
+                  _QiblaGlassSurface(radius: 20,
+                    child: Container(
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
                       color: _qiblaPanel.withValues(alpha: 0.72),
@@ -234,6 +236,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         ),
                       ],
                     ),
+                  )
                   ),
                   const SizedBox(height: 20),
                   Center(
@@ -243,7 +246,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
-                          Container(
+                          _QiblaGlassSurface(radius: 141,
+                            child: Container(
                             width: 282,
                             height: 282,
                             decoration: BoxDecoration(
@@ -256,6 +260,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                                 spreadRadius: 3,
                               )],
                             ),
+                          )
                           ),
                           Transform.rotate(
                             angle: -(_heading ?? 0) * math.pi / 180,
@@ -309,7 +314,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  Container(
+                  _QiblaGlassSurface(radius: 16,
+                    child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _qiblaPanel,
@@ -341,10 +347,12 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         ),
                       ],
                     ),
+                  )
                   ),
                   const SizedBox(height: 14),
                   if (_sensorUnavailable || _heading == null)
-                    Container(
+                    _QiblaGlassSurface(radius: 12,
+                      child: Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
                         color: const Color(0xFF202542),
@@ -355,6 +363,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(color: _qiblaIvory, height: 1.8, fontSize: 12),
                       ),
+                    )
                     )
                   else
                     const Text(
@@ -370,6 +379,25 @@ class _QiblaScreenState extends State<QiblaScreen> {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+
+class _QiblaGlassSurface extends StatelessWidget {
+  const _QiblaGlassSurface({required this.child, required this.radius});
+
+  final Widget child;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+        child: child,
       ),
     );
   }

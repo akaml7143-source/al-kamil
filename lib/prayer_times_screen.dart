@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show ImageFilter;
 
 import 'package:adhan_dart/adhan_dart.dart';
 import 'package:material_ui/material_ui.dart';
@@ -431,7 +432,8 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
             : ListView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 28),
                 children: [
-                  Container(
+                  _PrayerGlassSurface(radius: 17,
+                    child: Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
@@ -511,10 +513,12 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         ],
                       ],
                     ),
+                  )
                   ),
                   const SizedBox(height: 14),
                   if (_error != null)
-                    Container(
+                    _PrayerGlassSurface(radius: 12,
+                      child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: const Color(0xFF252B4A),
@@ -523,8 +527,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                       child: Text(_error!,
                           style: const TextStyle(color: _ivory)),
                     )
+                    )
                   else
-                    Container(
+                    _PrayerGlassSurface(radius: 15,
+                      child: Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: _panelBlack,
@@ -556,9 +562,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                             ),
                         ],
                       ),
+                    )
                     ),
                   const SizedBox(height: 16),
-                  Container(
+                  _PrayerGlassSurface(radius: 18,
+                    child: Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: _panelBlack.withValues(alpha: 0.68),
@@ -637,9 +645,11 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                         ),
                       ],
                     ),
+                  )
                   ),
                   const SizedBox(height: 14),
-                  Container(
+                  _PrayerGlassSurface(radius: 12,
+                    child: Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: const Color(0xFF202542),
@@ -650,6 +660,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                       style: TextStyle(
                           color: _ivory, height: 1.9, fontSize: 11),
                     ),
+                  )
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -742,6 +753,25 @@ class _PrayerTimeTile extends StatelessWidget {
                 color: _turquoise, size: 16),
           ],
         ],
+      ),
+    );
+  }
+}
+
+
+class _PrayerGlassSurface extends StatelessWidget {
+  const _PrayerGlassSurface({required this.child, required this.radius});
+
+  final Widget child;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 13, sigmaY: 13),
+        child: child,
       ),
     );
   }
