@@ -1217,38 +1217,37 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        decoration: BoxDecoration(
-                          color: panelBlack,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: gold.withValues(alpha: 0.35),
-                          ),
-                        ),
+                      _TwilightGlassPanel(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        radius: 17,
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _selectedId,
                             isExpanded: true,
-                            dropdownColor: panelBlack,
-                            style: const TextStyle(
-                              color: ivory,
-                              fontSize: 15,
-                            ),
-                            items: _options
-                                .map(
-                                  (option) => DropdownMenuItem<String>(
-                                    value: option.id,
-                                    child: Text(option.title),
-                                  ),
-                                )
-                                .toList(),
+                            dropdownColor: const Color(0xFF211D3D),
+                            icon: const Icon(Icons.keyboard_arrow_down_rounded, color: turquoise),
+                            style: const TextStyle(color: ivory, fontSize: 15),
+                            items: _options.map((option) => DropdownMenuItem<String>(
+                              value: option.id,
+                              child: Text(option.title, overflow: TextOverflow.ellipsis),
+                            )).toList(),
                             onChanged: _selectDhikr,
                           ),
                         ),
                       ),
-                      const SizedBox(height: 7),
-                      Text(_selected.description, style: const TextStyle(color: mutedIvory, fontSize: 12)),
+                      const SizedBox(height: 9),
+                      _TwilightGlassPanel(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        radius: 14,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.auto_awesome_rounded, color: gold, size: 17),
+                            const SizedBox(width: 9),
+                            Expanded(child: Text(_selected.description, style: const TextStyle(color: mutedIvory, fontSize: 12))),
+                            Text('الهدف: ${_selected.target}', style: const TextStyle(color: turquoise, fontSize: 11, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 14),
                       GridView.builder(
                         shrinkWrap: true,
@@ -1271,22 +1270,33 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         },
                       ),
                       const SizedBox(height: 24),
-                      Container(
-                        width: 236,
-                        height: 236,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: panelBlack,
-                          border: Border.all(color: gold, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: gold.withValues(alpha: 0.10),
-                              blurRadius: 24,
-                              spreadRadius: 3,
+                      _TwilightGlassPanel(
+                        padding: const EdgeInsets.all(10),
+                        radius: 140,
+                        child: Container(
+                          width: 236,
+                          height: 236,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                const Color(0xFF9B8BEA).withValues(alpha: 0.20),
+                                const Color(0xFF342D59).withValues(alpha: 0.78),
+                                panelBlack.withValues(alpha: 0.92),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Stack(
+                            border: Border.all(color: turquoise.withValues(alpha: 0.72), width: 1.5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF9B8BEA).withValues(alpha: 0.16),
+                                blurRadius: 28,
+                                spreadRadius: 2,
+                              ),
+                            ],
+                          ),
+                          child: Stack(
                           alignment: Alignment.center,
                           children: [
                             SizedBox(
@@ -1334,6 +1344,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                               ],
                             ),
                           ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
