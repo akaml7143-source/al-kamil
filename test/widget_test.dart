@@ -287,11 +287,29 @@ void main() {
 
     expect(find.text('الصورة المشهورة: ١١ ركعة؛ ثمانٍ نافلة الليل، ثم ركعتا الشفع، ثم ركعة الوتر.'), findsOneWidget);
     expect(find.text('وقت صلاة الليل'), findsOneWidget);
+    expect(find.text('أولاً: الركعات الثماني – نافلة الليل'), findsOneWidget);
+    expect(find.text('ثانياً: ركعتا الشفع'), findsOneWidget);
+    expect(find.text('ثالثاً: ركعة الوتر'), findsOneWidget);
+    expect(find.byKey(const Key('night_counter_forty')), findsOneWidget);
+    expect(find.byKey(const Key('night_counter_istighfar')), findsOneWidget);
+    expect(find.byKey(const Key('night_counter_aidh')), findsOneWidget);
+    expect(find.byKey(const Key('night_counter_afw')), findsOneWidget);
+    expect(find.text('نهج البلاغة'), findsNothing);
+    expect(find.text('الصوتيات'), findsNothing);
+    expect(find.text('آخر قراءة'), findsNothing);
     await tester.tap(find.text('وقت صلاة الليل'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('night_prayer_step_0')));
     await tester.pumpAndSettle();
 
+    final istighfarButton = find.byKey(const Key('night_prayer_counter_istighfar_increment'));
+    await tester.tap(istighfarButton);
+    await tester.pumpAndSettle();
+    expect(find.text('1 / 70'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getInt('night_prayer_counter_istighfar'),
+      1,
+    );
     expect(
       (await SharedPreferences.getInstance())
           .getStringList('night_prayer_completed_steps'),
@@ -324,7 +342,7 @@ void main() {
     expect(find.text('دعاء العهد'), findsNWidgets(3));
     expect(find.textContaining('عدد النتائج: 1'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(ListTile, 'دعاء العهد'));
+    await tester.tap(find.widgetWithText(ListTile, 'دعاء العهد').first);
     await tester.pumpAndSettle();
     expect(
       find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'),
