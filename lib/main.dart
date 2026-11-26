@@ -526,6 +526,58 @@ class _SectionTile extends StatelessWidget {
   }
 }
 
+class _TwilightGlassPanel extends StatelessWidget {
+  const _TwilightGlassPanel({
+    super.key,
+    required this.child,
+    this.padding = const EdgeInsets.all(15),
+    this.margin = EdgeInsets.zero,
+    this.radius = 16,
+    this.blur = 14,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry margin;
+  final double radius;
+  final double blur;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          margin: margin,
+          padding: padding,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [
+                Colors.white.withValues(alpha: 0.105),
+                turquoise.withValues(alpha: 0.075),
+                panelBlack.withValues(alpha: 0.76),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(radius),
+            border: Border.all(color: twilightBorder, width: 0.85),
+            boxShadow: [
+              BoxShadow(
+                color: turquoise.withValues(alpha: 0.07),
+                blurRadius: 16,
+                spreadRadius: 0.2,
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
 class QuranScreen extends StatefulWidget {
   const QuranScreen({super.key});
 
@@ -584,7 +636,14 @@ class _QuranScreenState extends State<QuranScreen> {
         body: Column(
           children: [
             Container(
-              color: royalBlack,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [panelBlack.withValues(alpha: 0.96), twilightSurface.withValues(alpha: 0.92)],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                ),
+                border: Border(bottom: BorderSide(color: twilightBorder.withValues(alpha: 0.8))),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(
                 children: [
@@ -650,7 +709,14 @@ class _QuranScreenState extends State<QuranScreen> {
                     ),
             ),
             Container(
-              color: royalBlack,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [twilightSurface.withValues(alpha: 0.94), panelBlack.withValues(alpha: 0.98)],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                ),
+                border: Border(top: BorderSide(color: twilightBorder.withValues(alpha: 0.8))),
+              ),
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
               child: Row(
                 children: [
@@ -897,16 +963,9 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
+                      _TwilightGlassPanel(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: panelBlack,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: gold.withValues(alpha: 0.45),
-                          ),
-                        ),
+                        radius: 18,
                         child: Column(
                           children: [
                             const Icon(
@@ -1534,8 +1593,12 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                             itemBuilder: (context, index) {
                               final item = items[index];
                               final favorite = _favorites.contains(item.id);
-                              return Card(
-                                color: panelBlack,
+                              return _TwilightGlassPanel(
+                                padding: EdgeInsets.zero,
+                                radius: 14,
+                                child: Card(
+                                color: Colors.transparent,
+                                elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                   side: BorderSide(
@@ -1574,6 +1637,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                                       color: gold,
                                     ),
                                   ),
+                                ),
                                 ),
                               );
                             },
@@ -1976,14 +2040,10 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
   }
 
   Widget _sectionCard({required String title, required Widget child, IconData icon = Icons.auto_awesome}) {
-    return Container(
+    return _TwilightGlassPanel(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: panelBlack,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: gold.withValues(alpha: 0.28)),
-      ),
+      radius: 14,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
