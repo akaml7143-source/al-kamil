@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'prayer_times_screen.dart';
 import 'qibla_screen.dart';
 import 'package:material_ui/material_ui.dart';
@@ -10,12 +12,15 @@ void main() {
   runApp(const AlKamilApp());
 }
 
-const Color royalBlack = Color(0xFF101112);
-const Color panelBlack = Color(0xFF1B1D1F);
-const Color gold = Color(0xFFD8B66A);
-const Color turquoise = Color(0xFF55C5BC);
-const Color ivory = Color(0xFFF5F0E5);
-const Color mutedIvory = Color(0xFFC9C2B5);
+// Twilight Glassmorphism design system: deep indigo, misty violet and luminous glass.
+const Color royalBlack = Color(0xFF111329);
+const Color panelBlack = Color(0xC9252B4A);
+const Color gold = Color(0xFFC9B9FF);
+const Color turquoise = Color(0xFF9D8CFF);
+const Color ivory = Color(0xFFF4F1FF);
+const Color mutedIvory = Color(0xFFC6C2DC);
+const Color twilightSurface = Color(0xFF202542);
+const Color twilightBorder = Color(0x66D5C9FF);
 
 class AlKamilApp extends StatelessWidget {
   const AlKamilApp({super.key});
@@ -30,11 +35,32 @@ class AlKamilApp extends StatelessWidget {
         useMaterial3: true,
         scaffoldBackgroundColor: royalBlack,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: gold,
+          seedColor: turquoise,
           brightness: Brightness.dark,
           primary: gold,
           secondary: turquoise,
-          surface: panelBlack,
+          surface: twilightSurface,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xE6191D38),
+          foregroundColor: ivory,
+          surfaceTintColor: Colors.transparent,
+          centerTitle: true,
+          elevation: 0,
+        ),
+        cardTheme: CardThemeData(
+          color: panelBlack,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: twilightBorder, width: 0.8),
+          ),
+        ),
+        dividerColor: twilightBorder,
+        dialogTheme: const DialogThemeData(
+          backgroundColor: twilightSurface,
+          surfaceTintColor: Colors.transparent,
         ),
       ),
       home: const WelcomeGate(),
@@ -280,7 +306,7 @@ class HomePage extends StatelessWidget {
                     const Text(
                       'الكامل • محتوى إسلامي في مكان واحد',
                       style: TextStyle(
-                        color: Color(0xFF817968),
+                        color: Color(0xFF9A96B8),
                         fontSize: 9,
                       ),
                     ),
@@ -310,7 +336,7 @@ class _ShrineHeader extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [Color(0xFF40331D), Color(0xFF171819), Color(0xFF102322)],
+          colors: [Color(0xFF49416F), Color(0xFF242744), Color(0xFF171B36)],
         ),
         border: Border.all(color: gold.withValues(alpha: 0.62), width: 0.9),
       ),
@@ -323,7 +349,7 @@ class _ShrineHeader extends StatelessWidget {
             child: Icon(
               Icons.mosque_rounded,
               size: height + 54,
-              color: gold.withValues(alpha: 0.11),
+              color: gold.withValues(alpha: 0.13),
             ),
           ),
           Positioned(
@@ -416,36 +442,83 @@ class _SectionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: panelBlack,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: gold.withValues(alpha: 0.30), width: 0.7),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(section.icon, size: compact ? 18 : 20, color: gold),
-              SizedBox(height: compact ? 3 : 5),
-              Text(
-                section.title,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: ivory,
-                  fontSize: compact ? 8.5 : 9.2,
-                  fontWeight: FontWeight.w600,
-                  height: 1.2,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 13, sigmaY: 13),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.13),
+                    turquoise.withValues(alpha: 0.075),
+                    panelBlack.withValues(alpha: 0.72),
+                  ],
                 ),
+                border: Border.all(
+                  color: twilightBorder,
+                  width: 0.85,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: turquoise.withValues(alpha: 0.075),
+                    blurRadius: 14,
+                    spreadRadius: 0.3,
+                  ),
+                ],
               ),
-            ],
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: compact ? 34 : 38,
+                    height: compact ? 34 : 38,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          turquoise.withValues(alpha: 0.38),
+                          gold.withValues(alpha: 0.16),
+                        ],
+                      ),
+                      border: Border.all(
+                        color: gold.withValues(alpha: 0.48),
+                        width: 0.7,
+                      ),
+                    ),
+                    child: Icon(
+                      section.icon,
+                      size: compact ? 17 : 19,
+                      color: ivory,
+                    ),
+                  ),
+                  SizedBox(height: compact ? 3 : 5),
+                  Text(
+                    section.title,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: ivory,
+                      fontSize: compact ? 8.5 : 9.2,
+                      fontWeight: FontWeight.w600,
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -1963,7 +2036,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF3B301D), panelBlack],
+                        colors: [Color(0xFF343052), panelBlack],
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
                       ),
@@ -1997,7 +2070,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                         _instruction('الصلاة الأولى – الركعتان الأوليان:'),
                         _instruction('• الركعة الأولى: سورة الفاتحة وسورة الإخلاص.'),
                         _instruction('• الركعة الثانية: سورة الفاتحة وسورة الكافرون.'),
-                        const Divider(color: Color(0xFF51452F)),
+                        const Divider(color: Color(0xFF47416D)),
                         _instruction('الصلاة الثانية – الركعتان الثالثة والرابعة:'),
                         _instruction('• الركعة الأولى: الفاتحة وما تيسّر من السور.'),
                         _instruction('• الركعة الثانية: الفاتحة وما تيسّر من السور.'),
@@ -2026,7 +2099,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF342B1D),
+                            color: const Color(0xFF292744),
                             borderRadius: BorderRadius.circular(9),
                           ),
                           child: const Text('ملاحظة: ركعتا الشفع من دون قنوت في هذه الصيغة.', style: TextStyle(color: gold, height: 1.7)),
@@ -2150,7 +2223,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(color: const Color(0xFF29251D), borderRadius: BorderRadius.circular(12)),
+                    decoration: BoxDecoration(color: const Color(0xFF22213B), borderRadius: BorderRadius.circular(12)),
                     child: const Text(
                       'تنبيه فقهي: هذه طريقة تعليمية معروضة وفق النص المطلوب، وقد تختلف بعض التفاصيل والأذكار والقراءات باختلاف فتوى مرجع التقليد. الأعداد المذكورة مستحبة وليست شرطاً لصحة الصلاة؛ يُرجى مراجعة مرجع التقليد في الأحكام.',
                       style: TextStyle(color: ivory, height: 1.9, fontSize: 12),
