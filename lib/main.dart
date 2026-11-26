@@ -2897,21 +2897,58 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                   ),
                   Expanded(
                     child: _query.trim().isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Padding(
-                              padding: EdgeInsets.all(28),
-                              child: Text(
-                                'اكتب كلمة أو عبارة للبحث في محتوى التطبيق المحفوظ على جهازك.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: mutedIvory, height: 1.9),
+                              padding: const EdgeInsets.all(24),
+                              child: _TwilightGlassPanel(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                                radius: 22,
+                                child: const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _TwilightGlassOrb(icon: Icons.manage_search_rounded, size: 58),
+                                    SizedBox(height: 14),
+                                    Text(
+                                      'ابدأ البحث في مكتبة التطبيق',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 15),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'اكتب كلمة أو عبارة للبحث في محتوى التطبيق المحفوظ على جهازك.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(color: mutedIvory, height: 1.9, fontSize: 12),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           )
                         : results.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'لا توجد نتائج مطابقة في المحتوى المتاح حالياً.',
-                                  style: TextStyle(color: mutedIvory),
+                            ? Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: _TwilightGlassPanel(
+                                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 26),
+                                    radius: 20,
+                                    child: const Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.search_off_rounded, color: mutedIvory, size: 34),
+                                        SizedBox(height: 12),
+                                        Text(
+                                          'لا توجد نتائج مطابقة',
+                                          style: TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 14),
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          'جرّب كلمة أخرى أو عبارة أقصر للبحث في المحتوى المتاح.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(color: mutedIvory, height: 1.8, fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               )
                             : ListView.separated(
@@ -3105,17 +3142,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             radius: 16,
             child: Row(
               children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)],
-                    ),
-                  ),
-                  child: Icon(icon, color: royalBlack, size: 21),
-                ),
+                _TwilightGlassOrb(icon: icon, size: 42),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -3171,16 +3198,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             const Text('14', style: TextStyle(color: mutedIvory, fontSize: 11)),
                             Expanded(
-                              child: Slider(
-                                value: _fontSize.toDouble(),
-                                min: _minimumFontSize.toDouble(),
-                                max: _maximumFontSize.toDouble(),
-                                divisions: _maximumFontSize - _minimumFontSize,
-                                activeColor: turquoise,
-                                inactiveColor: twilightBorder,
-                                label: '$_fontSize',
-                                onChanged: (value) => setState(() => _fontSize = value.round()),
-                                onChangeEnd: _saveFontSize,
+                              child: _TwilightGlassPanel(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                radius: 16,
+                                child: Slider(
+                                  value: _fontSize.toDouble(),
+                                  min: _minimumFontSize.toDouble(),
+                                  max: _maximumFontSize.toDouble(),
+                                  divisions: _maximumFontSize - _minimumFontSize,
+                                  activeColor: turquoise,
+                                  inactiveColor: twilightBorder,
+                                  label: '$_fontSize',
+                                  onChanged: (value) => setState(() => _fontSize = value.round()),
+                                  onChangeEnd: _saveFontSize,
+                                ),
                               ),
                             ),
                             const Text('36', style: TextStyle(color: mutedIvory, fontSize: 11)),
