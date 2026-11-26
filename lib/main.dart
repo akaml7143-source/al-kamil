@@ -762,15 +762,7 @@ class _QuranScreenState extends State<QuranScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: const Color(0xFFF4EBDD),
-        appBar: AppBar(
-          backgroundColor: royalBlack,
-          foregroundColor: gold,
-          centerTitle: true,
-          title: const Text(
-            'القرآن الكريم',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-        ),
+        appBar: _TwilightSubpageAppBar(title: 'القرآن الكريم'),
         body: Column(
           children: [
             Container(
@@ -1088,12 +1080,7 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: const Text('المسبحة الإلكترونية'),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
-          centerTitle: true,
-        ),
+        appBar: _TwilightSubpageAppBar(title: 'المسبحة الإلكترونية'),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: gold))
             : SafeArea(
@@ -1675,12 +1662,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: Text(widget.title),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
-          centerTitle: true,
-        ),
+        appBar: _TwilightSubpageAppBar(title: widget.title),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: gold))
             : Column(
@@ -1921,10 +1903,8 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: Text(widget.item.title),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
+        appBar: _TwilightSubpageAppBar(
+          title: widget.item.title,
           actions: [
             IconButton(
               tooltip: 'تصغير الخط',
@@ -2216,12 +2196,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: const Text('تعليم صلاة الليل'),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
-          centerTitle: true,
-        ),
+        appBar: _TwilightSubpageAppBar(title: 'تعليم صلاة الليل'),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: gold))
             : SingleChildScrollView(
@@ -2648,12 +2623,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: const Text('البحث الشامل'),
-          backgroundColor: panelBlack,
-          foregroundColor: gold,
-          centerTitle: true,
-        ),
+        appBar: _TwilightSubpageAppBar(title: 'البحث الشامل', showSearch: false),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: gold))
             : Column(
@@ -2774,6 +2744,81 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
   }
 }
 
+
+class _TwilightSubpageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const _TwilightSubpageAppBar({
+    required this.title,
+    this.showSearch = true,
+    this.actions = const [],
+  });
+
+  final String title;
+  final bool showSearch;
+  final List<Widget> actions;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(70);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      toolbarHeight: 70,
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: 8,
+      title: Row(
+        children: [
+          _TwilightGlassPanel(
+            padding: const EdgeInsets.all(2),
+            radius: 22,
+            child: IconButton(
+              tooltip: 'رجوع',
+              onPressed: () => Navigator.maybePop(context),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 17, color: ivory),
+            ),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.w700),
+            ),
+          ),
+          if (showSearch) ...[
+            const SizedBox(width: 8),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(22),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const GlobalSearchScreen()),
+                ),
+                child: _TwilightGlassPanel(
+                  padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
+                  radius: 22,
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('بحث', style: TextStyle(color: mutedIvory, fontSize: 11)),
+                      SizedBox(width: 7),
+                      Icon(Icons.search_rounded, color: ivory, size: 17),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+      actions: actions,
+    );
+  }
+}
+
 class SectionPage extends StatelessWidget {
   const SectionPage({super.key, required this.title});
   final String title;
@@ -2784,12 +2829,7 @@ class SectionPage extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: royalBlack,
-        appBar: AppBar(
-          title: Text(title),
-          backgroundColor: panelBlack,
-          foregroundColor: ivory,
-          centerTitle: true,
-        ),
+        appBar: _TwilightSubpageAppBar(title: title),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
