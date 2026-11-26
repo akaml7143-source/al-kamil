@@ -2114,21 +2114,26 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                         ),
                         const SizedBox(height: 10),
                         for (var index = 0; index < _lessons.length; index++)
-                          CheckboxListTile(
-                            key: Key('night_prayer_step_$index'),
-                            value: _completed.contains(index),
-                            onChanged: (value) => _toggleLesson(index, value ?? false),
-                            activeColor: turquoise,
-                            checkColor: royalBlack,
-                            contentPadding: EdgeInsets.zero,
-                            controlAffinity: ListTileControlAffinity.leading,
-                            title: Text(
-                              _lessons[index].title,
-                              style: const TextStyle(color: ivory, fontSize: 12),
-                            ),
-                            subtitle: Text(
-                              _lessons[index].summary,
-                              style: const TextStyle(color: mutedIvory, fontSize: 11, height: 1.6),
+                          Material(
+                            color: royalBlack,
+                            borderRadius: BorderRadius.circular(10),
+                            clipBehavior: Clip.antiAlias,
+                            child: CheckboxListTile(
+                              key: Key('night_prayer_step_$index'),
+                              value: _completed.contains(index),
+                              onChanged: (value) => _toggleLesson(index, value ?? false),
+                              activeColor: turquoise,
+                              checkColor: royalBlack,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              controlAffinity: ListTileControlAffinity.leading,
+                              title: Text(
+                                _lessons[index].title,
+                                style: const TextStyle(color: ivory, fontSize: 12),
+                              ),
+                              subtitle: Text(
+                                _lessons[index].summary,
+                                style: const TextStyle(color: mutedIvory, fontSize: 11, height: 1.6),
+                              ),
                             ),
                           ),
                         OutlinedButton.icon(

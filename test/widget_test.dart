@@ -309,7 +309,16 @@ void main() {
     await tester.tap(firstLesson);
     await tester.pumpAndSettle();
 
+    // The checklist is below the counters in a lazy ListView. Scroll back
+    // to the counter section so its increment button is mounted before use.
+    await tester.scrollUntilVisible(
+      thirdSection,
+      280,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
     final istighfarButton = find.byKey(const Key('night_prayer_counter_istighfar_increment'));
+    expect(istighfarButton, findsOneWidget);
     await tester.ensureVisible(istighfarButton);
     await tester.pumpAndSettle();
     await tester.tap(istighfarButton);
