@@ -726,6 +726,7 @@ class QuranScreen extends StatefulWidget {
 class _QuranScreenState extends State<QuranScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 1;
+  int _lastReadPage = 1;
   bool _fontsReady = false;
   bool _fontError = false;
 
@@ -733,6 +734,27 @@ class _QuranScreenState extends State<QuranScreen> {
   void initState() {
     super.initState();
     _loadQuranFonts();
+    _loadLastReadPage();
+  }
+
+  Future<void> _loadLastReadPage() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final savedPage = (preferences.getInt('quran_last_page') ?? 1).clamp(1, 604).toInt();
+      if (mounted) setState(() => _lastReadPage = savedPage);
+    } catch (_) {
+      // The Mushaf remains available if local progress cannot be read.
+    }
+  }
+
+  Future<void> _saveLastReadPage(int page) async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setInt('quran_last_page', page);
+      if (mounted) setState(() => _lastReadPage = page);
+    } catch (_) {
+      // Reading continues even if progress cannot be saved.
+    }
   }
 
   Future<void> _loadQuranFonts() async {
@@ -765,6 +787,25 @@ class _QuranScreenState extends State<QuranScreen> {
         appBar: _TwilightSubpageAppBar(title: 'القرآن الكريم'),
         body: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+              child: _TwilightGlassPanel(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                radius: 18,
+                child: Row(
+                  children: [
+                    const Icon(Icons.history_rounded, color: gold, size: 21),
+                    const SizedBox(width: 9),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      const Text('آخر قراءة', style: TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text('صفحة $_lastReadPage من 604', style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                    ])),
+                    TextButton.icon(onPressed: () => _goToPage(_lastReadPage), icon: const Icon(Icons.play_arrow_rounded, size: 18), label: const Text('متابعة')),
+                    IconButton(tooltip: 'فهرس السور', onPressed: _showSurahIndex, icon: const Icon(Icons.list_alt_rounded, color: turquoise)),
+                  ],
+                ),
+              ),
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -812,7 +853,9 @@ class _QuranScreenState extends State<QuranScreen> {
                       enableTwoPageLayout: false,
                       pageBackgroundColor: const Color(0xFFFFFCF4),
                       onPageChanged: (page) {
-                        setState(() => _currentPage = page + 1);
+                        final current = page + 1;
+                        setState(() => _currentPage = current);
+                        _saveLastReadPage(current);
                       },
                     )
                   : Center(
@@ -872,6 +915,47 @@ class _QuranScreenState extends State<QuranScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showSurahIndex() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Container(
+          height: MediaQuery.of(sheetContext).size.height * 0.78,
+          decoration: const BoxDecoration(color: twilightSurface, borderRadius: BorderRadius.vertical(top: Radius.circular(26)), border: Border(top: BorderSide(color: twilightBorder))),
+          child: Column(children: [
+            Padding(padding: const EdgeInsets.fromLTRB(18, 18, 18, 12), child: Row(children: [
+              const Icon(Icons.menu_book_rounded, color: gold),
+              const SizedBox(width: 9),
+              const Expanded(child: Text('فهرس سور القرآن الكريم', style: TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.bold))),
+              IconButton(onPressed: () => Navigator.pop(sheetContext), icon: const Icon(Icons.close_rounded, color: mutedIvory)),
+            ])),
+            Expanded(child: ListView.separated(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 22),
+              itemCount: 114,
+              separatorBuilder: (_, __) => const SizedBox(height: 7),
+              itemBuilder: (context, index) {
+                final number = index + 1;
+                final name = getSurahNameArabic(number);
+                final verses = getVerseCount(number);
+                final page = getPageNumber(number, 1).clamp(1, 604).toInt();
+                return _TwilightGlassPanel(padding: EdgeInsets.zero, radius: 14, child: ListTile(
+                  onTap: () { Navigator.pop(sheetContext); _goToPage(page); },
+                  leading: Container(width: 38, height: 38, alignment: Alignment.center, decoration: BoxDecoration(shape: BoxShape.circle, color: turquoise.withValues(alpha: 0.16), border: Border.all(color: twilightBorder)), child: Text('$number', style: const TextStyle(color: ivory, fontWeight: FontWeight.bold))),
+                  title: Text(name, style: const TextStyle(color: ivory, fontWeight: FontWeight.bold)),
+                  subtitle: Text('$verses آية • صفحة $page', style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                  trailing: const Icon(Icons.chevron_left_rounded, color: turquoise),
+                ));
+              },
+            )),
+          ]),
         ),
       ),
     );
@@ -1163,12 +1247,27 @@ class _TasbeehScreenState extends State<TasbeehScreen> {
                         ),
                       ),
                       const SizedBox(height: 7),
-                      Text(
-                        _selected.description,
-                        style: const TextStyle(
-                          color: mutedIvory,
-                          fontSize: 12,
-                        ),
+                      Text(_selected.description, style: const TextStyle(color: mutedIvory, fontSize: 12)),
+                      const SizedBox(height: 14),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _options.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 9, mainAxisSpacing: 9, childAspectRatio: 2.25),
+                        itemBuilder: (context, index) {
+                          final option = _options[index];
+                          final selected = option.id == _selectedId;
+                          final count = _counts[option.id] ?? 0;
+                          return Material(color: Colors.transparent, child: InkWell(
+                            borderRadius: BorderRadius.circular(15),
+                            onTap: () => _selectDhikr(option.id),
+                            child: _TwilightGlassPanel(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9), radius: 15, child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                              Row(children: [Expanded(child: Text(option.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: selected ? gold : ivory, fontSize: 11, fontWeight: FontWeight.bold))), if (selected) const Icon(Icons.check_circle_rounded, color: turquoise, size: 15)]),
+                              const SizedBox(height: 5),
+                              Text('$count / ${option.target}', style: const TextStyle(color: mutedIvory, fontSize: 10)),
+                            ])),
+                          ));
+                        },
                       ),
                       const SizedBox(height: 24),
                       Container(
@@ -1669,6 +1768,22 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
+                    child: _TwilightGlassPanel(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+                      radius: 19,
+                      child: Row(children: [
+                        Container(width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, gradient: const LinearGradient(colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)]), boxShadow: [BoxShadow(color: turquoise.withValues(alpha: 0.18), blurRadius: 14)]), child: const Icon(Icons.auto_stories_rounded, color: Color(0xFF292345), size: 23)),
+                        const SizedBox(width: 11),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(widget.title, style: const TextStyle(color: ivory, fontSize: 15, fontWeight: FontWeight.bold)),
+                          Text('${items.length} عنصر • بحث ومفضلة وحفظ آخر قراءة', style: const TextStyle(color: mutedIvory, fontSize: 10, height: 1.5)),
+                        ])),
+                        const Icon(Icons.chevron_left_rounded, color: turquoise),
+                      ]),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
                     child: TextField(
                       controller: _searchController,
                       onChanged: (value) => setState(() => _query = value),
