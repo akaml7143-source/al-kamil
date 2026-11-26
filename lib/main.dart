@@ -332,7 +332,11 @@ class _ShrineHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
       height: height,
       width: double.infinity,
       decoration: BoxDecoration(
@@ -422,6 +426,8 @@ class _ShrineHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
@@ -2523,7 +2529,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
-                    child: TextField(
+                    child: _TwilightGlassPanel(
+                      padding: const EdgeInsets.all(4),
+                      radius: 17,
+                      child: TextField(
                       key: const Key('global_local_search'),
                       controller: _controller,
                       autofocus: true,
@@ -2549,6 +2558,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide.none,
                         ),
+                      ),
                       ),
                     ),
                   ),
@@ -2592,15 +2602,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
                                   final item = results[index];
                                   final hasText =
                                       (_verifiedPrayerTexts[item.id] ?? '').isNotEmpty;
-                                  return Card(
-                                    color: panelBlack,
-                                    margin: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(13),
-                                      side: BorderSide(
-                                        color: gold.withValues(alpha: 0.22),
-                                      ),
-                                    ),
+                                  return _TwilightGlassPanel(
+                                    padding: EdgeInsets.zero,
+                                    radius: 14,
                                     child: ListTile(
                                       onTap: () => _openItem(item),
                                       title: Text(
@@ -2658,9 +2662,12 @@ class SectionPage extends StatelessWidget {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+            child: _TwilightGlassPanel(
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 26),
+              radius: 24,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 const Icon(Icons.auto_awesome, size: 34, color: gold),
                 const SizedBox(height: 16),
                 Text(
@@ -2681,7 +2688,8 @@ class SectionPage extends StatelessWidget {
                     height: 1.8,
                   ),
                 ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
