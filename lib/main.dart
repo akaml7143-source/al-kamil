@@ -124,9 +124,12 @@ class _WelcomeGateState extends State<WelcomeGate> {
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+              child: _TwilightGlassPanel(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+                radius: 26,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                   Container(
                     width: 148,
                     height: 148,
@@ -184,7 +187,8 @@ class _WelcomeGateState extends State<WelcomeGate> {
                     'يعمل دون الحاجة إلى إنشاء حساب',
                     style: TextStyle(color: mutedIvory, fontSize: 12),
                   ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
