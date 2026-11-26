@@ -4,12 +4,12 @@ import 'package:adhan_dart/adhan_dart.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const Color _royalBlack = Color(0xFF101112);
-const Color _panelBlack = Color(0xFF1B1D1F);
-const Color _gold = Color(0xFFD8B66A);
-const Color _turquoise = Color(0xFF55C5BC);
-const Color _ivory = Color(0xFFF5F0E5);
-const Color _mutedIvory = Color(0xFFC9C2B5);
+const Color _royalBlack = Color(0xFF111329);
+const Color _panelBlack = Color(0xC9252B4A);
+const Color _gold = Color(0xFFC9B9FF);
+const Color _turquoise = Color(0xFF9D8CFF);
+const Color _ivory = Color(0xFFF4F1FF);
+const Color _mutedIvory = Color(0xFFC6C2DC);
 
 const List<_PrayerCity> _iraqiCities = [
   _PrayerCity('baghdad', 'بغداد', 33.3152, 44.3661),
@@ -436,7 +436,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(17),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF3B301D), _panelBlack, Color(0xFF102322)],
+                        colors: [Color(0xFF34356C), _panelBlack, Color(0xFF392B62)],
                         begin: Alignment.topRight,
                         end: Alignment.bottomLeft,
                       ),
@@ -517,7 +517,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                     Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3A2020),
+                        color: const Color(0xFF252B4A),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(_error!,
@@ -561,9 +561,10 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: _panelBlack,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: _turquoise.withValues(alpha: 0.3)),
+                      color: _panelBlack.withValues(alpha: 0.68),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: _turquoise.withValues(alpha: 0.42)),
+                      boxShadow: [BoxShadow(color: _turquoise.withValues(alpha: 0.07), blurRadius: 18)],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -641,7 +642,7 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF29251D),
+                      color: const Color(0xFF202542),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(

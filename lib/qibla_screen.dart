@@ -5,12 +5,12 @@ import 'package:flutter_compass/flutter_compass.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const Color _qiblaBlack = Color(0xFF101112);
-const Color _qiblaPanel = Color(0xFF1B1D1F);
-const Color _qiblaGold = Color(0xFFD8B66A);
-const Color _qiblaTeal = Color(0xFF55C5BC);
-const Color _qiblaIvory = Color(0xFFF5F0E5);
-const Color _qiblaMuted = Color(0xFFC9C2B5);
+const Color _qiblaBlack = Color(0xFF111329);
+const Color _qiblaPanel = Color(0xC9252B4A);
+const Color _qiblaGold = Color(0xFFC9B9FF);
+const Color _qiblaTeal = Color(0xFF9D8CFF);
+const Color _qiblaIvory = Color(0xFFF4F1FF);
+const Color _qiblaMuted = Color(0xFFC6C2DC);
 
 const double _kaabaLatitude = 21.4225;
 const double _kaabaLongitude = 39.8262;
@@ -208,9 +208,10 @@ class _QiblaScreenState extends State<QiblaScreen> {
                   Container(
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: _qiblaPanel,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: _qiblaGold.withValues(alpha: 0.35)),
+                      color: _qiblaPanel.withValues(alpha: 0.72),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: _qiblaGold.withValues(alpha: 0.48)),
+                      boxShadow: [BoxShadow(color: _qiblaTeal.withValues(alpha: 0.08), blurRadius: 18)],
                     ),
                     child: Row(
                       children: [
@@ -346,7 +347,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
                     Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF29251D),
+                        color: const Color(0xFF202542),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Text(
