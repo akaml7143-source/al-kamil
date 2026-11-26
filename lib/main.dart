@@ -528,26 +528,23 @@ class _SectionTile extends StatelessWidget {
 
 class _TwilightGlassPanel extends StatelessWidget {
   const _TwilightGlassPanel({
-    super.key,
     required this.child,
     this.padding = const EdgeInsets.all(15),
     this.margin = EdgeInsets.zero,
     this.radius = 16,
-    this.blur = 14,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
   final EdgeInsetsGeometry margin;
   final double radius;
-  final double blur;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
         child: Container(
           margin: margin,
           padding: padding,
