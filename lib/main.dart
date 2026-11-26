@@ -1796,19 +1796,23 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (value) => setState(() => _query = value),
-                      style: const TextStyle(color: ivory),
-                      decoration: InputDecoration(
-                        hintText: 'ابحث في هذا القسم...',
-                        hintStyle: const TextStyle(color: mutedIvory),
-                        prefixIcon: const Icon(Icons.search, color: gold),
-                        filled: true,
-                        fillColor: panelBlack,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                    child: _TwilightGlassPanel(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      radius: 17,
+                      child: TextField(
+                        controller: _searchController,
+                        onChanged: (value) => setState(() => _query = value),
+                        style: const TextStyle(color: ivory),
+                        decoration: InputDecoration(
+                          hintText: 'ابحث في هذا القسم...',
+                          hintStyle: const TextStyle(color: mutedIvory),
+                          prefixIcon: const Icon(Icons.search_rounded, color: turquoise),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     ),
@@ -2094,14 +2098,10 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
             ),
             const SizedBox(height: 16),
             if (_isTaqibat) ...[
-              Container(
+              _TwilightGlassPanel(
                 key: const Key('taqibat_progress_card'),
                 padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: panelBlack,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: turquoise.withValues(alpha: 0.45)),
-                ),
+                radius: 17,
                 child: Row(
                   children: [
                     Expanded(
@@ -2129,24 +2129,28 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
               const SizedBox(height: 18),
             ],
             if (text != null && text.trim().isNotEmpty) ...[
-              TextField(
-                key: const Key('reader_text_search'),
-                controller: _readerSearchController,
-                onChanged: (value) => setState(() => _readerSearch = value),
-                style: const TextStyle(color: ivory),
-                decoration: InputDecoration(
-                  hintText: 'ابحث داخل هذا النص...',
-                  hintStyle: const TextStyle(color: mutedIvory),
-                  prefixIcon: const Icon(Icons.manage_search, color: turquoise),
-                  suffixText: _readerSearch.trim().isEmpty
-                      ? null
-                      : 'النتائج: ${_countMatches(text, _readerSearch)}',
-                  suffixStyle: const TextStyle(color: gold, fontSize: 11),
-                  filled: true,
-                  fillColor: panelBlack,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+              _TwilightGlassPanel(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                radius: 17,
+                child: TextField(
+                  key: const Key('reader_text_search'),
+                  controller: _readerSearchController,
+                  onChanged: (value) => setState(() => _readerSearch = value),
+                  style: const TextStyle(color: ivory),
+                  decoration: InputDecoration(
+                    hintText: 'ابحث داخل هذا النص...',
+                    hintStyle: const TextStyle(color: mutedIvory),
+                    prefixIcon: const Icon(Icons.manage_search_rounded, color: turquoise),
+                    suffixText: _readerSearch.trim().isEmpty
+                        ? null
+                        : 'النتائج: ${_countMatches(text, _readerSearch)}',
+                    suffixStyle: const TextStyle(color: gold, fontSize: 11),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
