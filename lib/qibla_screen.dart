@@ -196,10 +196,38 @@ class _QiblaScreenState extends State<QiblaScreen> {
       child: Scaffold(
         backgroundColor: _qiblaBlack,
         appBar: AppBar(
-          title: const Text('اتجاه القبلة'),
-          centerTitle: true,
-          backgroundColor: _qiblaPanel,
-          foregroundColor: _qiblaGold,
+          toolbarHeight: 70,
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          titleSpacing: 8,
+          title: Row(
+            children: [
+              _QiblaGlassSurface(
+                radius: 22,
+                child: IconButton(
+                  tooltip: 'رجوع',
+                  onPressed: () => Navigator.maybePop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 17, color: Color(0xFFF4F0FF)),
+                ),
+              ),
+              const SizedBox(width: 9),
+              const Expanded(
+                child: Text('اتجاه القبلة', style: TextStyle(color: Color(0xFFF4F0FF), fontSize: 17, fontWeight: FontWeight.w700)),
+              ),
+              _QiblaGlassSurface(
+                radius: 22,
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Text('بحث', style: TextStyle(color: Color(0xFFD5D0E8), fontSize: 11)),
+                    SizedBox(width: 7),
+                    Icon(Icons.search_rounded, color: Color(0xFFF4F0FF), size: 17),
+                  ]),
+                ),
+              ),
+            ],
+          ),
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: _qiblaGold))
