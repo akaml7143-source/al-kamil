@@ -1847,48 +1847,78 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                               return _TwilightGlassPanel(
                                 padding: EdgeInsets.zero,
                                 radius: 14,
-                                child: Card(
-                                color: Colors.transparent,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                  side: BorderSide(
-                                    color: gold.withValues(alpha: 0.24),
-                                  ),
-                                ),
-                                child: ListTile(
-                                  onTap: () => _openItem(item),
-                                  leading: const Icon(
-                                    Icons.menu_book_rounded,
-                                    color: gold,
-                                  ),
-                                  title: Text(
-                                    item.title,
-                                    style: const TextStyle(
-                                      color: ivory,
-                                      fontWeight: FontWeight.bold,
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    onTap: () => _openItem(item),
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 46,
+                                            height: 46,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                                colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)],
+                                              ),
+                                              border: Border.all(color: twilightBorder),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: turquoise.withValues(alpha: 0.16),
+                                                  blurRadius: 12,
+                                                ),
+                                              ],
+                                            ),
+                                            child: const Icon(Icons.menu_book_rounded, color: Color(0xFF292345), size: 22),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  item.title,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color: ivory,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  item.description,
+                                                  maxLines: 2,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: const TextStyle(
+                                                    color: mutedIvory,
+                                                    fontSize: 11,
+                                                    height: 1.5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          IconButton(
+                                            tooltip: favorite ? 'إزالة من المفضلة' : 'إضافة إلى المفضلة',
+                                            onPressed: () => _toggleFavorite(item),
+                                            icon: Icon(
+                                              favorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
+                                              color: favorite ? gold : mutedIvory,
+                                            ),
+                                          ),
+                                          const Icon(Icons.chevron_left_rounded, color: turquoise, size: 20),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                  subtitle: Text(
-                                    item.description,
-                                    style: const TextStyle(
-                                      color: mutedIvory,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  trailing: IconButton(
-                                    tooltip: favorite
-                                        ? 'إزالة من المفضلة'
-                                        : 'إضافة إلى المفضلة',
-                                    onPressed: () => _toggleFavorite(item),
-                                    icon: Icon(
-                                      favorite
-                                          ? Icons.bookmark
-                                          : Icons.bookmark_border,
-                                      color: gold,
-                                    ),
-                                  ),
-                                ),
                                 ),
                               );
                             },
