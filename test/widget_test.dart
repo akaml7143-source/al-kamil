@@ -4,6 +4,15 @@ import 'package:al_kamil/main.dart';
 import 'package:al_kamil/qibla_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+Future<void> tapHomeSection(WidgetTester tester, String title) async {
+  final target = find.text(title).first;
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  await tester.tap(target);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('welcome screen enters the Al-Kamil home screen', (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -23,7 +32,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('المسبحة الإلكترونية'));
+    await tapHomeSection(tester, 'المسبحة الإلكترونية');
     await tester.pumpAndSettle();
 
     expect(find.text('0'), findsOneWidget);
@@ -47,7 +56,7 @@ void main() {
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('الزيارات'));
+    await tapHomeSection(tester, 'الزيارات');
     await tester.pumpAndSettle();
     expect(find.text('زيارة عاشوراء'), findsOneWidget);
     await tester.tap(find.byTooltip('إضافة إلى المفضلة').first);
@@ -72,7 +81,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الأدعية العامة'));
+    await tapHomeSection(tester, 'الأدعية العامة');
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء التوسل'));
     await tester.pumpAndSettle();
@@ -89,7 +98,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الأدعية العامة'));
+    await tapHomeSection(tester, 'الأدعية العامة');
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء العهد').first);
     await tester.pumpAndSettle();
@@ -105,7 +114,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الأدعية العامة'));
+    await tapHomeSection(tester, 'الأدعية العامة');
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء الافتتاح'));
     await tester.pumpAndSettle();
@@ -122,7 +131,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الزيارات'));
+    await tapHomeSection(tester, 'الزيارات');
     await tester.pumpAndSettle();
     await tester.tap(find.text('زيارة عاشوراء').first);
     await tester.pumpAndSettle();
@@ -146,7 +155,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('الزيارات'));
+    await tapHomeSection(tester, 'الزيارات');
     await tester.pumpAndSettle();
     await tester.tap(find.text('زيارة عاشوراء').first);
     await tester.pumpAndSettle();
@@ -177,7 +186,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('تعقيبات الصلوات'));
+    await tapHomeSection(tester, 'تعقيبات الصلوات');
     await tester.pumpAndSettle();
 
     for (final title in [
@@ -224,7 +233,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('مواقيت الصلاة'));
+    await tapHomeSection(tester, 'مواقيت الصلاة');
     await tester.pumpAndSettle();
 
     expect(find.text('الصلاة القادمة'), findsOneWidget);
@@ -282,7 +291,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('تعليم صلاة الليل'));
+    await tapHomeSection(tester, 'تعليم صلاة الليل');
     await tester.pumpAndSettle();
 
     expect(find.text('صلاة الليل ١١ ركعة: ٨ ركعات نافلة الليل، وركعتا الشفع، وركعة الوتر.'), findsOneWidget);
@@ -337,7 +346,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('البحث الشامل'));
+    await tapHomeSection(tester, 'البحث الشامل');
     await tester.pumpAndSettle();
 
     await tester.enterText(
@@ -382,7 +391,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('القبلة'));
+    await tapHomeSection(tester, 'القبلة');
     await tester.pumpAndSettle();
 
     expect(find.text('اتجاه القبلة'), findsOneWidget);

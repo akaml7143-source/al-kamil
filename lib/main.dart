@@ -314,7 +314,7 @@ class HomePage extends StatelessWidget {
                               Row(
                                 children: [
                                   const Expanded(
-                                    child: Text('مواقيت الصلاة', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
+                                    child: Text('الصلاة والقبلة', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
                                   ),
                                   Container(
                                     width: 42,
@@ -349,7 +349,7 @@ class HomePage extends StatelessWidget {
                                   const SizedBox(width: 9),
                                   _HomeRoundAction(
                                     icon: Icons.explore_rounded,
-                                    label: 'القبلة',
+                                    label: 'اتجاه القبلة',
                                     onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded)),
                                   ),
                                 ],
@@ -377,7 +377,7 @@ class HomePage extends StatelessWidget {
                                       children: [
                                         _HomePillAction(
                                           icon: Icons.menu_book_rounded,
-                                          label: 'القرآن الكريم',
+                                          label: 'فتح المصحف',
                                           onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded)),
                                         ),
                                         _HomePillAction(
@@ -471,7 +471,7 @@ class HomePage extends StatelessWidget {
                 _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
                 _HomeNavItem(icon: Icons.explore_rounded, label: 'القبلة', onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded))),
                 _HomeNavItem(icon: Icons.auto_awesome_rounded, label: 'المكتبة', onTap: () => _openSection(context, const _Section('الزيارات', Icons.account_balance_rounded))),
-                _HomeNavItem(icon: Icons.person_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
+                _HomeNavItem(icon: Icons.person_rounded, label: 'حسابي', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
           ),
