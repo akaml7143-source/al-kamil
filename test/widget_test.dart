@@ -287,11 +287,7 @@ void main() {
 
     expect(find.text('صلاة الليل ١١ ركعة: ٨ ركعات نافلة الليل، وركعتا الشفع، وركعة الوتر.'), findsOneWidget);
     final thirdSection = find.text('ثالثاً: ركعة الوتر');
-    await tester.scrollUntilVisible(
-      thirdSection,
-      280,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await tester.ensureVisible(thirdSection);
     await tester.pumpAndSettle();
     expect(thirdSection, findsOneWidget);
     expect(find.byKey(const Key('night_counter_forty')), findsOneWidget);
@@ -300,22 +296,14 @@ void main() {
     expect(find.byKey(const Key('night_counter_afw')), findsOneWidget);
 
     final firstLesson = find.byKey(const Key('night_prayer_step_0'));
-    await tester.scrollUntilVisible(
-      firstLesson,
-      280,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await tester.ensureVisible(firstLesson);
     await tester.pumpAndSettle();
     await tester.tap(firstLesson);
     await tester.pumpAndSettle();
 
-    // The checklist is below the counters in a lazy ListView. Scroll back
-    // to the counter section so its increment button is mounted before use.
-    await tester.scrollUntilVisible(
-      thirdSection,
-      280,
-      scrollable: find.byType(Scrollable).first,
-    );
+    // All lesson widgets are mounted in the scroll view; bring the counter
+    // back into the viewport before tapping it.
+    await tester.ensureVisible(thirdSection);
     await tester.pumpAndSettle();
     final istighfarButton = find.byKey(const Key('night_prayer_counter_istighfar_increment'));
     expect(istighfarButton, findsOneWidget);

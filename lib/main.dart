@@ -1953,9 +1953,11 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
         ),
         body: _loading
             ? const Center(child: CircularProgressIndicator(color: gold))
-            : ListView(
+            : SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(14, 16, 14, 28),
-                children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
@@ -2159,7 +2161,8 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                     'للمراجعة الفقهية: https://www.sistani.org/arabic/qa/0552/\nhttps://www.sistani.org/arabic/book/13/565/',
                     style: TextStyle(color: turquoise, fontSize: 11, height: 1.8),
                   ),
-                ],
+                  ],
+                ),
               ),
       ),
     );
