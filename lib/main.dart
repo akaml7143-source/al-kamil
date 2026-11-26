@@ -2055,20 +2055,33 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
         body: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Text(
-              widget.item.title,
-              style: const TextStyle(
-                color: gold,
-                fontSize: 23,
-                fontWeight: FontWeight.bold,
+            _TwilightGlassPanel(
+              padding: const EdgeInsets.all(17),
+              radius: 20,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.auto_stories_rounded, color: turquoise, size: 22),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          widget.item.title,
+                          style: const TextStyle(color: gold, fontSize: 21, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 9),
+                  Text(
+                    widget.item.description,
+                    style: const TextStyle(color: ivory, fontSize: 14, height: 1.8),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              widget.item.description,
-              style: const TextStyle(color: ivory, fontSize: 15),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             if (_isTaqibat) ...[
               Container(
                 key: const Key('taqibat_progress_card'),
@@ -2181,18 +2194,26 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                 ),
               ),
             const SizedBox(height: 18),
-            const Text(
-              'بيانات المصدر',
-              style: TextStyle(
-                color: gold,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            _TwilightGlassPanel(
+              padding: const EdgeInsets.all(15),
+              radius: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.menu_book_rounded, color: turquoise, size: 19),
+                      SizedBox(width: 8),
+                      Text('بيانات المصدر', style: TextStyle(color: gold, fontSize: 15, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.item.source,
+                    style: const TextStyle(color: ivory, height: 1.8, fontSize: 12),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              widget.item.source,
-              style: const TextStyle(color: ivory, height: 1.8),
             ),
           ],
         ),
@@ -2320,17 +2341,9 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                  Container(
+                  _TwilightGlassPanel(
                     padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF343052), panelBlack],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                      ),
-                      border: Border.all(color: gold.withValues(alpha: 0.55)),
-                    ),
+                    radius: 20,
                     child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -2452,13 +2465,9 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                       ],
                     ),
                   ),
-                  Container(
+                  _TwilightGlassPanel(
                     padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: panelBlack,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: turquoise.withValues(alpha: 0.35)),
-                    ),
+                    radius: 18,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -2510,12 +2519,21 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Container(
+                  _TwilightGlassPanel(
                     padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(color: const Color(0xFF22213B), borderRadius: BorderRadius.circular(12)),
-                    child: const Text(
-                      'تنبيه فقهي: هذه طريقة تعليمية معروضة وفق النص المطلوب، وقد تختلف بعض التفاصيل والأذكار والقراءات باختلاف فتوى مرجع التقليد. الأعداد المذكورة مستحبة وليست شرطاً لصحة الصلاة؛ يُرجى مراجعة مرجع التقليد في الأحكام.',
-                      style: TextStyle(color: ivory, height: 1.9, fontSize: 12),
+                    radius: 16,
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.info_outline_rounded, color: turquoise, size: 20),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'تنبيه فقهي: هذه طريقة تعليمية معروضة وفق النص المطلوب، وقد تختلف بعض التفاصيل والأذكار والقراءات باختلاف فتوى مرجع التقليد. الأعداد المذكورة مستحبة وليست شرطاً لصحة الصلاة؛ يُرجى مراجعة مرجع التقليد في الأحكام.',
+                            style: TextStyle(color: ivory, height: 1.9, fontSize: 12),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -2583,16 +2601,12 @@ class _NightPrayerDhikrCounterState extends State<_NightPrayerDhikrCounter> {
   @override
   Widget build(BuildContext context) {
     final completed = _count >= widget.target;
-    return Container(
-      key: ValueKey(widget.storageKey),
+    return _TwilightGlassPanel(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(11),
-      decoration: BoxDecoration(
-        color: royalBlack,
-        borderRadius: BorderRadius.circular(11),
-        border: Border.all(color: completed ? turquoise : gold.withValues(alpha: 0.3)),
-      ),
+      radius: 14,
       child: Column(
+        key: ValueKey(widget.storageKey),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(widget.title, style: const TextStyle(color: ivory, fontSize: 12, height: 1.7, fontWeight: FontWeight.w600)),
