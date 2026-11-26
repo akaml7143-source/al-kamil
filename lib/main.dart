@@ -261,17 +261,9 @@ class HomePage extends StatelessWidget {
                       delegate: SliverChildListDelegate([
                         Row(
                           children: [
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFFB7A7FF), Color(0xFF6C5BB5)],
-                                ),
-                                border: Border.all(color: twilightBorder),
-                              ),
-                              child: const Icon(Icons.person_rounded, color: ivory, size: 24),
+                            const _TwilightGlassOrb(
+                              icon: Icons.person_rounded,
+                              size: 42,
                             ),
                             const SizedBox(width: 10),
                             const Expanded(
@@ -317,15 +309,9 @@ class HomePage extends StatelessWidget {
                                   const Expanded(
                                     child: Text('الصلاة والقبلة', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
                                   ),
-                                  Container(
-                                    width: 42,
-                                    height: 42,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white.withValues(alpha: 0.13),
-                                      border: Border.all(color: twilightBorder),
-                                    ),
-                                    child: const Icon(Icons.access_time_rounded, color: ivory, size: 22),
+                                  const _TwilightGlassOrb(
+                                    icon: Icons.access_time_rounded,
+                                    size: 42,
                                   ),
                                 ],
                               ),
@@ -480,6 +466,45 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TwilightGlassOrb extends StatelessWidget {
+  const _TwilightGlassOrb({required this.icon, this.size = 42});
+  final IconData icon;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 13, sigmaY: 13),
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: 0.23),
+                  const Color(0xFFB7A7FF).withValues(alpha: 0.30),
+                  const Color(0xFF6C5BB5).withValues(alpha: 0.48),
+                ],
+              ),
+              border: Border.all(color: twilightBorder, width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: turquoise.withValues(alpha: 0.13),
+                  blurRadius: 15,
+                  spreadRadius: 0.4,
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Icon(icon, color: ivory, size: size * 0.56),
+          ),
+        ),
+      );
 }
 
 class _HomeRoundAction extends StatelessWidget {
