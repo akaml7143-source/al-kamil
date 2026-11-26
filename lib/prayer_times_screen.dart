@@ -567,6 +567,29 @@ class _PrayerTimesScreenState extends State<PrayerTimesScreen> {
                       ),
                       child: Column(
                         children: [
+                          const Padding(
+                            padding: EdgeInsets.fromLTRB(4, 2, 4, 10),
+                            child: Row(
+                              children: [
+                                Icon(Icons.schedule_rounded, color: _turquoise, size: 18),
+                                SizedBox(width: 8),
+                                Text(
+                                  'مواقيت الصلاة لهذا اليوم',
+                                  style: TextStyle(
+                                    color: _ivory,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(Icons.wifi_off_rounded, color: _mutedIvory, size: 14),
+                                SizedBox(width: 4),
+                                Text('محلياً', style: TextStyle(color: _mutedIvory, fontSize: 10)),
+                              ],
+                            ),
+                          ),
+                          const Divider(color: Color(0x33C9B9FF), height: 1),
+                          const SizedBox(height: 4),
                           for (final prayer in [
                             _PrayerEntry('الفجر', Icons.nights_stay_rounded,
                                 _today!.fajr.toLocal(), 'fajr'),

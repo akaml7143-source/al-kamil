@@ -135,36 +135,82 @@ class _QiblaScreenState extends State<QiblaScreen> {
   Future<void> _chooseCity() async {
     final selected = await showModalBottomSheet<QiblaCity>(
       context: context,
-      backgroundColor: _qiblaPanel,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) => SafeArea(
-        child: SizedBox(
-          height: MediaQuery.of(sheetContext).size.height * 0.72,
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: Text('اختر مدينتك', style: TextStyle(
-                  color: _qiblaGold, fontSize: 18, fontWeight: FontWeight.bold,
-                )),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: qiblaCities.length,
-                  itemBuilder: (context, index) {
-                    final city = qiblaCities[index];
-                    return ListTile(
-                      key: ValueKey('qibla_city_${city.id}'),
-                      title: Text(city.name, style: const TextStyle(color: _qiblaIvory)),
-                      trailing: city.id == _cityId
-                          ? const Icon(Icons.check_circle, color: _qiblaTeal)
-                          : null,
-                      onTap: () => Navigator.pop(sheetContext, city),
-                    );
-                  },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+              child: Container(
+                height: MediaQuery.of(sheetContext).size.height * 0.72,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomLeft,
+                    colors: [Color(0xEE34356C), Color(0xF2252B4A), Color(0xEE392B62)],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _qiblaGold.withValues(alpha: 0.48)),
+                  boxShadow: [BoxShadow(color: _qiblaTeal.withValues(alpha: 0.12), blurRadius: 24)],
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.location_city_rounded, color: _qiblaTeal, size: 21),
+                          const SizedBox(width: 9),
+                          const Expanded(
+                            child: Text('اختر مدينتك', style: TextStyle(
+                              color: _qiblaGold, fontSize: 18, fontWeight: FontWeight.bold,
+                            )),
+                          ),
+                          IconButton(
+                            tooltip: 'إغلاق',
+                            onPressed: () => Navigator.pop(sheetContext),
+                            icon: const Icon(Icons.close_rounded, color: _qiblaMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(color: Color(0x44C9B9FF), height: 1),
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: qiblaCities.length,
+                        itemBuilder: (context, index) {
+                          final city = qiblaCities[index];
+                          final selected = city.id == _cityId;
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                            child: Material(
+                              color: selected ? _qiblaTeal.withValues(alpha: 0.12) : Colors.transparent,
+                              borderRadius: BorderRadius.circular(13),
+                              child: ListTile(
+                                key: ValueKey('qibla_city_${city.id}'),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                                title: Text(city.name, style: TextStyle(
+                                  color: selected ? _qiblaGold : _qiblaIvory,
+                                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                                )),
+                                trailing: selected
+                                    ? const Icon(Icons.check_circle_rounded, color: _qiblaTeal)
+                                    : const Icon(Icons.chevron_left_rounded, color: _qiblaMuted),
+                                onTap: () => Navigator.pop(sheetContext, city),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
