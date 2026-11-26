@@ -807,16 +807,10 @@ class _QuranScreenState extends State<QuranScreen> {
                 ),
               ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [panelBlack.withValues(alpha: 0.96), twilightSurface.withValues(alpha: 0.92)],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
-                border: Border(bottom: BorderSide(color: twilightBorder.withValues(alpha: 0.8))),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            _TwilightGlassPanel(
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              radius: 16,
               child: Row(
                 children: [
                   IconButton(
@@ -882,16 +876,10 @@ class _QuranScreenState extends State<QuranScreen> {
                       ),
                     ),
             ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [twilightSurface.withValues(alpha: 0.94), panelBlack.withValues(alpha: 0.98)],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
-                border: Border(top: BorderSide(color: twilightBorder.withValues(alpha: 0.8))),
-              ),
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+            _TwilightGlassPanel(
+              margin: const EdgeInsets.fromLTRB(10, 3, 10, 8),
+              padding: const EdgeInsets.fromLTRB(12, 7, 12, 7),
+              radius: 16,
               child: Row(
                 children: [
                   const Icon(Icons.menu_book, color: gold, size: 18),
@@ -928,10 +916,13 @@ class _QuranScreenState extends State<QuranScreen> {
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => Directionality(
         textDirection: TextDirection.rtl,
-        child: Container(
-          height: MediaQuery.of(sheetContext).size.height * 0.78,
-          decoration: const BoxDecoration(color: twilightSurface, borderRadius: BorderRadius.vertical(top: Radius.circular(26)), border: Border(top: BorderSide(color: twilightBorder))),
-          child: Column(children: [
+        child: _TwilightGlassPanel(
+          margin: const EdgeInsets.only(top: 8),
+          padding: EdgeInsets.zero,
+          radius: 26,
+          child: SizedBox(
+            height: MediaQuery.of(sheetContext).size.height * 0.78,
+            child: Column(children: [
             Padding(padding: const EdgeInsets.fromLTRB(18, 18, 18, 12), child: Row(children: [
               const Icon(Icons.menu_book_rounded, color: gold),
               const SizedBox(width: 9),
@@ -956,7 +947,8 @@ class _QuranScreenState extends State<QuranScreen> {
                 ));
               },
             )),
-          ]),
+            ]),
+          ),
         ),
       ),
     );
