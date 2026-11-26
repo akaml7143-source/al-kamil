@@ -235,6 +235,7 @@ class HomePage extends StatelessWidget {
       'تعقيبات الصلوات' ||
       'الصحيفة السجادية' ||
       'وصايا أهل البيت' => LibrarySectionScreen(title: section.title),
+      'الإعدادات' => const SettingsScreen(),
       _ => SectionPage(title: section.title),
     };
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
@@ -2930,6 +2931,212 @@ class _TwilightSubpageAppBar extends StatelessWidget implements PreferredSizeWid
         ],
       ),
       actions: actions,
+    );
+  }
+}
+
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  static const int _minimumFontSize = 14;
+  static const int _maximumFontSize = 36;
+  int _fontSize = 18;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final saved = preferences.getInt('reader_font_size') ?? 18;
+      if (!mounted) return;
+      setState(() {
+        _fontSize = saved.clamp(_minimumFontSize, _maximumFontSize);
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _saveFontSize(double value) async {
+    final next = value.round().clamp(_minimumFontSize, _maximumFontSize);
+    setState(() => _fontSize = next);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setInt('reader_font_size', next);
+  }
+
+  void _openLibrary(String title) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LibrarySectionScreen(title: title),
+      ),
+    );
+  }
+
+  Widget _quickAccess({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 9),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: _TwilightGlassPanel(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+            radius: 16,
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)],
+                    ),
+                  ),
+                  child: Icon(icon, color: royalBlack, size: 21),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: const TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 13)),
+                      const SizedBox(height: 3),
+                      Text(subtitle, style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_left_rounded, color: turquoise),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: _TwilightSubpageAppBar(title: 'الإعدادات'),
+        body: _loading
+            ? const Center(child: CircularProgressIndicator(color: gold))
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(14, 14, 14, 28),
+                children: [
+                  _TwilightGlassPanel(
+                    padding: const EdgeInsets.all(16),
+                    radius: 20,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Row(
+                          children: [
+                            Icon(Icons.text_fields_rounded, color: gold, size: 21),
+                            SizedBox(width: 9),
+                            Text('حجم خط القراءة', style: TextStyle(color: ivory, fontSize: 15, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'يتحكم هذا الخيار بحجم النص داخل صفحات قراءة الزيارات والأدعية، ويُحفظ تلقائياً على جهازك.',
+                          style: TextStyle(color: mutedIvory, fontSize: 12, height: 1.8),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            const Text('14', style: TextStyle(color: mutedIvory, fontSize: 11)),
+                            Expanded(
+                              child: Slider(
+                                value: _fontSize.toDouble(),
+                                min: _minimumFontSize.toDouble(),
+                                max: _maximumFontSize.toDouble(),
+                                divisions: _maximumFontSize - _minimumFontSize,
+                                activeColor: turquoise,
+                                inactiveColor: twilightBorder,
+                                label: '$_fontSize',
+                                onChanged: (value) => setState(() => _fontSize = value.round()),
+                                onChangeEnd: _saveFontSize,
+                              ),
+                            ),
+                            const Text('36', style: TextStyle(color: mutedIvory, fontSize: 11)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Center(
+                          child: Text(
+                            '$_fontSize',
+                            style: TextStyle(color: gold, fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const Divider(color: twilightBorder, height: 24),
+                        const Text('معاينة النص', style: TextStyle(color: mutedIvory, fontSize: 11)),
+                        const SizedBox(height: 8),
+                        Text(
+                          'اللهم صلّ على محمد وآل محمد',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: ivory, fontSize: _fontSize.toDouble(), height: 1.8, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 9, right: 3),
+                    child: Text('الوصول السريع', style: TextStyle(color: ivory, fontSize: 14, fontWeight: FontWeight.bold)),
+                  ),
+                  _quickAccess(
+                    icon: Icons.bookmark_rounded,
+                    title: 'المفضلة',
+                    subtitle: 'النصوص التي حفظتها',
+                    onTap: () => _openLibrary('المفضلة'),
+                  ),
+                  _quickAccess(
+                    icon: Icons.history_rounded,
+                    title: 'آخر قراءة',
+                    subtitle: 'متابعة آخر نص فتحته',
+                    onTap: () => _openLibrary('آخر قراءة'),
+                  ),
+                  _TwilightGlassPanel(
+                    padding: const EdgeInsets.all(14),
+                    radius: 16,
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.phonelink_lock_rounded, color: turquoise, size: 20),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'إعدادات القراءة والمفضلة محفوظة محلياً على هذا الجهاز.',
+                            style: TextStyle(color: mutedIvory, fontSize: 11, height: 1.8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }
