@@ -452,8 +452,7 @@ void main() {
 
 
 
-  testWidgets('global offline search finds a verified dua by title and opens its text',
-      (tester) async {
+  testWidgets('removed global search and wasaya entries stay hidden while library category filtering remains', (tester) async {
     tester.view.physicalSize = const Size(1200, 2000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -464,27 +463,16 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'البحث الشامل');
-    await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byKey(const Key('global_local_search')),
-      'دعاء العهد',
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('دعاء العهد'), findsNWidgets(3));
-    expect(find.textContaining('عدد النتائج: 1'), findsOneWidget);
+    expect(find.text('البحث الشامل'), findsNothing);
+    expect(find.text('وصايا أهل البيت'), findsNothing);
+    expect(find.byIcon(Icons.search_rounded), findsNothing);
 
-    await tester.tap(find.widgetWithText(ListTile, 'دعاء العهد').first);
+    await tester.tap(find.text('المكتبة').last);
     await tester.pumpAndSettle();
-    expect(
-      find.textContaining('اللّهُمَّ رَبَّ النُّورِ العَظِيمِ'),
-      findsOneWidget,
-    );
-    expect(
-      (await SharedPreferences.getInstance()).getString('library_last_read'),
-      'dua_ahd',
-    );
+    expect(find.text('وصايا أهل البيت'), findsNothing);
+    expect(find.byKey(const Key('library_category_search')), findsOneWidget);
+    expect(find.text('تعليم صلاة الليل'), findsOneWidget);
   });
 
   testWidgets('home combines prayer times and qibla into one entry', (tester) async {

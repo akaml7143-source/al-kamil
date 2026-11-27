@@ -202,7 +202,6 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static const List<_Section> _sections = [
-    _Section('البحث الشامل', Icons.search_rounded),
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('الصلاة والقبلة', Icons.access_time_filled_rounded),
     _Section('الزيارات', Icons.mosque_rounded),
@@ -211,7 +210,6 @@ class HomePage extends StatelessWidget {
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('المسبحة الإلكترونية', Icons.grain_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
-    _Section('وصايا أهل البيت', Icons.format_quote_rounded),
     _Section('التقويم', Icons.calendar_month_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
@@ -224,14 +222,12 @@ class HomePage extends StatelessWidget {
       'الصلاة والقبلة' => const PrayerQiblaHubScreen(),
       'الأدعية' => const DuasHubScreen(),
       'التقويم' => const IslamicCalendarScreen(),
-      'البحث الشامل' => const GlobalSearchScreen(),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
       'الزيارات' ||
       'تعقيبات الصلوات' ||
-      'الصحيفة السجادية' ||
-      'وصايا أهل البيت' => LibrarySectionScreen(title: section.title),
+      'الصحيفة السجادية' => LibrarySectionScreen(title: section.title),
       'الإعدادات' => const SettingsScreen(),
       _ => SectionPage(title: section.title),
     };
@@ -271,25 +267,6 @@ class HomePage extends StatelessWidget {
                                   SizedBox(height: 2),
                                   Text('أهلاً بك في تطبيق الكامل', style: TextStyle(color: mutedIvory, fontSize: 11)),
                                 ],
-                              ),
-                            ),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(24),
-                                onTap: () => _openSection(context, const _Section('البحث الشامل', Icons.search_rounded)),
-                                child: _TwilightGlassPanel(
-                                  padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-                                  radius: 22,
-                                  child: const Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text('بحث', style: TextStyle(color: mutedIvory, fontSize: 12)),
-                                      SizedBox(width: 9),
-                                      Icon(Icons.search_rounded, color: ivory, size: 19),
-                                    ],
-                                  ),
-                                ),
                               ),
                             ),
                           ],
@@ -726,7 +703,6 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
     _Section('الأدعية', Icons.volunteer_activism_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
-    _Section('وصايا أهل البيت', Icons.format_quote_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
   ];
 
@@ -808,21 +784,6 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                          IconButton(
-                            tooltip: 'البحث الشامل',
-                            onPressed: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const GlobalSearchScreen(),
-                                ),
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.search_rounded,
-                              color: Color(0xFFE8D5A8),
-                              size: 25,
                             ),
                           ),
                         ],
@@ -2057,11 +2018,6 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
   'الصحيفة السجادية': [
     _LibraryItem(id: 'sahifa_intro', title: 'فهرس أدعية الصحيفة', description: 'فهرس موضوعي للصحيفة السجادية', source: 'الصحيفة السجادية؛ تُضاف أرقام الأدعية بعد المطابقة'),
   ],
-  'نهج البلاغة': [
-    _LibraryItem(id: 'nahj_sermons', title: 'الخطب', description: 'فهرس خطب نهج البلاغة', source: 'نهج البلاغة؛ تُضاف أرقام الخطب بعد المطابقة'),
-    _LibraryItem(id: 'nahj_letters', title: 'الكتب والرسائل', description: 'فهرس كتب ورسائل أمير المؤمنين (عليه السلام)', source: 'نهج البلاغة؛ تُضاف أرقام الكتب بعد المطابقة'),
-    _LibraryItem(id: 'nahj_wisdom', title: 'الحِكَم', description: 'فهرس الحكم والكلمات القصار', source: 'نهج البلاغة؛ تُضاف الأرقام بعد المطابقة'),
-  ],
   'وصايا أهل البيت': [
     _LibraryItem(id: 'wasaya_worship', title: 'العبادة والتقوى', description: 'نصوص في العبادة ومراقبة الله', source: 'تُذكر المصادر والأسانيد وحالة النسبة لكل نص على حدة'),
     _LibraryItem(id: 'wasaya_akhlaq', title: 'الأخلاق وحسن المعاملة', description: 'نصوص في الأخلاق والحقوق', source: 'تُذكر المصادر والأسانيد وحالة النسبة لكل نص على حدة'),
@@ -2071,9 +2027,6 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
     _LibraryItem(id: 'night_overview', title: 'التعريف بصلاة الليل', description: 'مدخل إلى صلاة الليل وأهميتها', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
     _LibraryItem(id: 'night_steps', title: 'ترتيب الصلاة', description: 'عرض تعليمي مرتب للركعات والأعمال', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
     _LibraryItem(id: 'night_qunut', title: 'القنوت والأدعية', description: 'مواضع القنوت والأدعية', source: 'تُراجع الأحكام وفق فتاوى المرجع الذي يختاره المستخدم'),
-  ],
-  'الصوتيات': [
-    _LibraryItem(id: 'audio_library', title: 'مكتبة التلاوات والأدعية', description: 'إدارة الملفات الصوتية المحفوظة على الجهاز', source: 'لا توجد تسجيلات مرفقة في هذه النسخة بعد'),
   ],
 };
 
@@ -2545,12 +2498,6 @@ IconData _readerItemIcon(_LibraryItem item) {
   final id = item.id.toLowerCase();
   if (id.startsWith('night_')) {
     return Icons.nightlight_round;
-  }
-  if (id.startsWith('nahj_')) {
-    return Icons.menu_book_rounded;
-  }
-  if (id.startsWith('audio_')) {
-    return Icons.graphic_eq_rounded;
   }
   if (id.startsWith('taqib_')) {
     return Icons.self_improvement_rounded;
@@ -3486,276 +3433,13 @@ class _NightPrayerLesson {
 }
 
 
-String _normalizeLocalSearch(String value) {
-  return value
-      .toLowerCase()
-      .replaceAll(RegExp(r'[\\u064B-\\u065F\\u0670\\u0640]'), '')
-      .replaceAll('أ', 'ا')
-      .replaceAll('إ', 'ا')
-      .replaceAll('آ', 'ا')
-      .replaceAll('ى', 'ي')
-      .replaceAll('ة', 'ه')
-      .trim();
-}
-
-class GlobalSearchScreen extends StatefulWidget {
-  const GlobalSearchScreen({super.key});
-
-  @override
-  State<GlobalSearchScreen> createState() => _GlobalSearchScreenState();
-}
-
-class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
-  final TextEditingController _controller = TextEditingController();
-  Set<String> _favorites = {};
-  bool _loading = true;
-  String _query = '';
-
-  List<_LibraryItem> get _results {
-    final normalized = _normalizeLocalSearch(_query);
-    if (normalized.isEmpty) return <_LibraryItem>[];
-    return _libraryItems.values
-        .expand((items) => items)
-        .where((item) {
-          final searchable = _normalizeLocalSearch([
-            item.title,
-            item.description,
-            item.source,
-            _verifiedPrayerTexts[item.id] ?? '',
-          ].join(' '));
-          return searchable.contains(normalized);
-        })
-        .toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFavorites();
-  }
-
-  Future<void> _loadFavorites() async {
-    final preferences = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _favorites =
-          preferences.getStringList('library_favorites')?.toSet() ?? {};
-      _loading = false;
-    });
-  }
-
-  Future<void> _toggleFavorite(_LibraryItem item) async {
-    final next = Set<String>.from(_favorites);
-    if (!next.add(item.id)) next.remove(item.id);
-    setState(() => _favorites = next);
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setStringList('library_favorites', next.toList()..sort());
-  }
-
-  Future<void> _openItem(_LibraryItem item) async {
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString('library_last_read', item.id);
-    if (!mounted) return;
-    if (item.id.startsWith('night_')) {
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => const NightPrayerTutorialScreen(),
-        ),
-      );
-      return;
-    }
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => _LibraryItemDetail(
-          item: item,
-          isFavorite: _favorites.contains(item.id),
-          onToggleFavorite: () => _toggleFavorite(item),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final results = _results;
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: royalBlack,
-        appBar: _TwilightSubpageAppBar(title: 'البحث الشامل', showSearch: false),
-        body: _loading
-            ? const Center(child: CircularProgressIndicator(color: gold))
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
-                    child: _TwilightGlassPanel(
-                      padding: const EdgeInsets.all(4),
-                      radius: 17,
-                      child: TextField(
-                      key: const Key('global_local_search'),
-                      controller: _controller,
-                      autofocus: true,
-                      onChanged: (value) => setState(() => _query = value),
-                      style: const TextStyle(color: ivory, fontSize: 15),
-                      decoration: InputDecoration(
-                        hintText: 'ابحث في الزيارات والأدعية والتعقيبات...',
-                        hintStyle: const TextStyle(color: mutedIvory),
-                        prefixIcon: const Icon(Icons.search, color: gold),
-                        suffixIcon: _query.isEmpty
-                            ? null
-                            : IconButton(
-                                tooltip: 'مسح البحث',
-                                onPressed: () {
-                                  _controller.clear();
-                                  setState(() => _query = '');
-                                },
-                                icon: const Icon(Icons.close, color: mutedIvory),
-                              ),
-                        filled: true,
-                        fillColor: panelBlack,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        _query.trim().isEmpty
-                            ? 'يبحث محلياً في عناوين النصوص ومتونها ومصادرها.'
-                            : 'عدد النتائج: ${results.length}',
-                        style: const TextStyle(color: mutedIvory, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: _query.trim().isEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: _TwilightGlassPanel(
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-                                radius: 22,
-                                child: const Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _TwilightGlassOrb(icon: Icons.manage_search_rounded, size: 58),
-                                    SizedBox(height: 14),
-                                    Text(
-                                      'ابدأ البحث في مكتبة التطبيق',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 15),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'اكتب كلمة أو عبارة للبحث في محتوى التطبيق المحفوظ على جهازك.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(color: mutedIvory, height: 1.9, fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        : results.isEmpty
-                            ? Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(24),
-                                  child: _TwilightGlassPanel(
-                                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 26),
-                                    radius: 20,
-                                    child: const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.search_off_rounded, color: mutedIvory, size: 34),
-                                        SizedBox(height: 12),
-                                        Text(
-                                          'لا توجد نتائج مطابقة',
-                                          style: TextStyle(color: ivory, fontWeight: FontWeight.bold, fontSize: 14),
-                                        ),
-                                        SizedBox(height: 6),
-                                        Text(
-                                          'جرّب كلمة أخرى أو عبارة أقصر للبحث في المحتوى المتاح.',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(color: mutedIvory, height: 1.8, fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : ListView.separated(
-                                padding: const EdgeInsets.fromLTRB(14, 8, 14, 24),
-                                itemCount: results.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 8),
-                                itemBuilder: (context, index) {
-                                  final item = results[index];
-                                  final hasText =
-                                      (_verifiedPrayerTexts[item.id] ?? '').isNotEmpty;
-                                  return _TwilightGlassPanel(
-                                    padding: EdgeInsets.zero,
-                                    radius: 14,
-                                    child: ListTile(
-                                      onTap: () => _openItem(item),
-                                      title: Text(
-                                        item.title,
-                                        style: const TextStyle(
-                                          color: ivory,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      subtitle: Padding(
-                                        padding: const EdgeInsets.only(top: 5),
-                                        child: Text(
-                                          item.description,
-                                          style: const TextStyle(
-                                            color: mutedIvory,
-                                            height: 1.6,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                      trailing: Icon(
-                                        hasText
-                                            ? Icons.menu_book_rounded
-                                            : Icons.info_outline_rounded,
-                                        color: hasText ? turquoise : mutedIvory,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                  ),
-                ],
-              ),
-      ),
-    );
-  }
-}
-
-
 class _TwilightSubpageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _TwilightSubpageAppBar({
     required this.title,
-    this.showSearch = true,
     this.actions = const [],
   });
 
   final String title;
-  final bool showSearch;
   final List<Widget> actions;
 
   @override
@@ -3790,30 +3474,6 @@ class _TwilightSubpageAppBar extends StatelessWidget implements PreferredSizeWid
               style: const TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.w700),
             ),
           ),
-          if (showSearch) ...[
-            const SizedBox(width: 8),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(22),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const GlobalSearchScreen()),
-                ),
-                child: _TwilightGlassPanel(
-                  padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 8),
-                  radius: 22,
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('بحث', style: TextStyle(color: mutedIvory, fontSize: 11)),
-                      SizedBox(width: 7),
-                      Icon(Icons.search_rounded, color: ivory, size: 17),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
         ],
       ),
       actions: actions,
