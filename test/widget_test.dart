@@ -581,6 +581,46 @@ void main() {
     expect(find.byKey(const Key('calendar_today_button')), findsNothing);
   });
 
+
+  testWidgets('the fifteen Imam al-Sajjad munajat are available offline', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2200);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('مناجاة الإمام السجاد (ع)'), findsWidgets);
+    expect(find.byIcon(Icons.history_edu_rounded), findsOneWidget);
+    await tapHomeSection(tester, 'مناجاة الإمام السجاد (ع)');
+    for (final title in [
+      'مناجاة التائبين',
+      'مناجاة الشاكين',
+      'مناجاة الخائفين',
+      'مناجاة الراجين',
+      'مناجاة الراغبين',
+      'مناجاة الشاكرين',
+      'مناجاة المطيعين لله',
+      'مناجاة المريدين',
+      'مناجاة المحبين',
+      'مناجاة المتوسلين',
+      'مناجاة المفتقرين',
+      'مناجاة العارفين',
+      'مناجاة الذاكرين',
+      'مناجاة المعتصمين',
+      'مناجاة الزاهدين',
+    ]) {
+      expect(find.text(title), findsOneWidget);
+    }
+
+    await tester.tap(find.text('مناجاة التائبين'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('إِلهِي أَلْبَسَتْنِي الخَطايا'), findsOneWidget);
+  });
+
   test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
     final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
     final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
