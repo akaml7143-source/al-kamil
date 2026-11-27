@@ -3,13 +3,23 @@ import 'dart:ui' show ImageFilter;
 import 'prayer_times_screen.dart';
 import 'qibla_screen.dart';
 import 'munajat_data.dart';
+import 'productivity_tools.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:qcf_quran_plus/qcf_quran_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+final ValueNotifier<double> appTextScale = ValueNotifier<double>(1.0);
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    final preferences = await SharedPreferences.getInstance();
+    final size = (preferences.getInt('reader_font_size') ?? 18).clamp(14, 36);
+    appTextScale.value = size / 18.0;
+  } catch (_) {
+    appTextScale.value = 1.0;
+  }
   runApp(const AlKamilApp());
 }
 
@@ -63,6 +73,16 @@ class AlKamilApp extends StatelessWidget {
           backgroundColor: twilightSurface,
           surfaceTintColor: Colors.transparent,
         ),
+      ),
+      builder: (context, child) => ValueListenableBuilder<double>(
+        valueListenable: appTextScale,
+        builder: (context, scale, _) {
+          final media = MediaQuery.of(context);
+          return MediaQuery(
+            data: media.copyWith(textScaler: TextScaler.linear(scale)),
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
       ),
       home: const WelcomeGate(),
     );
@@ -223,6 +243,7 @@ class HomePage extends StatelessWidget {
       'الصلاة والقبلة' => const PrayerQiblaHubScreen(),
       'الأدعية' => const DuasHubScreen(),
       'التقويم' => const IslamicCalendarScreen(),
+      'التنبيهات' => const ProductivityToolsScreen(initialTab: 0),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
@@ -584,6 +605,8 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 30),
             children: [
+              HijriDateInfoCard(date: _selectedDate),
+              const SizedBox(height: 10),
               _TwilightGlassPanel(
                 radius: 22,
                 padding: const EdgeInsets.fromLTRB(12, 12, 12, 15),
@@ -1359,6 +1382,7 @@ class _QuranScreenState extends State<QuranScreen> {
                       Text('صفحة $_lastReadPage من 604', style: const TextStyle(color: mutedIvory, fontSize: 11)),
                     ])),
                     TextButton.icon(onPressed: () => _goToPage(_lastReadPage), icon: const Icon(Icons.play_arrow_rounded, size: 18), label: const Text('متابعة')),
+                    IconButton(tooltip: 'الورد والختمة', onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProductivityToolsScreen(initialTab: 1))), icon: const Icon(Icons.bookmark_add_rounded, color: turquoise)),
                     IconButton(tooltip: 'فهرس السور', onPressed: _showSurahIndex, icon: const Icon(Icons.list_alt_rounded, color: turquoise)),
                   ],
                 ),
@@ -2734,6 +2758,7 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
       final savedSize = preferences.getInt('reader_font_size') ?? _defaultFontSize;
       if (!mounted) return;
       setState(() => _fontSize = savedSize.clamp(_minimumFontSize, _maximumFontSize));
+      appTextScale.value = _fontSize / 18.0;
     } catch (_) {
       // Keep the reader available with its default font size.
     }
@@ -2742,6 +2767,7 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
   Future<void> _changeFontSize(int delta) async {
     final nextSize = (_fontSize + delta).clamp(_minimumFontSize, _maximumFontSize);
     setState(() => _fontSize = nextSize);
+    appTextScale.value = nextSize / 18.0;
     final preferences = await SharedPreferences.getInstance();
     await preferences.setInt('reader_font_size', nextSize);
   }
@@ -3550,6 +3576,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _fontSize = saved.clamp(_minimumFontSize, _maximumFontSize);
         _loading = false;
       });
+      appTextScale.value = _fontSize / 18.0;
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -3558,6 +3585,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveFontSize(double value) async {
     final next = value.round().clamp(_minimumFontSize, _maximumFontSize);
     setState(() => _fontSize = next);
+    appTextScale.value = next / 18.0;
     final preferences = await SharedPreferences.getInstance();
     await preferences.setInt('reader_font_size', next);
   }
@@ -3636,7 +3664,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'يتحكم هذا الخيار بحجم النص داخل صفحات قراءة الزيارات والأدعية، ويُحفظ تلقائياً على جهازك.',
+                          'يتحكم هذا الخيار بحجم النص في التطبيق كله، ويُحفظ تلقائياً على جهازك.',
                           style: TextStyle(color: mutedIvory, fontSize: 12, height: 1.8),
                         ),
                         const SizedBox(height: 12),
@@ -3716,6 +3744,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: 'آخر قراءة',
                     subtitle: 'متابعة آخر نص فتحته',
                     onTap: () => _openLibrary('آخر قراءة'),
+                  ),
+                  _quickAccess(
+                    icon: Icons.backup_rounded,
+                    title: 'النسخ الاحتياطي',
+                    subtitle: 'حفظ بياناتك واستعادتها محلياً',
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProductivityToolsScreen(initialTab: 2))),
                   ),
                   _TwilightGlassPanel(
                     padding: const EdgeInsets.all(14),
