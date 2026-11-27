@@ -573,8 +573,9 @@ class _DailyDashboardState extends State<_DailyDashboard> {
       );
 
   @override
-  Widget build(BuildContext context) => _TwilightGlassPanel(
+  Widget build(BuildContext context) => KeyedSubtree(
         key: const Key('home_daily_dashboard'),
+        child: _TwilightGlassPanel(
         padding: const EdgeInsets.fromLTRB(15, 14, 15, 14),
         radius: 22,
         child: Column(
@@ -643,6 +644,7 @@ class _DailyDashboardState extends State<_DailyDashboard> {
             ],
           ],
         ),
+      ),
       );
 }
 
