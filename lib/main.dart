@@ -480,10 +480,143 @@ class HomePage extends StatelessWidget {
                 _HomeNavItem(icon: Icons.home_rounded, label: 'الرئيسية', selected: true, onTap: () {}),
                 _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
                 _HomeNavItem(icon: Icons.explore_rounded, label: 'القبلة', onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded))),
-                _HomeNavItem(icon: Icons.auto_awesome_rounded, label: 'المكتبة', onTap: () => _openSection(context, const _Section('الزيارات', Icons.account_balance_rounded))),
+                _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
                 _HomeNavItem(icon: Icons.person_rounded, label: 'حسابي', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class LibraryHubScreen extends StatelessWidget {
+  const LibraryHubScreen({super.key});
+
+  static const List<_Section> _categories = [
+    _Section('القرآن الكريم', Icons.menu_book_rounded),
+    _Section('الزيارات', Icons.mosque_rounded),
+    _Section('الأدعية العامة', Icons.volunteer_activism_rounded),
+    _Section('أدعية الأيام', Icons.today_rounded),
+    _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
+    _Section('الصحيفة السجادية', Icons.article_rounded),
+    _Section('وصايا أهل البيت', Icons.format_quote_rounded),
+  ];
+
+  void _openCategory(BuildContext context, _Section section) {
+    final Widget page = section.title == 'القرآن الكريم'
+        ? const QuranScreen()
+        : LibrarySectionScreen(title: section.title);
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => page),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: _TwilightSubpageAppBar(title: 'المكتبة'),
+        body: SafeArea(
+          top: false,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _TwilightGlassPanel(
+                      padding: const EdgeInsets.all(16),
+                      radius: 20,
+                      child: Row(
+                        children: [
+                          const _TwilightGlassOrb(
+                            icon: Icons.auto_stories_rounded,
+                            size: 54,
+                          ),
+                          const SizedBox(width: 13),
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'مكتبة الكامل',
+                                  style: TextStyle(
+                                    color: Color(0xFFF4F0E7),
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'تصفّح القرآن والزيارات والأدعية',
+                                  style: TextStyle(
+                                    color: mutedIvory,
+                                    fontSize: 11,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'البحث الشامل',
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute<void>(
+                                  builder: (_) => const GlobalSearchScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.search_rounded,
+                              color: Color(0xFFE8D5A8),
+                              size: 25,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'الأقسام',
+                      style: TextStyle(
+                        color: Color(0xFFF4F0E7),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 11),
+                  ]),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.12,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final section = _categories[index];
+                      return _SectionTile(
+                        section: section,
+                        compact: false,
+                        onTap: () => _openCategory(context, section),
+                      );
+                    },
+                    childCount: _categories.length,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
