@@ -501,10 +501,8 @@ class LibraryHubScreen extends StatelessWidget {
     _Section('أدعية الأيام', Icons.today_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
-    _Section('نهج البلاغة', Icons.menu_book_rounded),
     _Section('وصايا أهل البيت', Icons.format_quote_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
-    _Section('الصوتيات', Icons.graphic_eq_rounded),
   ];
 
   void _openCategory(BuildContext context, _Section section) {
