@@ -111,7 +111,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'الأدعية العامة');
+    await tapHomeSection(tester, 'الأدعية');
+    await tester.tap(find.text('الأدعية العامة').first);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء التوسل'));
     await tester.pumpAndSettle();
@@ -128,7 +130,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'الأدعية العامة');
+    await tapHomeSection(tester, 'الأدعية');
+    await tester.tap(find.text('الأدعية العامة').first);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء العهد').first);
     await tester.pumpAndSettle();
@@ -144,7 +148,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'الأدعية العامة');
+    await tapHomeSection(tester, 'الأدعية');
+    await tester.tap(find.text('الأدعية العامة').first);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
     await tester.tap(find.text('دعاء الافتتاح'));
     await tester.pumpAndSettle();
@@ -343,7 +349,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'مواقيت الصلاة');
+    await tapHomeSection(tester, 'الصلاة والقبلة');
+    await tester.tap(find.text('مواقيت الصلاة').first);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
 
     expect(find.text('الصلاة القادمة'), findsOneWidget);
@@ -479,6 +487,55 @@ void main() {
     );
   });
 
+  testWidgets('home combines prayer times and qibla into one entry', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    expect(find.text('الصلاة والقبلة'), findsWidgets);
+    expect(find.text('المناسبات الإسلامية'), findsNothing);
+    await tapHomeSection(tester, 'الصلاة والقبلة');
+    expect(find.text('مواقيت الصلاة'), findsOneWidget);
+    expect(find.text('اتجاه القبلة'), findsOneWidget);
+  });
+
+  testWidgets('duas are grouped under one home entry with two subcategories', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    expect(find.text('الأدعية العامة'), findsNothing);
+    expect(find.text('أدعية الأيام'), findsNothing);
+    await tapHomeSection(tester, 'الأدعية');
+    expect(find.text('الأدعية العامة'), findsOneWidget);
+    expect(find.text('أدعية الأيام'), findsOneWidget);
+  });
+
+  testWidgets('calendar shows Arabic and English month and weekday labels', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const MaterialApp(home: IslamicCalendarScreen()));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar_month_ar')), findsOneWidget);
+    expect(find.byKey(const Key('calendar_month_en')), findsOneWidget);
+    expect(find.byKey(const Key('calendar_weekdays')), findsOneWidget);
+    expect(find.text('Mon'), findsOneWidget);
+    expect(find.text('الإثنين'), findsOneWidget);
+    expect(find.byKey(const Key('calendar_days_grid')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('calendar_next_month')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar_month_en')), findsOneWidget);
+  });
+
   test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
     final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
     final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
@@ -501,7 +558,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
-    await tapHomeSection(tester, 'القبلة');
+    await tapHomeSection(tester, 'الصلاة والقبلة');
+    await tester.tap(find.text('اتجاه القبلة').first);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
 
     expect(find.text('اتجاه القبلة'), findsOneWidget);

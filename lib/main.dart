@@ -204,17 +204,15 @@ class HomePage extends StatelessWidget {
   static const List<_Section> _sections = [
     _Section('البحث الشامل', Icons.search_rounded),
     _Section('القرآن الكريم', Icons.menu_book_rounded),
-    _Section('مواقيت الصلاة', Icons.access_time_rounded),
+    _Section('الصلاة والقبلة', Icons.access_time_filled_rounded),
     _Section('الزيارات', Icons.mosque_rounded),
-    _Section('الأدعية العامة', Icons.volunteer_activism_rounded),
-    _Section('أدعية الأيام', Icons.today_rounded),
+    _Section('الأدعية', Icons.volunteer_activism_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('المسبحة الإلكترونية', Icons.grain_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
     _Section('وصايا أهل البيت', Icons.format_quote_rounded),
-    _Section('المناسبات الإسلامية', Icons.celebration_rounded),
-    _Section('القبلة', Icons.explore_rounded),
+    _Section('التقويم', Icons.calendar_month_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
     _Section('الإعدادات', Icons.settings_rounded),
@@ -223,15 +221,14 @@ class HomePage extends StatelessWidget {
   void _openSection(BuildContext context, _Section section) {
     final Widget page = switch (section.title) {
       'القرآن الكريم' => const QuranScreen(),
-      'مواقيت الصلاة' => const PrayerTimesScreen(),
-      'القبلة' => const QiblaScreen(),
+      'الصلاة والقبلة' => const PrayerQiblaHubScreen(),
+      'الأدعية' => const DuasHubScreen(),
+      'التقويم' => const IslamicCalendarScreen(),
       'البحث الشامل' => const GlobalSearchScreen(),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       'المسبحة الإلكترونية' => const TasbeehScreen(),
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
       'الزيارات' ||
-      'الأدعية العامة' ||
-      'أدعية الأيام' ||
       'تعقيبات الصلوات' ||
       'الصحيفة السجادية' ||
       'وصايا أهل البيت' => LibrarySectionScreen(title: section.title),
@@ -318,28 +315,20 @@ class HomePage extends StatelessWidget {
                               const SizedBox(height: 6),
                               const Text('تابع أوقات الصلاة حسب مدينتك، وانتقل بسهولة إلى اتجاه القبلة', style: TextStyle(color: mutedIvory, fontSize: 12, height: 1.6)),
                               const SizedBox(height: 13),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: FilledButton.icon(
-                                      onPressed: () => _openSection(context, const _Section('مواقيت الصلاة', Icons.access_time_rounded)),
-                                      icon: const Icon(Icons.arrow_back_rounded, size: 17),
-                                      label: const Text('عرض المواقيت'),
-                                      style: FilledButton.styleFrom(
-                                        backgroundColor: const Color(0xFF8069D4),
-                                        foregroundColor: ivory,
-                                        padding: const EdgeInsets.symmetric(vertical: 11),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                                      ),
-                                    ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.icon(
+                                  key: const Key('home_prayer_qibla_entry'),
+                                  onPressed: () => _openSection(context, const _Section('الصلاة والقبلة', Icons.access_time_filled_rounded)),
+                                  icon: const Icon(Icons.explore_rounded, size: 19),
+                                  label: const Text('فتح مواقيت الصلاة والقبلة'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFF8069D4),
+                                    foregroundColor: ivory,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                                   ),
-                                  const SizedBox(width: 9),
-                                  _HomeRoundAction(
-                                    icon: Icons.explore_rounded,
-                                    label: 'اتجاه القبلة',
-                                    onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded)),
-                                  ),
-                                ],
+                                ),
                               ),
                             ],
                           ),
@@ -479,11 +468,246 @@ class HomePage extends StatelessWidget {
               children: [
                 _HomeNavItem(icon: Icons.home_rounded, label: 'الرئيسية', selected: true, onTap: () {}),
                 _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
-                _HomeNavItem(icon: Icons.explore_rounded, label: 'القبلة', onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded))),
+                _HomeNavItem(icon: Icons.access_time_filled_rounded, label: 'الصلاة والقبلة', onTap: () => _openSection(context, const _Section('الصلاة والقبلة', Icons.access_time_filled_rounded))),
                 _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
                 _HomeNavItem(icon: Icons.settings_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PrayerQiblaHubScreen extends StatelessWidget {
+  const PrayerQiblaHubScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Directionality(
+    textDirection: TextDirection.rtl,
+    child: Scaffold(
+      backgroundColor: royalBlack,
+      appBar: _TwilightSubpageAppBar(title: 'الصلاة والقبلة'),
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 20, 18, 30),
+          children: [
+            const _TwilightGlassPanel(radius: 22, child: Column(children: [
+              _TwilightGlassOrb(icon: Icons.access_time_filled_rounded, size: 68),
+              SizedBox(height: 12),
+              Text('الصلاة والقبلة', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
+              SizedBox(height: 6),
+              Text('اختر الخدمة التي تريد فتحها', textAlign: TextAlign.center, style: TextStyle(color: mutedIvory, fontSize: 12)),
+            ])),
+            const SizedBox(height: 16),
+            _SectionTile(section: const _Section('مواقيت الصلاة', Icons.access_time_filled_rounded), compact: false,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const PrayerTimesScreen()))),
+            const SizedBox(height: 12),
+            _SectionTile(section: const _Section('اتجاه القبلة', Icons.explore_rounded), compact: false,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const QiblaScreen()))),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class DuasHubScreen extends StatelessWidget {
+  const DuasHubScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Directionality(
+    textDirection: TextDirection.rtl,
+    child: Scaffold(
+      backgroundColor: royalBlack,
+      appBar: _TwilightSubpageAppBar(title: 'الأدعية'),
+      body: SafeArea(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(18, 20, 18, 30),
+          children: [
+            const _TwilightGlassPanel(radius: 22, child: Column(children: [
+              _TwilightGlassOrb(icon: Icons.volunteer_activism_rounded, size: 68),
+              SizedBox(height: 12),
+              Text('الأدعية', style: TextStyle(color: ivory, fontSize: 21, fontWeight: FontWeight.bold)),
+              SizedBox(height: 6),
+              Text('الأدعية العامة وأدعية الأيام في مكان واحد', textAlign: TextAlign.center, style: TextStyle(color: mutedIvory, fontSize: 12)),
+            ])),
+            const SizedBox(height: 16),
+            _SectionTile(section: const _Section('الأدعية العامة', Icons.volunteer_activism_rounded), compact: false,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibrarySectionScreen(title: 'الأدعية العامة')))),
+            const SizedBox(height: 12),
+            _SectionTile(section: const _Section('أدعية الأيام', Icons.today_rounded), compact: false,
+              onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibrarySectionScreen(title: 'أدعية الأيام')))),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class IslamicCalendarScreen extends StatefulWidget {
+  const IslamicCalendarScreen({super.key});
+  @override
+  State<IslamicCalendarScreen> createState() => _IslamicCalendarScreenState();
+}
+
+class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
+  DateTime _displayedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime _selectedDate = DateTime.now();
+  static const List<String> _arabicMonths = [
+    'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+    'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+  ];
+  static const List<String> _englishMonths = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  static const List<(String, String)> _weekdays = [
+    ('الإثنين', 'Mon'), ('الثلاثاء', 'Tue'), ('الأربعاء', 'Wed'),
+    ('الخميس', 'Thu'), ('الجمعة', 'Fri'), ('السبت', 'Sat'), ('الأحد', 'Sun'),
+  ];
+  // No occasions are inserted until an approved and verified date list is supplied.
+  static const Map<String, String> _verifiedOccasions = {};
+
+  String _dateKey(DateTime date) =>
+      date.year.toString().padLeft(4, '0') + '-' +
+      date.month.toString().padLeft(2, '0') + '-' +
+      date.day.toString().padLeft(2, '0');
+
+  String _arabicDigits(String value) {
+    const digits = '٠١٢٣٤٥٦٧٨٩';
+    return value.split('').map((character) {
+      final digit = int.tryParse(character);
+      return digit == null ? character : digits[digit];
+    }).join();
+  }
+
+  void _changeMonth(int delta) {
+    setState(() {
+      _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + delta);
+      _selectedDate = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final firstDay = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
+    final gridStart = firstDay.subtract(Duration(days: firstDay.weekday - 1));
+    final monthIndex = _displayedMonth.month - 1;
+    final selectedOccasion = _verifiedOccasions[_dateKey(_selectedDate)];
+    final today = DateTime.now();
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: royalBlack,
+        appBar: _TwilightSubpageAppBar(title: 'التقويم'),
+        body: SafeArea(
+          top: false,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 30),
+            children: [
+              _TwilightGlassPanel(
+                radius: 22,
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 15),
+                child: Column(children: [
+                  Row(children: [
+                    IconButton(key: const Key('calendar_previous_month'), tooltip: 'الشهر السابق',
+                      onPressed: () => _changeMonth(-1),
+                      icon: const Icon(Icons.chevron_right_rounded, color: ivory, size: 28)),
+                    Expanded(child: Column(children: [
+                      Text(_arabicMonths[monthIndex], key: const Key('calendar_month_ar'), style: const TextStyle(color: ivory, fontSize: 19, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 2),
+                      Text(_englishMonths[monthIndex], key: const Key('calendar_month_en'), style: const TextStyle(color: mutedIvory, fontSize: 12, letterSpacing: 0.5)),
+                      Text(_arabicDigits(_displayedMonth.year.toString()) + ' • ' + _displayedMonth.year.toString(), style: const TextStyle(color: turquoise, fontSize: 11)),
+                    ])),
+                    IconButton(key: const Key('calendar_next_month'), tooltip: 'الشهر التالي',
+                      onPressed: () => _changeMonth(1),
+                      icon: const Icon(Icons.chevron_left_rounded, color: ivory, size: 28)),
+                  ]),
+                  const SizedBox(height: 12),
+                  GridView.builder(
+                    key: const Key('calendar_weekdays'),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 7,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, childAspectRatio: 0.86),
+                    itemBuilder: (context, index) => Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Text(_weekdays[index].$1, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: ivory, fontSize: 8.5, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 2),
+                      Text(_weekdays[index].$2, style: const TextStyle(color: mutedIvory, fontSize: 8)),
+                    ]),
+                  ),
+                  const SizedBox(height: 5),
+                  GridView.builder(
+                    key: const Key('calendar_days_grid'),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 42,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, crossAxisSpacing: 3, mainAxisSpacing: 4, childAspectRatio: 0.91),
+                    itemBuilder: (context, index) {
+                      final date = gridStart.add(Duration(days: index));
+                      final inMonth = date.month == _displayedMonth.month;
+                      final isToday = date.year == today.year && date.month == today.month && date.day == today.day;
+                      final isSelected = date.year == _selectedDate.year && date.month == _selectedDate.month && date.day == _selectedDate.day;
+                      final occasion = _verifiedOccasions.containsKey(_dateKey(date));
+                      final numberColor = occasion ? const Color(0xFFFFC66D) : isToday ? ivory : inMonth ? mutedIvory : mutedIvory.withValues(alpha: 0.28);
+                      final accessibleLabel = date.day.toString() + '/' + date.month.toString() + '/' + date.year.toString() +
+                          (occasion ? '، ' + _verifiedOccasions[_dateKey(date)]! : '');
+                      return Semantics(
+                        button: true,
+                        label: accessibleLabel,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            key: ValueKey('calendar_day_' + _dateKey(date)),
+                            borderRadius: BorderRadius.circular(11),
+                            onTap: () => setState(() => _selectedDate = date),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(11),
+                                color: occasion ? const Color(0x26FFC66D) : isSelected ? const Color(0x334F70C9) : Colors.transparent,
+                                border: Border.all(color: isToday ? turquoise : occasion ? const Color(0xAAFFC66D) : Colors.transparent, width: isToday || occasion ? 1 : 0),
+                              ),
+                              child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Text(_arabicDigits(date.day.toString()), style: TextStyle(color: numberColor, fontSize: 14, fontWeight: occasion || isToday ? FontWeight.bold : FontWeight.w500)),
+                                Text(date.day.toString(), style: TextStyle(color: inMonth ? mutedIvory.withValues(alpha: 0.72) : mutedIvory.withValues(alpha: 0.2), fontSize: 7)),
+                                if (occasion) Container(width: 4, height: 4, decoration: const BoxDecoration(color: Color(0xFFFFC66D), shape: BoxShape.circle)),
+                              ]),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  const Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    DecoratedBox(decoration: BoxDecoration(color: turquoise, shape: BoxShape.circle), child: SizedBox(width: 8, height: 8)),
+                    SizedBox(width: 5),
+                    Text('اليوم / Today', style: TextStyle(color: mutedIvory, fontSize: 10)),
+                    SizedBox(width: 16),
+                    DecoratedBox(decoration: BoxDecoration(color: Color(0xFFFFC66D), shape: BoxShape.circle), child: SizedBox(width: 8, height: 8)),
+                    SizedBox(width: 5),
+                    Text('مناسبة / Occasion', style: TextStyle(color: mutedIvory, fontSize: 10)),
+                  ]),
+                ]),
+              ),
+              const SizedBox(height: 13),
+              _TwilightGlassPanel(
+                radius: 19,
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Text('تفاصيل اليوم / Selected day', style: TextStyle(color: ivory, fontSize: 14, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(_arabicDigits(_selectedDate.day.toString()) + ' ' + _arabicMonths[_selectedDate.month - 1] + ' ' + _arabicDigits(_selectedDate.year.toString()), style: const TextStyle(color: ivory, fontSize: 14)),
+                  Text(_englishMonths[_selectedDate.month - 1] + ' ' + _selectedDate.day.toString() + ', ' + _selectedDate.year.toString(), style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                  const SizedBox(height: 9),
+                  if (selectedOccasion != null)
+                    Text(selectedOccasion, style: const TextStyle(color: Color(0xFFFFC66D), fontSize: 13, fontWeight: FontWeight.bold))
+                  else
+                    const Text('لا توجد مناسبة موثقة مسجلة لهذا اليوم حالياً', style: TextStyle(color: mutedIvory, fontSize: 11, height: 1.5)),
+                ]),
+              ),
+            ],
           ),
         ),
       ),
@@ -502,8 +726,7 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
   static const List<_Section> _categories = [
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('الزيارات', Icons.mosque_rounded),
-    _Section('الأدعية العامة', Icons.volunteer_activism_rounded),
-    _Section('أدعية الأيام', Icons.today_rounded),
+    _Section('الأدعية', Icons.volunteer_activism_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
     _Section('وصايا أهل البيت', Icons.format_quote_rounded),
@@ -524,6 +747,7 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
   void _openCategory(BuildContext context, _Section section) {
     final Widget page = switch (section.title) {
       'القرآن الكريم' => const QuranScreen(),
+      'الأدعية' => const DuasHubScreen(),
       'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
       _ => LibrarySectionScreen(title: section.title),
     };
@@ -3856,7 +4080,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 IconData _sectionPlaceholderIcon(String title) => switch (title) {
-      'المناسبات الإسلامية' => Icons.event_available_rounded,
       'التنبيهات' => Icons.notifications_active_rounded,
       _ => Icons.auto_stories_rounded,
     };
