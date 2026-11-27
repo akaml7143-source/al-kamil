@@ -997,8 +997,7 @@ class _SectionTile extends StatelessWidget {
                   Container(
                     width: compact ? 51 : 55,
                     height: compact ? 51 : 55,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                    decoration: BoxDecoration(                      borderRadius: BorderRadius.circular(15),
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -1997,7 +1996,6 @@ const Map<String, String> _verifiedPrayerTexts = {
 يا أَبا الحَسَنِ يا أَمِيرَ المُؤْمِنِينَ يا عَلِيَّ بْنَ أَبي طالِبٍ يا حُجَّةَ اللهِ عَلى خَلْقِهِ يا سَيِّدَنا وَمَوْلانا، إِنّا تَوَجَّهْنا وَاسْتَشْفَعْنا وَتَوَسَّلْنا بِكَ إِلَى اللهِ، وَقَدَّمْناكَ بَيْنَ يَدَيْ حاجاتِنا، يا وَجِيهاً عِنْدَ اللهِ اشْفَعْ لَنا عِنْدَ اللهِ.
 
 يا فاطِمَةَ الزَّهْراءُ يا بِنْتَ مُحَمَّدٍ يا قُرَّةَ عَيْنِ الرَّسُولِ يا سَيِّدَتَنا وَمَوْلاتَنا، إِنّا تَوَجَّهْنا وَاسْتَشْفَعْنا وَتَوَسَّلْنا بِكِ إِلَى اللهِ، وَقَدَّمْناكِ بَيْنَ يَدَيْ حاجاتِنا، يا وَجِيهَةً عِنْدَ اللهِ اشْفَعِي لَنا عِنْدَ اللهِ.
-
 يا أَبا مُحَمَّدٍ يا حَسَنَ بْنَ عَلِيٍّ أَيُّها المُجْتَبى يا ابْنَ رَسُولِ اللهِ يا حُجَّةَ اللهِ عَلى خَلْقِهِ يا سَيِّدَنا وَمَوْلانا، إِنّا تَوَجَّهْنا وَاسْتَشْفَعْنا وَتَوَسَّلْنا بِكَ إِلَى اللهِ، وَقَدَّمْناكَ بَيْنَ يَدَيْ حاجاتِنا، يا وَجِيهاً عِنْدَ اللهِ اشْفَعْ لَنا عِنْدَ اللهِ.
 
 يا أَبا عَبْدِ اللهِ يا حُسَيْنَ بْنَ عَلِيٍّ أَيُّها الشَّهِيدُ يا ابْنَ رَسُولِ اللهِ يا حُجَّةَ اللهِ عَلى خَلْقِهِ يا سَيِّدَنا وَمَوْلانا، إِنّا تَوَجَّهْنا وَاسْتَشْفَعْنا وَتَوَسَّلْنا بِكَ إِلَى اللهِ، وَقَدَّمْناكَ بَيْنَ يَدَيْ حاجاتِنا، يا وَجِيهاً عِنْدَ اللهِ اشْفَعْ لَنا عِنْدَ اللهِ.
@@ -2398,6 +2396,11 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
 
   bool get _isTaqibat => widget.item.id.startsWith('taqib_');
   String get _taqibProgressKey => 'taqibat_completed_${widget.item.id}';
+  String get _readerPositionKey => 'reader_scroll_${widget.item.id}';
+
+  late final ScrollController _readerScrollController;
+  double _lastPersistedReaderOffset = 0;
+  bool _restoringReaderPosition = false;
 
   String? get _verifiedText => _verifiedPrayerTexts[widget.item.id];
 
@@ -2406,14 +2409,63 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
     super.initState();
     _isFavorite = widget.isFavorite;
     _readerSearchController = TextEditingController();
+    _readerScrollController = ScrollController()
+      ..addListener(_saveReaderPositionOnScroll);
     _loadFontSize();
     _loadTaqibProgress();
+    _loadReaderPosition();
   }
 
   @override
   void dispose() {
+    _readerScrollController.removeListener(_saveReaderPositionOnScroll);
+    _persistReaderPosition();
+    _readerScrollController.dispose();
     _readerSearchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadReaderPosition() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final savedOffset = preferences.getDouble(_readerPositionKey) ?? 0;
+      if (!mounted || savedOffset <= 0) return;
+      _restoringReaderPosition = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_readerScrollController.hasClients) {
+          _restoringReaderPosition = false;
+          return;
+        }
+        final maxOffset = _readerScrollController.position.maxScrollExtent;
+        final restoredOffset = savedOffset.clamp(0.0, maxOffset).toDouble();
+        _readerScrollController.jumpTo(restoredOffset);
+        _lastPersistedReaderOffset = restoredOffset;
+        _restoringReaderPosition = false;
+      });
+    } catch (_) {
+      // Reading remains available if local position storage fails.
+    }
+  }
+
+  void _saveReaderPositionOnScroll() {
+    if (_restoringReaderPosition || !_readerScrollController.hasClients) return;
+    final offset = _readerScrollController.offset;
+    if ((offset - _lastPersistedReaderOffset).abs() < 100) return;
+    _lastPersistedReaderOffset = offset;
+    SharedPreferences.getInstance().then(
+      (preferences) => preferences.setDouble(_readerPositionKey, offset),
+    );
+  }
+
+  Future<void> _persistReaderPosition() async {
+    if (!_readerScrollController.hasClients) return;
+    final offset = _readerScrollController.offset;
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setDouble(_readerPositionKey, offset);
+    } catch (_) {
+      // Ignore storage errors while leaving the reader usable.
+    }
   }
 
   Future<void> _loadTaqibProgress() async {
@@ -2537,6 +2589,8 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
           ],
         ),
         body: ListView(
+          key: const Key('reader_scroll_view'),
+          controller: _readerScrollController,
           padding: const EdgeInsets.all(20),
           children: [
             _TwilightGlassPanel(
@@ -2997,8 +3051,7 @@ class _NightPrayerTutorialScreenState extends State<NightPrayerTutorialScreen> {
                   const SizedBox(height: 12),
                   _TwilightGlassPanel(
                     padding: const EdgeInsets.all(14),
-                    radius: 16,
-                    child: const Row(
+                    radius: 16,                    child: const Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Icon(Icons.info_outline_rounded, color: turquoise, size: 20),
