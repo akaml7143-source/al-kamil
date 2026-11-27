@@ -6,8 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 Future<void> tapHomeSection(WidgetTester tester, String title) async {
-  final target = find.text(title).last;
-  await tester.ensureVisible(target);
+  // Home content is intentionally lazy inside the outer CustomScrollView.
+  // Scroll until the section tile is built before attempting to tap it.
+  final target = find.text(title).first;
+  await tester.scrollUntilVisible(
+    target,
+    260,
+    scrollable: find.byType(Scrollable).first,
+  );
   await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();
