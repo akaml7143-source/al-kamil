@@ -205,7 +205,7 @@ class HomePage extends StatelessWidget {
     _Section('البحث الشامل', Icons.search_rounded),
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('مواقيت الصلاة', Icons.access_time_rounded),
-    _Section('الزيارات', Icons.account_balance_rounded),
+    _Section('الزيارات', Icons.mosque_rounded),
     _Section('الأدعية العامة', Icons.volunteer_activism_rounded),
     _Section('أدعية الأيام', Icons.today_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
@@ -368,9 +368,9 @@ class HomePage extends StatelessWidget {
                                           onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded)),
                                         ),
                                         _HomePillAction(
-                                          icon: Icons.radio_button_checked_rounded,
+                                          icon: Icons.grain_rounded,
                                           label: 'الأذكار',
-                                          onTap: () => _openSection(context, const _Section('المسبحة الإلكترونية', Icons.radio_button_checked_rounded)),
+                                          onTap: () => _openSection(context, const _Section('المسبحة الإلكترونية', Icons.grain_rounded)),
                                         ),
                                       ],
                                     ),
@@ -437,10 +437,10 @@ class HomePage extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: _sections.length,
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 4,
-                              crossAxisSpacing: 8,
-                              mainAxisSpacing: 9,
-                              childAspectRatio: compact ? 0.95 : 0.9,
+                              crossAxisCount: constraints.maxWidth >= 560 ? 4 : 3,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 11,
+                              childAspectRatio: compact ? 0.88 : 0.92,
                             ),
                             itemBuilder: (context, index) {
                               final section = _sections[index];
@@ -708,14 +708,14 @@ class _SectionTile extends StatelessWidget {
                   ],
                 ),
                 border: Border.all(
-                  color: twilightBorder,
-                  width: 0.85,
+                  color: const Color(0xFFD8BE83).withValues(alpha: 0.34),
+                  width: 0.95,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: turquoise.withValues(alpha: 0.075),
-                    blurRadius: 14,
-                    spreadRadius: 0.3,
+                    color: const Color(0xFFD8BE83).withValues(alpha: 0.10),
+                    blurRadius: 16,
+                    spreadRadius: 0.4,
                   ),
                 ],
               ),
@@ -724,8 +724,8 @@ class _SectionTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: compact ? 43 : 48,
-                    height: compact ? 43 : 48,
+                    width: compact ? 51 : 55,
+                    height: compact ? 51 : 55,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       gradient: const LinearGradient(
@@ -751,11 +751,11 @@ class _SectionTile extends StatelessWidget {
                     ),
                     child: Icon(
                       section.icon,
-                      size: compact ? 25 : 28,
+                      size: compact ? 29 : 31,
                       color: const Color(0xFFE8D5A8),
                     ),
                   ),
-                  SizedBox(height: compact ? 5 : 7),
+                  SizedBox(height: compact ? 7 : 8),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1),
                     child: Text(
@@ -765,7 +765,7 @@ class _SectionTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: const Color(0xFFF4F0E7),
-                        fontSize: compact ? 9.2 : 10,
+                        fontSize: compact ? 10.5 : 11,
                         fontWeight: FontWeight.w600,
                         height: 1.25,
                       ),
@@ -2058,6 +2058,18 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
   }
 }
 
+
+IconData _readerItemIcon(_LibraryItem item) {
+  final id = item.id.toLowerCase();
+  if (id.startsWith('taqib_')) return Icons.self_improvement_rounded;
+  if (id.contains('ziyarat') || id.contains('visit')) return Icons.mosque_rounded;
+  if (id.contains('sahifa') || id.contains('sajjad')) return Icons.article_rounded;
+  if (id.contains('daily') || id.contains('day')) return Icons.today_rounded;
+  if (id.contains('wasaya') || id.contains('advice')) return Icons.format_quote_rounded;
+  if (id.contains('dua')) return Icons.volunteer_activism_rounded;
+  return Icons.auto_stories_rounded;
+}
+
 class _LibraryItemDetail extends StatefulWidget {
   const _LibraryItemDetail({
     required this.item,
@@ -2235,7 +2247,7 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                 children: [
                   Row(
                     children: [
-                      const _TwilightGlassOrb(icon: Icons.auto_stories_rounded, size: 42),
+                      _TwilightGlassOrb(icon: _readerItemIcon(widget.item), size: 46),
                       const SizedBox(width: 9),
                       Expanded(
                         child: Text(
