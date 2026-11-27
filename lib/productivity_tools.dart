@@ -5,24 +5,31 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Serialize read-progress updates so rapid page swipes cannot overwrite each other.
+Future<void> _quranReadWriteQueue = Future<void>.value();
+
 /// Records each distinct Mushaf page read today; revisiting a page never inflates progress.
-Future<void> recordQuranPageRead(int page) async {
-  if (page < 1 || page > 604) return;
-  final preferences = await SharedPreferences.getInstance();
-  final today = DateTime.now().toIso8601String().substring(0, 10);
-  final sameDay = preferences.getString('quran_daily_date') == today;
-  final pages = sameDay
-      ? (preferences.getStringList('quran_daily_read_pages_v1') ?? <String>[]).toSet()
-      : <String>{};
-  final base = sameDay
-      ? (preferences.getInt('quran_daily_auto_base_v1') ??
-          preferences.getInt('quran_daily_pages') ?? 0)
-      : 0;
-  pages.add(page.toString());
-  await preferences.setString('quran_daily_date', today);
-  await preferences.setStringList('quran_daily_read_pages_v1', pages.toList()..sort());
-  await preferences.setInt('quran_daily_auto_base_v1', base);
-  await preferences.setInt('quran_daily_pages', base + pages.length);
+Future<void> recordQuranPageRead(int page) {
+  if (page < 1 || page > 604) return Future<void>.value();
+  final operation = _quranReadWriteQueue.then((_) async {
+    final preferences = await SharedPreferences.getInstance();
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    final sameDay = preferences.getString('quran_daily_date') == today;
+    final pages = sameDay
+        ? (preferences.getStringList('quran_daily_read_pages_v1') ?? <String>[]).toSet()
+        : <String>{};
+    final base = sameDay
+        ? (preferences.getInt('quran_daily_auto_base_v1') ??
+            preferences.getInt('quran_daily_pages') ?? 0)
+        : 0;
+    pages.add(page.toString());
+    await preferences.setString('quran_daily_date', today);
+    await preferences.setStringList('quran_daily_read_pages_v1', pages.toList()..sort());
+    await preferences.setInt('quran_daily_auto_base_v1', base);
+    await preferences.setInt('quran_daily_pages', base + pages.length);
+  });
+  _quranReadWriteQueue = operation.catchError((Object _) {});
+  return operation;
 }
 
 const Color _toolBg=Color(0xFF111329),_toolPanel=Color(0xC9252B4A),_toolAccent=Color(0xFF9D8CFF),_toolText=Color(0xFFF4F1FF),_toolMuted=Color(0xFFC6C2DC),_toolBorder=Color(0x66D5C9FF);

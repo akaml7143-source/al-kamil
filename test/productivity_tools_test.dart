@@ -10,6 +10,30 @@ void main() {
     expect(value, contains('جمادى'));
   });
 
+  test('Quran reading counts unique pages once and serializes rapid updates', () async {
+    SharedPreferences.setMockInitialValues({});
+    await Future.wait([
+      recordQuranPageRead(12),
+      recordQuranPageRead(13),
+      recordQuranPageRead(12),
+      recordQuranPageRead(14),
+    ]);
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getInt('quran_daily_pages'), 3);
+    expect(
+      (preferences.getStringList('quran_daily_read_pages_v1') ?? []).toSet(),
+      {'12', '13', '14'},
+    );
+  });
+
+  test('invalid Quran page numbers do not change daily progress', () async {
+    SharedPreferences.setMockInitialValues({'quran_daily_pages': 4});
+    await recordQuranPageRead(0);
+    await recordQuranPageRead(605);
+    final preferences = await SharedPreferences.getInstance();
+    expect(preferences.getInt('quran_daily_pages'), 4);
+  });
+
   testWidgets('reminders are empty on first install and are not auto-created', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const MaterialApp(home: ProductivityToolsScreen()));
