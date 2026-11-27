@@ -448,6 +448,7 @@ class HomePage extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final section = _sections[index];
                               return _SectionTile(
+                                key: ValueKey('home_section_${section.title}'),
                                 section: section,
                                 compact: true,
                                 onTap: () => _openSection(context, section),
@@ -1311,6 +1312,7 @@ class _Section {
 
 class _SectionTile extends StatelessWidget {
   const _SectionTile({
+    super.key,
     required this.section,
     required this.onTap,
     required this.compact,
