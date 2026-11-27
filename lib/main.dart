@@ -2061,12 +2061,24 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
 
 IconData _readerItemIcon(_LibraryItem item) {
   final id = item.id.toLowerCase();
-  if (id.startsWith('taqib_')) return Icons.self_improvement_rounded;
-  if (id.contains('ziyarat') || id.contains('visit')) return Icons.mosque_rounded;
-  if (id.contains('sahifa') || id.contains('sajjad')) return Icons.article_rounded;
-  if (id.contains('daily') || id.contains('day')) return Icons.today_rounded;
-  if (id.contains('wasaya') || id.contains('advice')) return Icons.format_quote_rounded;
-  if (id.contains('dua')) return Icons.volunteer_activism_rounded;
+  if (id.startsWith('taqib_')) {
+    return Icons.self_improvement_rounded;
+  }
+  if (id.contains('ziyarat') || id.contains('visit')) {
+    return Icons.mosque_rounded;
+  }
+  if (id.contains('sahifa') || id.contains('sajjad')) {
+    return Icons.article_rounded;
+  }
+  if (id.contains('daily') || id.contains('day')) {
+    return Icons.today_rounded;
+  }
+  if (id.contains('wasaya') || id.contains('advice')) {
+    return Icons.format_quote_rounded;
+  }
+  if (id.contains('dua')) {
+    return Icons.volunteer_activism_rounded;
+  }
   return Icons.auto_stories_rounded;
 }
 
