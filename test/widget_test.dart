@@ -594,7 +594,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('مناجاة الإمام السجاد (ع)'), findsWidgets);
-    expect(find.byIcon(Icons.history_edu_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.spa_rounded), findsOneWidget);
     await tapHomeSection(tester, 'مناجاة الإمام السجاد (ع)');
     await tester.pumpAndSettle();
 
