@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 Future<void> tapHomeSection(WidgetTester tester, String title) async {
-  final target = find.text(title).first;
+  final target = find.text(title).last;
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();
   await tester.tap(target);
