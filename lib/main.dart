@@ -657,7 +657,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                         child: Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            key: ValueKey('calendar_day_' + _dateKey(date)),
+                            key: ValueKey('calendar_day_${_dateKey(date)}'),
                             borderRadius: BorderRadius.circular(11),
                             onTap: () => setState(() => _selectedDate = date),
                             child: Container(
