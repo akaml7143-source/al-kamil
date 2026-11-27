@@ -148,6 +148,31 @@ void main() {
 
 
 
+  testWidgets('reader search can be cleared and reader offers return-to-top control',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'الزيارات');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reader_scroll_to_top')), findsOneWidget);
+    await tester.enterText(
+      find.byKey(const Key('reader_text_search')),
+      'السَّلامُ عَلَيْكَ',
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('reader_clear_search')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('reader_clear_search')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('النتائج:'), findsNothing);
+    expect(find.byKey(const Key('reader_clear_search')), findsNothing);
+  });
+
   testWidgets('reader search highlights matches and bookmark updates immediately',
       (tester) async {
     SharedPreferences.setMockInitialValues({});

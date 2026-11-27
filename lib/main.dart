@@ -2588,6 +2588,22 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton.small(
+          key: const Key('reader_scroll_to_top'),
+          tooltip: 'العودة إلى بداية الصفحة',
+          backgroundColor: twilightSurface,
+          foregroundColor: gold,
+          onPressed: () {
+            if (_readerScrollController.hasClients) {
+              _readerScrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeOutCubic,
+              );
+            }
+          },
+          child: const Icon(Icons.vertical_align_top_rounded),
+        ),
         body: ListView(
           key: const Key('reader_scroll_view'),
           controller: _readerScrollController,
@@ -2668,6 +2684,17 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                         ? null
                         : 'النتائج: ${_countMatches(text, _readerSearch)}',
                     suffixStyle: const TextStyle(color: gold, fontSize: 11),
+                    suffixIcon: _readerSearch.trim().isEmpty
+                        ? null
+                        : IconButton(
+                            key: const Key('reader_clear_search'),
+                            tooltip: 'مسح البحث داخل النص',
+                            onPressed: () {
+                              _readerSearchController.clear();
+                              setState(() => _readerSearch = '');
+                            },
+                            icon: const Icon(Icons.close_rounded, color: mutedIvory),
+                          ),
                     filled: true,
                     fillColor: Colors.transparent,
                     border: OutlineInputBorder(
