@@ -571,9 +571,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
   static const Map<String, String> _verifiedOccasions = {};
 
   String _dateKey(DateTime date) =>
-      date.year.toString().padLeft(4, '0') + '-' +
-      date.month.toString().padLeft(2, '0') + '-' +
-      date.day.toString().padLeft(2, '0');
+      '\${date.year.toString().padLeft(4, '0')}-\${date.month.toString().padLeft(2, '0')}-\${date.day.toString().padLeft(2, '0')}';
 
   String _arabicDigits(String value) {
     const digits = '٠١٢٣٤٥٦٧٨٩';
@@ -619,7 +617,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                       Text(_arabicMonths[monthIndex], key: const Key('calendar_month_ar'), style: const TextStyle(color: ivory, fontSize: 19, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
                       Text(_englishMonths[monthIndex], key: const Key('calendar_month_en'), style: const TextStyle(color: mutedIvory, fontSize: 12, letterSpacing: 0.5)),
-                      Text(_arabicDigits(_displayedMonth.year.toString()) + ' • ' + _displayedMonth.year.toString(), style: const TextStyle(color: turquoise, fontSize: 11)),
+                      Text('\${_arabicDigits(_displayedMonth.year.toString())} • \${_displayedMonth.year}', style: const TextStyle(color: turquoise, fontSize: 11)),
                     ])),
                     IconButton(key: const Key('calendar_next_month'), tooltip: 'الشهر التالي',
                       onPressed: () => _changeMonth(1),
@@ -652,8 +650,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                       final isSelected = date.year == _selectedDate.year && date.month == _selectedDate.month && date.day == _selectedDate.day;
                       final occasion = _verifiedOccasions.containsKey(_dateKey(date));
                       final numberColor = occasion ? const Color(0xFFFFC66D) : isToday ? ivory : inMonth ? mutedIvory : mutedIvory.withValues(alpha: 0.28);
-                      final accessibleLabel = date.day.toString() + '/' + date.month.toString() + '/' + date.year.toString() +
-                          (occasion ? '، ' + _verifiedOccasions[_dateKey(date)]! : '');
+                      final accessibleLabel = '\${date.day}/\${date.month}/\${date.year}\${occasion ? '، \${_verifiedOccasions[_dateKey(date)]}' : ''}';
                       return Semantics(
                         button: true,
                         label: accessibleLabel,
@@ -698,8 +695,8 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   const Text('تفاصيل اليوم / Selected day', style: TextStyle(color: ivory, fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(_arabicDigits(_selectedDate.day.toString()) + ' ' + _arabicMonths[_selectedDate.month - 1] + ' ' + _arabicDigits(_selectedDate.year.toString()), style: const TextStyle(color: ivory, fontSize: 14)),
-                  Text(_englishMonths[_selectedDate.month - 1] + ' ' + _selectedDate.day.toString() + ', ' + _selectedDate.year.toString(), style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                  Text('\${_arabicDigits(_selectedDate.day.toString())} \${_arabicMonths[_selectedDate.month - 1]} \${_arabicDigits(_selectedDate.year.toString())}', style: const TextStyle(color: ivory, fontSize: 14)),
+                  Text('\${_englishMonths[_selectedDate.month - 1]} \${_selectedDate.day}, \${_selectedDate.year}', style: const TextStyle(color: mutedIvory, fontSize: 11)),
                   const SizedBox(height: 9),
                   if (selectedOccasion != null)
                     Text(selectedOccasion, style: const TextStyle(color: Color(0xFFFFC66D), fontSize: 13, fontWeight: FontWeight.bold))
@@ -1023,42 +1020,6 @@ class _TwilightGlassOrb extends StatelessWidget {
             ),
             alignment: Alignment.center,
             child: Icon(icon, color: const Color(0xFFF4E9D2), size: size * 0.60),
-          ),
-        ),
-      );
-}
-
-class _HomeRoundAction extends StatelessWidget {
-  const _HomeRoundAction({required this.icon, required this.label, required this.onTap});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: _TwilightGlassPanel(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            radius: 16,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(icon, color: const Color(0xFFE8D5A8), size: 26),
-                const SizedBox(height: 5),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Color(0xFFF4F0E7),
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       );
