@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'prayer_times_screen.dart';
 import 'qibla_screen.dart';
+import 'munajat_data.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:qcf_quran_plus/qcf_quran_plus.dart';
@@ -209,7 +210,7 @@ class HomePage extends StatelessWidget {
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('المسبحة الإلكترونية', Icons.grain_rounded),
-    _Section('الصحيفة السجادية', Icons.article_rounded),
+    _Section('مناجاة الإمام السجاد (ع)', Icons.history_edu_rounded),
     _Section('التقويم', Icons.calendar_month_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
@@ -227,7 +228,7 @@ class HomePage extends StatelessWidget {
       'المفضلة' => const LibrarySectionScreen(title: 'المفضلة'),
       'الزيارات' ||
       'تعقيبات الصلوات' ||
-      'الصحيفة السجادية' => LibrarySectionScreen(title: section.title),
+      'مناجاة الإمام السجاد (ع)' => LibrarySectionScreen(title: section.title),
       'الإعدادات' => const SettingsScreen(),
       _ => SectionPage(title: section.title),
     };
@@ -729,7 +730,7 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
     _Section('الزيارات', Icons.mosque_rounded),
     _Section('الأدعية', Icons.volunteer_activism_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
-    _Section('الصحيفة السجادية', Icons.article_rounded),
+    _Section('مناجاة الإمام السجاد (ع)', Icons.history_edu_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
   ];
 
@@ -2042,7 +2043,7 @@ const Map<String, List<_LibraryItem>> _libraryItems = {
     _LibraryItem(id: 'taqib_maghrib', title: 'تعقيبات صلاة المغرب', description: 'الأذكار والأدعية المأثورة بعد فريضة المغرب', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
     _LibraryItem(id: 'taqib_isha', title: 'تعقيبات صلاة العشاء', description: 'الأذكار والأدعية المأثورة بعد فريضة العشاء', source: 'المصدر الفقهي: السيد علي الحسيني السيستاني، التعليقة على العروة الوثقى، ج 2، فصل في التعقيب، المسائل 1690–1694. https://www.sistani.org/arabic/book/23/1900/'),
   ],
-  'الصحيفة السجادية': [
+  'مناجاة الإمام السجاد (ع)': [
     _LibraryItem(id: 'sahifa_intro', title: 'فهرس أدعية الصحيفة', description: 'فهرس موضوعي للصحيفة السجادية', source: 'الصحيفة السجادية؛ تُضاف أرقام الأدعية بعد المطابقة'),
   ],
   'وصايا أهل البيت': [
@@ -2105,6 +2106,7 @@ const String _commonTaqibatText = '''
 ''';
 
 const Map<String, String> _verifiedPrayerTexts = {
+  ...munajatTexts,
   'taqib_fajr': '''$_commonTaqibatText
 
 خصوصية تعقيب صلاة الفجر
@@ -2533,7 +2535,7 @@ IconData _readerItemIcon(_LibraryItem item) {
     return Icons.mosque_rounded;
   }
   if (id.contains('sahifa') || id.contains('sajjad')) {
-    return Icons.article_rounded;
+    return Icons.history_edu_rounded;
   }
   if (id.contains('daily') || id.contains('day')) {
     return Icons.today_rounded;
