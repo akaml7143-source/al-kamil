@@ -222,6 +222,9 @@ class _WelcomeGateState extends State<WelcomeGate> {
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  static final GlobalKey<_DailyDashboardState> _dailyDashboardKey =
+      GlobalKey<_DailyDashboardState>();
+
   static const List<_Section> _sections = [
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('الصلاة والقبلة', Icons.access_time_filled_rounded),
@@ -253,7 +256,9 @@ class HomePage extends StatelessWidget {
       'الإعدادات' => const SettingsScreen(),
       _ => SectionPage(title: section.title),
     };
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (_) => page))
+        .then((_) => _dailyDashboardKey.currentState?.refresh());
   }
 
   @override
@@ -409,6 +414,14 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                         SizedBox(height: compact ? 13 : 17),
+                        _DailyDashboard(
+                          key: _dailyDashboardKey,
+                          onOpenQuran: () => _openSection(
+                            context,
+                            const _Section('القرآن الكريم', Icons.menu_book_rounded),
+                          ),
+                        ),
+                        SizedBox(height: compact ? 13 : 17),
                         Row(
                           children: [
                             const Text('أقسام الكامل', style: TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.w700)),
@@ -469,7 +482,7 @@ class HomePage extends StatelessWidget {
                 _HomeNavItem(icon: Icons.home_rounded, label: 'الرئيسية', selected: true, onTap: () {}),
                 _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
                 _HomeNavItem(icon: Icons.explore_rounded, label: 'الصلاة والقبلة', onTap: () => _openSection(context, const _Section('الصلاة والقبلة', Icons.access_time_filled_rounded))),
-                _HomeNavItem(icon: Icons.library_books_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
+                _HomeNavItem(icon: Icons.library_books_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen())).then((_) => _dailyDashboardKey.currentState?.refresh())),
                 _HomeNavItem(icon: Icons.tune_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
@@ -478,6 +491,158 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DailyDashboard extends StatefulWidget {
+  const _DailyDashboard({super.key, required this.onOpenQuran});
+
+  final VoidCallback onOpenQuran;
+
+  @override
+  State<_DailyDashboard> createState() => _DailyDashboardState();
+}
+
+class _DailyDashboardState extends State<_DailyDashboard> {
+  int _lastPage = 0;
+  int _goal = 20;
+  int _pagesToday = 0;
+  int _tasbeehTotal = 0;
+  int _pendingReminders = 0;
+  bool _loading = true;
+
+  String get _today => DateTime.now().toIso8601String().substring(0, 10);
+
+  @override
+  void initState() {
+    super.initState();
+    refresh();
+  }
+
+  Future<void> refresh() async {
+    final preferences = await SharedPreferences.getInstance();
+    final reminderRaw = preferences.getString('local_reminders_v1') ?? '[]';
+    var pending = 0;
+    try {
+      final decoded = jsonDecode(reminderRaw);
+      if (decoded is List) {
+        for (final item in decoded.whereType<Map>()) {
+          if (item['done'] != true) pending++;
+        }
+      }
+    } catch (_) {
+      pending = 0;
+    }
+
+    var tasbeeh = 0;
+    for (final key in preferences.getKeys()) {
+      if (!key.startsWith('tasbeeh_count_')) continue;
+      final value = preferences.get(key);
+      if (value is int && value > 0) tasbeeh += value;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      final last = preferences.getInt('quran_last_page') ?? 0;
+      _lastPage = last >= 1 && last <= 604 ? last : 0;
+      _goal = (preferences.getInt('quran_daily_goal') ?? 20).clamp(1, 100);
+      _pagesToday = preferences.getString('quran_daily_date') == _today
+          ? (preferences.getInt('quran_daily_pages') ?? 0).clamp(0, 604)
+          : 0;
+      _tasbeehTotal = tasbeeh;
+      _pendingReminders = pending;
+      _loading = false;
+    });
+  }
+
+  Widget _metric(IconData icon, String label, String value) => Row(
+        children: [
+          _TwilightGlassOrb(icon: icon, size: 34),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: const TextStyle(color: mutedIvory, fontSize: 10)),
+                const SizedBox(height: 2),
+                Text(value, style: const TextStyle(color: ivory, fontSize: 15, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+        ],
+      );
+
+  @override
+  Widget build(BuildContext context) => _TwilightGlassPanel(
+        key: const Key('home_daily_dashboard'),
+        padding: const EdgeInsets.fromLTRB(15, 14, 15, 14),
+        radius: 22,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Text('يومي في الكامل', style: TextStyle(color: ivory, fontSize: 17, fontWeight: FontWeight.bold)),
+                ),
+                IconButton(
+                  key: const Key('home_dashboard_refresh'),
+                  tooltip: 'تحديث الملخص',
+                  onPressed: refresh,
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(Icons.refresh_rounded, color: turquoise, size: 21),
+                ),
+              ],
+            ),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Center(child: CircularProgressIndicator(color: turquoise)),
+              )
+            else ...[
+              Row(
+                children: [
+                  Expanded(child: _metric(Icons.menu_book_rounded, 'آخر صفحة في المصحف', _lastPage == 0 ? 'لم تبدأ بعد' : '$_lastPage من 604')),
+                  const SizedBox(width: 8),
+                  Expanded(child: _metric(Icons.auto_stories_rounded, 'الورد اليوم', '$_pagesToday / $_goal صفحة')),
+                ],
+              ),
+              const SizedBox(height: 13),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: (_pagesToday / _goal).clamp(0.0, 1.0),
+                  minHeight: 6,
+                  color: turquoise,
+                  backgroundColor: twilightBorder,
+                ),
+              ),
+              const SizedBox(height: 13),
+              Row(
+                children: [
+                  Expanded(child: _metric(Icons.fingerprint_rounded, 'مجموع التسبيح', _tasbeehTotal.toString())),
+                  const SizedBox(width: 8),
+                  Expanded(child: _metric(Icons.notifications_active_rounded, 'التذكيرات المتبقية', _pendingReminders.toString())),
+                ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  key: const Key('home_dashboard_continue_quran'),
+                  onPressed: widget.onOpenQuran,
+                  icon: const Icon(Icons.menu_book_rounded),
+                  label: Text(_lastPage == 0 ? 'ابدأ قراءة القرآن' : 'متابعة المصحف • صفحة $_lastPage'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: ivory,
+                    side: const BorderSide(color: twilightBorder),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(13)),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
 }
 
 class PrayerQiblaHubScreen extends StatelessWidget {

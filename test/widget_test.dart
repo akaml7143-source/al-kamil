@@ -612,6 +612,30 @@ void main() {
     expect(find.textContaining('إِلهِي أَلْبَسَتْنِي الخَطايا'), findsOneWidget);
   });
 
+  testWidgets('home daily dashboard summarizes locally saved progress', (tester) async {
+    final today = DateTime.now().toIso8601String().substring(0, 10);
+    SharedPreferences.setMockInitialValues({
+      'quran_last_page': 42,
+      'quran_daily_date': today,
+      'quran_daily_goal': 15,
+      'quran_daily_pages': 7,
+      'tasbeeh_count_takbir': 3,
+      'tasbeeh_count_salawat': 5,
+      'local_reminders_v1': '[{"title":"ورد","at":"2026-12-01T08:00:00","done":false},{"title":"منجز","at":"2026-12-01T09:00:00","done":true}]',
+    });
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('home_daily_dashboard')), findsOneWidget);
+    expect(find.text('42 من 604'), findsOneWidget);
+    expect(find.text('7 / 15 صفحة'), findsOneWidget);
+    expect(find.text('8'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('متابعة المصحف • صفحة 42'), findsOneWidget);
+  });
+
   test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
     final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
     final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
