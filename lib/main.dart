@@ -1837,7 +1837,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
                       radius: 19,
                       child: Row(children: [
-                        Container(width: 44, height: 44, decoration: BoxDecoration(shape: BoxShape.circle, gradient: const LinearGradient(colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)]), boxShadow: [BoxShadow(color: turquoise.withValues(alpha: 0.18), blurRadius: 14)]), child: const Icon(Icons.auto_stories_rounded, color: Color(0xFF292345), size: 23)),
+                        const _TwilightGlassOrb(icon: Icons.auto_stories_rounded, size: 44),
                         const SizedBox(width: 11),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(widget.title, style: const TextStyle(color: ivory, fontSize: 15, fontWeight: FontWeight.bold)),
@@ -1875,16 +1875,49 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                         ? Center(
                             child: Padding(
                               padding: const EdgeInsets.all(24),
-                              child: Text(
-                                widget.title == 'المفضلة'
-                                    ? 'لم تضف عناصر إلى المفضلة بعد.'
-                                    : widget.title == 'آخر قراءة'
-                                        ? 'سيظهر هنا آخر عنصر فتحته من المكتبة.'
-                                        : 'لا توجد نتائج مطابقة.',
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: mutedIvory,
-                                  height: 1.8,
+                              child: _TwilightGlassPanel(
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                                radius: 22,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _TwilightGlassOrb(
+                                      icon: widget.title == 'المفضلة'
+                                          ? Icons.bookmark_border_rounded
+                                          : widget.title == 'آخر قراءة'
+                                              ? Icons.history_rounded
+                                              : Icons.search_off_rounded,
+                                      size: 58,
+                                    ),
+                                    const SizedBox(height: 14),
+                                    Text(
+                                      widget.title == 'المفضلة'
+                                          ? 'قائمة المفضلة فارغة'
+                                          : widget.title == 'آخر قراءة'
+                                              ? 'لا توجد قراءة سابقة'
+                                              : 'لا توجد نتائج مطابقة',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: ivory,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.title == 'المفضلة'
+                                          ? 'يمكنك حفظ النصوص المهمة بالضغط على علامة الحفظ بجانب كل عنصر.'
+                                          : widget.title == 'آخر قراءة'
+                                              ? 'عند فتح أي نص من المكتبة سيظهر هنا لتعود إليه بسهولة.'
+                                              : 'جرّب تغيير عبارة البحث أو حذفها لعرض عناصر القسم.',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: mutedIvory,
+                                        height: 1.8,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -1909,26 +1942,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                                       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
                                       child: Row(
                                         children: [
-                                          Container(
-                                            width: 46,
-                                            height: 46,
-                                            decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              gradient: const LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                colors: [Color(0xFFD9D0FF), Color(0xFF7664C6)],
-                                              ),
-                                              border: Border.all(color: twilightBorder),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: turquoise.withValues(alpha: 0.16),
-                                                  blurRadius: 12,
-                                                ),
-                                              ],
-                                            ),
-                                            child: const Icon(Icons.menu_book_rounded, color: Color(0xFF292345), size: 22),
-                                          ),
+                                          const _TwilightGlassOrb(icon: Icons.menu_book_rounded, size: 46),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
@@ -2161,7 +2175,7 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.auto_stories_rounded, color: turquoise, size: 22),
+                      const _TwilightGlassOrb(icon: Icons.auto_stories_rounded, size: 42),
                       const SizedBox(width: 9),
                       Expanded(
                         child: Text(
