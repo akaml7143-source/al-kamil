@@ -491,9 +491,14 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class LibraryHubScreen extends StatelessWidget {
+class LibraryHubScreen extends StatefulWidget {
   const LibraryHubScreen({super.key});
 
+  @override
+  State<LibraryHubScreen> createState() => _LibraryHubScreenState();
+}
+
+class _LibraryHubScreenState extends State<LibraryHubScreen> {
   static const List<_Section> _categories = [
     _Section('القرآن الكريم', Icons.menu_book_rounded),
     _Section('الزيارات', Icons.mosque_rounded),
@@ -505,17 +510,37 @@ class LibraryHubScreen extends StatelessWidget {
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
   ];
 
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  List<_Section> get _visibleCategories {
+    final query = _query.trim().toLowerCase();
+    if (query.isEmpty) return _categories;
+    return _categories
+        .where((section) => section.title.toLowerCase().contains(query))
+        .toList();
+  }
+
   void _openCategory(BuildContext context, _Section section) {
-    final Widget page = section.title == 'القرآن الكريم'
-        ? const QuranScreen()
-        : LibrarySectionScreen(title: section.title);
+    final Widget page = switch (section.title) {
+      'القرآن الكريم' => const QuranScreen(),
+      'تعليم صلاة الليل' => const NightPrayerTutorialScreen(),
+      _ => LibrarySectionScreen(title: section.title),
+    };
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => page),
     );
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final categories = _visibleCategories;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -621,40 +646,114 @@ class LibraryHubScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    const Text(
-                      'الأقسام',
-                      style: TextStyle(
-                        color: Color(0xFFF4F0E7),
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'الأقسام',
+                            style: TextStyle(
+                              color: Color(0xFFF4F0E7),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${categories.length} من ${_categories.length}',
+                          style: const TextStyle(
+                            color: mutedIvory,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    _TwilightGlassPanel(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      radius: 17,
+                      child: TextField(
+                        key: const Key('library_category_search'),
+                        controller: _searchController,
+                        onChanged: (value) => setState(() => _query = value),
+                        style: const TextStyle(color: ivory, fontSize: 13),
+                        decoration: InputDecoration(
+                          hintText: 'ابحث عن قسم في المكتبة...',
+                          hintStyle: const TextStyle(color: mutedIvory, fontSize: 12),
+                          prefixIcon: const Icon(Icons.search_rounded, color: turquoise),
+                          suffixIcon: _query.isEmpty
+                              ? null
+                              : IconButton(
+                                  tooltip: 'مسح البحث',
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _query = '');
+                                  },
+                                  icon: const Icon(Icons.close_rounded, color: mutedIvory),
+                                ),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 11),
                   ]),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.12,
+              if (categories.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(28),
+                      child: _TwilightGlassPanel(
+                        radius: 20,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.search_off_rounded, color: mutedIvory, size: 34),
+                            SizedBox(height: 10),
+                            Text(
+                              'لا توجد أقسام مطابقة',
+                              style: TextStyle(color: ivory, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 5),
+                            Text(
+                              'جرّب كلمة بحث أخرى',
+                              style: TextStyle(color: mutedIvory, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final section = _categories[index];
-                      return _SectionTile(
-                        section: section,
-                        compact: false,
-                        onTap: () => _openCategory(context, section),
-                      );
-                    },
-                    childCount: _categories.length,
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 30),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 1.12,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final section = categories[index];
+                        return _SectionTile(
+                          section: section,
+                          compact: false,
+                          onTap: () => _openCategory(context, section),
+                        );
+                      },
+                      childCount: categories.length,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
@@ -3106,6 +3205,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString('library_last_read', item.id);
     if (!mounted) return;
+    if (item.id.startsWith('night_')) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const NightPrayerTutorialScreen(),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => _LibraryItemDetail(
