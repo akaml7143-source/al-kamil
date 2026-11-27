@@ -5,16 +5,36 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Records each distinct Mushaf page read today; revisiting a page never inflates progress.
+Future<void> recordQuranPageRead(int page) async {
+  if (page < 1 || page > 604) return;
+  final preferences = await SharedPreferences.getInstance();
+  final today = DateTime.now().toIso8601String().substring(0, 10);
+  final sameDay = preferences.getString('quran_daily_date') == today;
+  final pages = sameDay
+      ? (preferences.getStringList('quran_daily_read_pages_v1') ?? <String>[]).toSet()
+      : <String>{};
+  final base = sameDay
+      ? (preferences.getInt('quran_daily_auto_base_v1') ??
+          preferences.getInt('quran_daily_pages') ?? 0)
+      : 0;
+  pages.add(page.toString());
+  await preferences.setString('quran_daily_date', today);
+  await preferences.setStringList('quran_daily_read_pages_v1', pages.toList()..sort());
+  await preferences.setInt('quran_daily_auto_base_v1', base);
+  await preferences.setInt('quran_daily_pages', base + pages.length);
+}
+
 const Color _toolBg=Color(0xFF111329),_toolPanel=Color(0xC9252B4A),_toolAccent=Color(0xFF9D8CFF),_toolText=Color(0xFFF4F1FF),_toolMuted=Color(0xFFC6C2DC),_toolBorder=Color(0x66D5C9FF);
 class ProductivityToolsScreen extends StatefulWidget{
- const ProductivityToolsScreen({super.key,this.initialTab=0}); final int initialTab;
+ const ProductivityToolsScreen({super.key,this.initialTab=0,this.onOpenQuranPage}); final int initialTab; final ValueChanged<int>? onOpenQuranPage;
  @override State<ProductivityToolsScreen> createState()=>_ProductivityToolsScreenState();
 }
 class _ProductivityToolsScreenState extends State<ProductivityToolsScreen> with SingleTickerProviderStateMixin{
  late final TabController tabs;
  @override void initState(){super.initState();tabs=TabController(length:3,vsync:this,initialIndex:widget.initialTab.clamp(0,2));}
  @override void dispose(){tabs.dispose();super.dispose();}
- @override Widget build(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_toolBg,appBar:AppBar(title:const Text('أدوات الكامل'),backgroundColor:_toolPanel,bottom:TabBar(controller:tabs,isScrollable:true,indicatorColor:_toolAccent,tabs:const[Tab(text:'التذكيرات'),Tab(text:'الورد والختمة'),Tab(text:'النسخ الاحتياطي')])),body:TabBarView(controller:tabs,children:const[_Reminders(),_QuranPlan(),_Backup()])));
+ @override Widget build(BuildContext context)=>Directionality(textDirection:TextDirection.rtl,child:Scaffold(backgroundColor:_toolBg,appBar:AppBar(title:const Text('أدوات الكامل'),backgroundColor:_toolPanel,bottom:TabBar(controller:tabs,isScrollable:true,indicatorColor:_toolAccent,tabs:const[Tab(text:'التذكيرات'),Tab(text:'الورد والختمة'),Tab(text:'النسخ الاحتياطي')])),body:TabBarView(controller:tabs,children:[const _Reminders(),_QuranPlan(onOpenPage:widget.onOpenQuranPage),const _Backup()])));
 }
 class _ToolCard extends StatelessWidget{const _ToolCard(this.child);final Widget child;@override Widget build(BuildContext context)=>Container(padding:const EdgeInsets.all(14),decoration:BoxDecoration(color:_toolPanel,borderRadius:BorderRadius.circular(18),border:Border.all(color:_toolBorder)),child:child);}
 class _Reminders extends StatefulWidget{const _Reminders();@override State<_Reminders> createState()=>_RemindersState();}
@@ -32,7 +52,7 @@ class _RemindersState extends State<_Reminders>{
  if(items.isEmpty)const _ToolCard(Text('لا توجد تذكيرات بعد.',style:TextStyle(color:_toolMuted))),
  ...List.generate(items.length,(i){final x=items[i],at=DateTime.parse(x['at'] as String),done=x['done'] as bool? ?? false;return Padding(padding:const EdgeInsets.only(top:8),child:_ToolCard(Row(children:[Checkbox(value:done,onChanged:(_){setState(()=>x['done']=!done);save();}),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(x['title'] as String,style:const TextStyle(color:_toolText)),Text(at.toLocal().toString().substring(0,16),style:const TextStyle(color:_toolMuted,fontSize:11)),if(!done&&at.isBefore(DateTime.now()))const Text('موعد التذكير قد حان',style:TextStyle(color:Colors.orangeAccent,fontSize:10))])),IconButton(onPressed:(){setState(()=>items.removeAt(i));save();},icon:const Icon(Icons.delete_outline,color:_toolMuted))])));}),
  ]);}
-class _QuranPlan extends StatefulWidget{const _QuranPlan();@override State<_QuranPlan> createState()=>_QuranPlanState();}
+class _QuranPlan extends StatefulWidget{const _QuranPlan({this.onOpenPage});final ValueChanged<int>? onOpenPage;@override State<_QuranPlan> createState()=>_QuranPlanState();}
 class _QuranPlanState extends State<_QuranPlan>{
  int goal=20,read=0,last=1;List<int> marks=[];String get today=>DateTime.now().toIso8601String().substring(0,10);
  @override void initState(){super.initState();load();}
@@ -40,8 +60,8 @@ class _QuranPlanState extends State<_QuranPlan>{
  Future<void> save()async{final p=await SharedPreferences.getInstance();await p.setInt('quran_daily_goal',goal);await p.setInt('quran_daily_pages',read);await p.setString('quran_daily_date',today);await p.setStringList('quran_bookmarks_v1',marks.map((v)=>v.toString()).toList());}
  Future<void> bookmark()async{setState((){if(!marks.contains(last))marks.add(last);marks.sort();});await save();}
  @override Widget build(BuildContext context)=>ListView(padding:const EdgeInsets.all(14),children:[
- _ToolCard(Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('الورد اليومي وخطة الختمة',style:TextStyle(color:_toolText,fontSize:17,fontWeight:FontWeight.bold)),const SizedBox(height:8),Text('الهدف: '+goal.toString()+' صفحة • المنجز اليوم: '+read.toString(),style:const TextStyle(color:_toolMuted)),const SizedBox(height:8),LinearProgressIndicator(value:(read/goal).clamp(0.0,1.0),color:_toolAccent,backgroundColor:_toolBorder),const SizedBox(height:8),Text('المتبقي اليوم: '+(goal-read).clamp(0,goal).toString()+' صفحة • مدة الختم التقريبية: '+(604/goal).ceil().toString()+' يوماً',style:const TextStyle(color:_toolMuted,fontSize:11)),Wrap(spacing:7,children:[FilledButton.icon(onPressed:()async{setState(()=>read=(read+1).clamp(0,604));await save();},icon:const Icon(Icons.add),label:const Text('سجل صفحة')),OutlinedButton.icon(onPressed:read==0?null:()async{setState(()=>read--);await save();},icon:const Icon(Icons.remove),label:const Text('تراجع')),TextButton(onPressed:()async{final c=TextEditingController(text:goal.toString());final v=await showDialog<int>(context:context,builder:(ctx)=>AlertDialog(title:const Text('الورد اليومي'),content:TextField(controller:c,keyboardType:TextInputType.number),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('إلغاء')),TextButton(onPressed:()=>Navigator.pop(ctx,int.tryParse(c.text)),child:const Text('حفظ'))]));c.dispose();if(v!=null&&v>0&&v<=100){setState(()=>goal=v);await save();}},child:const Text('تعديل الهدف'))]) ])),
- const SizedBox(height:10),_ToolCard(Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('العلامات المرجعية • آخر صفحة: '+last.toString(),style:const TextStyle(color:_toolText,fontWeight:FontWeight.bold)),OutlinedButton.icon(onPressed:bookmark,icon:const Icon(Icons.bookmark_add),label:const Text('حفظ آخر صفحة')),if(marks.isEmpty)const Text('لا توجد علامات بعد.',style:TextStyle(color:_toolMuted)),...marks.map((v)=>ListTile(dense:true,title:Text('صفحة '+v.toString(),style:const TextStyle(color:_toolText)),trailing:IconButton(onPressed:()async{setState(()=>marks.remove(v));await save();},icon:const Icon(Icons.delete_outline,color:_toolMuted))))])),
+ _ToolCard(Column(crossAxisAlignment:CrossAxisAlignment.start,children:[const Text('الورد اليومي وخطة الختمة',style:TextStyle(color:_toolText,fontSize:17,fontWeight:FontWeight.bold)),const SizedBox(height:8),Text('الهدف: '+goal.toString()+' صفحة • المنجز اليوم: '+read.toString(),style:const TextStyle(color:_toolMuted)),const SizedBox(height:8),LinearProgressIndicator(value:(read/goal).clamp(0.0,1.0),color:_toolAccent,backgroundColor:_toolBorder),const SizedBox(height:8),Text('المتبقي اليوم: '+(goal-read).clamp(0,goal).toString()+' صفحة • مدة الختم التقريبية: '+(604/goal).ceil().toString()+' يوماً',style:const TextStyle(color:_toolMuted,fontSize:11)),Wrap(spacing:7,children:[const Padding(padding:EdgeInsets.only(top:4),child:Text('يُحدَّث الإنجاز تلقائياً عند تقليب صفحات المصحف، وتُحتسب الصفحة مرة واحدة في اليوم.',style:TextStyle(color:_toolMuted,fontSize:11))),OutlinedButton.icon(onPressed:read==0?null:()async{setState(()=>read--);await save();},icon:const Icon(Icons.remove),label:const Text('تراجع')),TextButton(onPressed:()async{final c=TextEditingController(text:goal.toString());final v=await showDialog<int>(context:context,builder:(ctx)=>AlertDialog(title:const Text('الورد اليومي'),content:TextField(controller:c,keyboardType:TextInputType.number),actions:[TextButton(onPressed:()=>Navigator.pop(ctx),child:const Text('إلغاء')),TextButton(onPressed:()=>Navigator.pop(ctx,int.tryParse(c.text)),child:const Text('حفظ'))]));c.dispose();if(v!=null&&v>0&&v<=100){setState(()=>goal=v);await save();}},child:const Text('تعديل الهدف'))]) ])),
+ const SizedBox(height:10),_ToolCard(Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text('العلامات المرجعية • آخر صفحة: '+last.toString(),style:const TextStyle(color:_toolText,fontWeight:FontWeight.bold)),OutlinedButton.icon(onPressed:bookmark,icon:const Icon(Icons.bookmark_add),label:const Text('حفظ آخر صفحة')),if(marks.isEmpty)const Text('لا توجد علامات بعد.',style:TextStyle(color:_toolMuted)),...marks.map((v)=>ListTile(dense:true,onTap:widget.onOpenPage==null?null:()=>widget.onOpenPage!(v),title:Text('صفحة '+v.toString(),style:const TextStyle(color:_toolText)),trailing:IconButton(onPressed:()async{setState(()=>marks.remove(v));await save();},icon:const Icon(Icons.delete_outline,color:_toolMuted))))])),
  ]);}
 class _Backup extends StatefulWidget{const _Backup();@override State<_Backup> createState()=>_BackupState();}
 class _BackupState extends State<_Backup>{

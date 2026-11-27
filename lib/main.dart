@@ -1382,7 +1382,7 @@ class _QuranScreenState extends State<QuranScreen> {
                       Text('صفحة $_lastReadPage من 604', style: const TextStyle(color: mutedIvory, fontSize: 11)),
                     ])),
                     TextButton.icon(onPressed: () => _goToPage(_lastReadPage), icon: const Icon(Icons.play_arrow_rounded, size: 18), label: const Text('متابعة')),
-                    IconButton(tooltip: 'الورد والختمة', onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProductivityToolsScreen(initialTab: 1))), icon: const Icon(Icons.bookmark_add_rounded, color: turquoise)),
+                    IconButton(tooltip: 'الورد والختمة', onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ProductivityToolsScreen(initialTab: 1, onOpenQuranPage: (page) { Navigator.of(context).pop(); _goToPage(page); }))), icon: const Icon(Icons.bookmark_add_rounded, color: turquoise)),
                     IconButton(tooltip: 'فهرس السور', onPressed: _showSurahIndex, icon: const Icon(Icons.list_alt_rounded, color: turquoise)),
                   ],
                 ),
@@ -1432,6 +1432,7 @@ class _QuranScreenState extends State<QuranScreen> {
                         final current = page + 1;
                         setState(() => _currentPage = current);
                         _saveLastReadPage(current);
+                        recordQuranPageRead(current);
                       },
                     )
                   : Center(
