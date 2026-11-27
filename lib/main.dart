@@ -481,7 +481,7 @@ class HomePage extends StatelessWidget {
                 _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
                 _HomeNavItem(icon: Icons.explore_rounded, label: 'القبلة', onTap: () => _openSection(context, const _Section('القبلة', Icons.explore_rounded))),
                 _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
-                _HomeNavItem(icon: Icons.person_rounded, label: 'حسابي', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
+                _HomeNavItem(icon: Icons.settings_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
           ),
@@ -580,6 +580,44 @@ class LibraryHubScreen extends StatelessWidget {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _SectionTile(
+                            section: const _Section(
+                              'المفضلة',
+                              Icons.bookmark_rounded,
+                            ),
+                            compact: true,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const LibrarySectionScreen(
+                                  title: 'المفضلة',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _SectionTile(
+                            section: const _Section(
+                              'آخر قراءة',
+                              Icons.history_rounded,
+                            ),
+                            compact: true,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const LibrarySectionScreen(
+                                  title: 'آخر قراءة',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 18),
                     const Text(
