@@ -613,9 +613,17 @@ void main() {
       'مناجاة المعتصمين',
       'مناجاة الزاهدين',
     ]) {
-      expect(find.text(title), findsOneWidget);
+      final titleFinder = find.text(title);
+      await tester.scrollUntilVisible(
+        titleFinder,
+        260,
+        scrollable: find.byType(Scrollable).last,
+      );
+      expect(titleFinder, findsOneWidget);
     }
 
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, 1800));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('مناجاة التائبين'));
     await tester.pumpAndSettle();
     expect(find.textContaining('إِلهِي أَلْبَسَتْنِي الخَطايا'), findsOneWidget);
