@@ -19,12 +19,12 @@ Future<void> scrollHomeUntil(WidgetTester tester, Finder target) async {
 }
 
 Future<void> tapHomeSection(WidgetTester tester, String title) async {
-  final target = find.text(title);
-  await scrollHomeUntil(tester, target);
-  expect(target, findsWidgets);
-  await tester.ensureVisible(target.first);
+  final tile = find.byKey(ValueKey('home_section_$title'));
+  await scrollHomeUntil(tester, tile);
+  expect(tile, findsOneWidget);
+  await tester.ensureVisible(tile);
   await tester.pumpAndSettle();
-  await tester.tap(target.first);
+  await tester.tap(tile);
   await tester.pumpAndSettle();
 }
 
@@ -379,11 +379,7 @@ void main() {
     expect(find.byKey(const Key('prayer_time_isha')), findsOneWidget);
 
     final cityButton = find.byKey(const Key('prayer_city_dropdown'));
-    await tester.scrollUntilVisible(
-      cityButton,
-      400,
-      scrollable: find.byType(Scrollable).last,
-    );
+    await tester.ensureVisible(cityButton);
     await tester.pumpAndSettle();
     await tester.tap(cityButton);
     await tester.pumpAndSettle();
@@ -401,11 +397,7 @@ void main() {
     );
 
     final methodButton = find.byKey(const Key('prayer_method_dropdown'));
-    await tester.scrollUntilVisible(
-      methodButton,
-      400,
-      scrollable: find.byType(Scrollable).last,
-    );
+    await tester.ensureVisible(methodButton);
     await tester.pumpAndSettle();
     await tester.tap(methodButton);
     await tester.pumpAndSettle();
