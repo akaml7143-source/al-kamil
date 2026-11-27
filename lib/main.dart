@@ -2087,12 +2087,15 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
   List<_LibraryItem> get _allItems =>
       _libraryItems.values.expand((items) => items).toList();
 
+  List<_LibraryItem> get _sourceItems =>
+      widget.title == 'المفضلة'
+          ? _allItems.where((item) => _favorites.contains(item.id)).toList()
+          : widget.title == 'آخر قراءة'
+              ? _allItems.where((item) => item.id == _lastReadId).toList()
+              : _libraryItems[widget.title] ?? <_LibraryItem>[];
+
   List<_LibraryItem> get _visibleItems {
-    final source = widget.title == 'المفضلة'
-        ? _allItems.where((item) => _favorites.contains(item.id)).toList()
-        : widget.title == 'آخر قراءة'
-            ? _allItems.where((item) => item.id == _lastReadId).toList()
-            : _libraryItems[widget.title] ?? <_LibraryItem>[];
+    final source = _sourceItems;
     if (_query.trim().isEmpty) return source;
     final query = _query.trim().toLowerCase();
     return source
@@ -2159,6 +2162,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
   @override
   Widget build(BuildContext context) {
     final items = _visibleItems;
+    final totalItems = _sourceItems.length;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -2178,7 +2182,11 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                         const SizedBox(width: 11),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(widget.title, style: const TextStyle(color: ivory, fontSize: 15, fontWeight: FontWeight.bold)),
-                          Text('${items.length} عنصر • بحث ومفضلة وحفظ آخر قراءة', style: const TextStyle(color: mutedIvory, fontSize: 10, height: 1.5)),
+                          Text(
+                            '${items.length} من $totalItems عنصر • بحث ومفضلة وحفظ آخر قراءة',
+                            key: const Key('library_section_count'),
+                            style: const TextStyle(color: mutedIvory, fontSize: 10, height: 1.5),
+                          ),
                         ])),
                         const Icon(Icons.chevron_left_rounded, color: turquoise),
                       ]),
@@ -2190,6 +2198,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       radius: 17,
                       child: TextField(
+                        key: const Key('library_section_search'),
                         controller: _searchController,
                         onChanged: (value) => setState(() => _query = value),
                         style: const TextStyle(color: ivory),
@@ -2197,6 +2206,17 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                           hintText: 'ابحث في هذا القسم...',
                           hintStyle: const TextStyle(color: mutedIvory),
                           prefixIcon: const Icon(Icons.search_rounded, color: turquoise),
+                          suffixIcon: _query.trim().isEmpty
+                              ? null
+                              : IconButton(
+                                  key: const Key('library_section_clear_search'),
+                                  tooltip: 'مسح البحث',
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    setState(() => _query = '');
+                                  },
+                                  icon: const Icon(Icons.close_rounded, color: mutedIvory),
+                                ),
                           filled: true,
                           fillColor: Colors.transparent,
                           border: OutlineInputBorder(
@@ -2401,6 +2421,7 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
   late final ScrollController _readerScrollController;
   double _lastPersistedReaderOffset = 0;
   bool _restoringReaderPosition = false;
+  int _readerProgressPercent = 0;
 
   String? get _verifiedText => _verifiedPrayerTexts[widget.item.id];
 
@@ -2440,6 +2461,9 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
         final restoredOffset = savedOffset.clamp(0.0, maxOffset).toDouble();
         _readerScrollController.jumpTo(restoredOffset);
         _lastPersistedReaderOffset = restoredOffset;
+        _readerProgressPercent = maxOffset <= 0
+            ? 0
+            : ((restoredOffset / maxOffset) * 100).round().clamp(0, 100);
         _restoringReaderPosition = false;
       });
     } catch (_) {
@@ -2449,7 +2473,15 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
 
   void _saveReaderPositionOnScroll() {
     if (_restoringReaderPosition || !_readerScrollController.hasClients) return;
-    final offset = _readerScrollController.offset;
+    final position = _readerScrollController.position;
+    final offset = position.pixels;
+    final maxOffset = position.maxScrollExtent;
+    final nextProgress = maxOffset <= 0
+        ? 0
+        : ((offset / maxOffset) * 100).round().clamp(0, 100);
+    if (mounted && nextProgress != _readerProgressPercent) {
+      setState(() => _readerProgressPercent = nextProgress);
+    }
     if ((offset - _lastPersistedReaderOffset).abs() < 100) return;
     _lastPersistedReaderOffset = offset;
     SharedPreferences.getInstance().then(
@@ -2604,10 +2636,58 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
           },
           child: const Icon(Icons.vertical_align_top_rounded),
         ),
-        body: ListView(
-          key: const Key('reader_scroll_view'),
-          controller: _readerScrollController,
-          padding: const EdgeInsets.all(20),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+              child: _TwilightGlassPanel(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                radius: 15,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'تقدم القراءة',
+                            style: TextStyle(
+                              color: ivory,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '$_readerProgressPercent%',
+                          key: const Key('reader_progress_percent'),
+                          style: const TextStyle(
+                            color: gold,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: LinearProgressIndicator(
+                        key: const Key('reader_progress_indicator'),
+                        value: _readerProgressPercent / 100,
+                        minHeight: 6,
+                        backgroundColor: twilightBorder,
+                        valueColor: const AlwaysStoppedAnimation<Color>(turquoise),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                key: const Key('reader_scroll_view'),
+                controller: _readerScrollController,
+                padding: const EdgeInsets.all(20),
           children: [
             _TwilightGlassPanel(
               padding: const EdgeInsets.all(17),
@@ -2770,6 +2850,8 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                     style: const TextStyle(color: ivory, height: 1.8, fontSize: 12),
                   ),
                 ],
+              ),
+                ),
               ),
             ),
           ],
@@ -3692,11 +3774,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                         const SizedBox(height: 5),
-                        Center(
-                          child: Text(
-                            '$_fontSize',
-                            style: TextStyle(color: gold, fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '$_fontSize',
+                              style: const TextStyle(
+                                color: gold,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            TextButton.icon(
+                              key: const Key('settings_reset_font_size'),
+                              onPressed: _fontSize == 18
+                                  ? null
+                                  : () => _saveFontSize(18),
+                              icon: const Icon(Icons.restart_alt_rounded, size: 17),
+                              label: const Text('استعادة الافتراضي'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: turquoise,
+                              ),
+                            ),
+                          ],
                         ),
                         const Divider(color: twilightBorder, height: 24),
                         const Text('معاينة النص', style: TextStyle(color: mutedIvory, fontSize: 11)),

@@ -48,6 +48,36 @@ void main() {
     );
   });
 
+  testWidgets('library section search shows filtered count and can be cleared',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'الزيارات');
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('library_section_search')),
+      'زيارة عاشوراء',
+    );
+    await tester.pumpAndSettle();
+    final count = tester.widget<Text>(
+      find.byKey(const Key('library_section_count')),
+    );
+    expect(count.data!.startsWith('1 من '), isTrue);
+    expect(find.byKey(const Key('library_section_clear_search')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('library_section_clear_search')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('library_section_clear_search')), findsNothing);
+    final clearedCount = tester.widget<Text>(
+      find.byKey(const Key('library_section_count')),
+    );
+    expect(clearedCount.data!.startsWith('1 من '), isFalse);
+  });
+
   testWidgets('library favorites and last-read item are stored locally',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -124,6 +154,25 @@ void main() {
   });
 
 
+  testWidgets('settings can restore the reader font size to its default',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({'reader_font_size': 27});
+    await tester.pumpWidget(
+      const MaterialApp(home: SettingsScreen()),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('27'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('settings_reset_font_size')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('18'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getInt('reader_font_size'),
+      18,
+    );
+  });
+
   testWidgets('reader font size can be increased and persists locally',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
@@ -147,6 +196,42 @@ void main() {
   });
 
 
+
+  testWidgets('reader saves, restores its position and displays progress',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'الزيارات');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('reader_progress_indicator')), findsOneWidget);
+    await tester.drag(
+      find.byKey(const Key('reader_scroll_view')),
+      const Offset(0, -450),
+    );
+    await tester.pumpAndSettle();
+
+    final preferences = await SharedPreferences.getInstance();
+    final savedOffset = preferences.getDouble('reader_scroll_visit_ashura') ?? 0;
+    expect(savedOffset, greaterThan(0));
+    expect(find.byKey(const Key('reader_progress_percent')), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('زيارة عاشوراء').first);
+    await tester.pumpAndSettle();
+
+    final restoredOffset = tester
+        .widget<ListView>(find.byKey(const Key('reader_scroll_view')))
+        .controller!
+        .offset;
+    expect(restoredOffset, greaterThan(0));
+  });
 
   testWidgets('reader search can be cleared and reader offers return-to-top control',
       (tester) async {
