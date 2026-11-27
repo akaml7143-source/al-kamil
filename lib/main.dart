@@ -401,6 +401,7 @@ class HomePage extends StatelessWidget {
                           child: GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
+                            key: const Key('home_sections_grid'),
                             itemCount: _sections.length,
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: constraints.maxWidth >= 560 ? 4 : 3,
@@ -444,10 +445,10 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _HomeNavItem(icon: Icons.home_rounded, label: 'الرئيسية', selected: true, onTap: () {}),
-                _HomeNavItem(icon: Icons.menu_book_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
-                _HomeNavItem(icon: Icons.access_time_filled_rounded, label: 'الصلاة والقبلة', onTap: () => _openSection(context, const _Section('الصلاة والقبلة', Icons.access_time_filled_rounded))),
-                _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
-                _HomeNavItem(icon: Icons.settings_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
+                _HomeNavItem(icon: Icons.auto_stories_rounded, label: 'القرآن', onTap: () => _openSection(context, const _Section('القرآن الكريم', Icons.menu_book_rounded))),
+                _HomeNavItem(icon: Icons.explore_rounded, label: 'الصلاة والقبلة', onTap: () => _openSection(context, const _Section('الصلاة والقبلة', Icons.access_time_filled_rounded))),
+                _HomeNavItem(icon: Icons.library_books_rounded, label: 'المكتبة', onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const LibraryHubScreen()))),
+                _HomeNavItem(icon: Icons.tune_rounded, label: 'الإعدادات', onTap: () => _openSection(context, const _Section('الإعدادات', Icons.settings_rounded))),
               ],
             ),
           ),
@@ -600,6 +601,21 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                       onPressed: () => _changeMonth(1),
                       icon: const Icon(Icons.chevron_left_rounded, color: ivory, size: 28)),
                   ]),
+                  if (_displayedMonth.year != today.year ||
+                      _displayedMonth.month != today.month)
+                    Align(
+                      alignment: Alignment.center,
+                      child: TextButton.icon(
+                        key: const Key('calendar_today_button'),
+                        onPressed: () => setState(() {
+                          _displayedMonth = DateTime(today.year, today.month);
+                          _selectedDate = DateTime(today.year, today.month, today.day);
+                        }),
+                        icon: const Icon(Icons.event_available_rounded, size: 17),
+                        label: const Text('العودة إلى اليوم / Today'),
+                        style: TextButton.styleFrom(foregroundColor: turquoise),
+                      ),
+                    ),
                   const SizedBox(height: 12),
                   GridView.builder(
                     key: const Key('calendar_weekdays'),
@@ -689,6 +705,17 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
   }
 }
 
+String _normalizeCategorySearch(String value) => value
+    .toLowerCase()
+    .replaceAll(RegExp(r'[\u064B-\u065F\u0670\u0640]'), '')
+    .replaceAll(RegExp('[أإآٱ]'), 'ا')
+    .replaceAll('ؤ', 'و')
+    .replaceAll('ئ', 'ي')
+    .replaceAll('ى', 'ي')
+    .replaceAll('ة', 'ه')
+    .replaceAll(RegExp(r'\s+'), ' ')
+    .trim();
+
 class LibraryHubScreen extends StatefulWidget {
   const LibraryHubScreen({super.key});
 
@@ -710,10 +737,10 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
   String _query = '';
 
   List<_Section> get _visibleCategories {
-    final query = _query.trim().toLowerCase();
+    final query = _normalizeCategorySearch(_query);
     if (query.isEmpty) return _categories;
     return _categories
-        .where((section) => section.title.toLowerCase().contains(query))
+        .where((section) => _normalizeCategorySearch(section.title).contains(query))
         .toList();
   }
 
@@ -2510,9 +2537,6 @@ IconData _readerItemIcon(_LibraryItem item) {
   }
   if (id.contains('daily') || id.contains('day')) {
     return Icons.today_rounded;
-  }
-  if (id.contains('wasaya') || id.contains('advice')) {
-    return Icons.format_quote_rounded;
   }
   if (id.contains('dua')) {
     return Icons.volunteer_activism_rounded;

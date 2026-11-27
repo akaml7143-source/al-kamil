@@ -524,6 +524,63 @@ void main() {
     expect(find.byKey(const Key('calendar_month_en')), findsOneWidget);
   });
 
+  testWidgets('home section grid uses a distinct icon for every section', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+
+    final icons = tester
+        .widgetList<Icon>(
+          find.descendant(
+            of: find.byKey(const Key('home_sections_grid')),
+            matching: find.byType(Icon),
+          ),
+        )
+        .map((icon) => icon.icon)
+        .toList();
+    expect(icons.length, 12);
+    expect(icons.toSet().length, icons.length);
+  });
+
+  testWidgets('library category search ignores Arabic hamza and diacritics', (tester) async {
+    tester.view.physicalSize = const Size(1200, 2000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('المكتبة').last);
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('library_category_search')), 'القران');
+    await tester.pumpAndSettle();
+    expect(find.text('القرآن الكريم'), findsOneWidget);
+    expect(find.text('الأدعية'), findsNothing);
+  });
+
+  testWidgets('calendar can return to the current date after month navigation', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const MaterialApp(home: IslamicCalendarScreen()));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('calendar_today_button')), findsNothing);
+    await tester.tap(find.byKey(const Key('calendar_next_month')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar_today_button')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('calendar_today_button')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('calendar_today_button')), findsNothing);
+  });
+
   test('Qibla bearing is normalized and points southwest from Iraqi cities', () {
     final baghdadBearing = calculateQiblaBearing(33.3152, 44.3661);
     final basraBearing = calculateQiblaBearing(30.5085, 47.7804);
