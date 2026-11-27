@@ -379,6 +379,16 @@ void main() {
     expect(find.byKey(const Key('prayer_time_isha')), findsOneWidget);
 
     final cityButton = find.byKey(const Key('prayer_city_dropdown'));
+    // Prayer settings are below the schedule in a lazy ListView. Scroll the
+    // actual page viewport until the keyed control is built, then reveal it.
+    final prayerList = find.byType(ListView).first;
+    for (var attempt = 0;
+        attempt < 10 && cityButton.evaluate().isEmpty;
+        attempt++) {
+      await tester.drag(prayerList, const Offset(0, -420));
+      await tester.pumpAndSettle();
+    }
+    expect(cityButton, findsOneWidget);
     await tester.ensureVisible(cityButton);
     await tester.pumpAndSettle();
     await tester.tap(cityButton);
