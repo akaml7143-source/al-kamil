@@ -210,7 +210,7 @@ class HomePage extends StatelessWidget {
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('المسبحة الإلكترونية', Icons.grain_rounded),
-    _Section('مناجاة الإمام السجاد (ع)', Icons.history_edu_rounded),
+    _Section('مناجاة الإمام السجاد (ع)', Icons.spa_rounded),
     _Section('التقويم', Icons.calendar_month_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
@@ -730,7 +730,7 @@ class _LibraryHubScreenState extends State<LibraryHubScreen> {
     _Section('الزيارات', Icons.mosque_rounded),
     _Section('الأدعية', Icons.volunteer_activism_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
-    _Section('مناجاة الإمام السجاد (ع)', Icons.history_edu_rounded),
+    _Section('مناجاة الإمام السجاد (ع)', Icons.spa_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
   ];
 
@@ -2549,7 +2549,7 @@ IconData _readerItemIcon(_LibraryItem item) {
     return Icons.mosque_rounded;
   }
   if (id.contains('sahifa') || id.contains('sajjad')) {
-    return Icons.history_edu_rounded;
+    return Icons.spa_rounded;
   }
   if (id.contains('daily') || id.contains('day')) {
     return Icons.today_rounded;
