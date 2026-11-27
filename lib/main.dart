@@ -3374,6 +3374,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+IconData _sectionPlaceholderIcon(String title) => switch (title) {
+      'المناسبات الإسلامية' => Icons.event_available_rounded,
+      'التنبيهات' => Icons.notifications_active_rounded,
+      _ => Icons.auto_stories_rounded,
+    };
+
 class SectionPage extends StatelessWidget {
   const SectionPage({super.key, required this.title});
   final String title;
@@ -3394,8 +3400,37 @@ class SectionPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                const Icon(Icons.auto_awesome, size: 34, color: gold),
-                const SizedBox(height: 16),
+                Container(
+                  width: 78,
+                  height: 78,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(23),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Color(0x3DF1E7D0),
+                        Color(0x28D8BE83),
+                        Color(0x302D3152),
+                      ],
+                    ),
+                    border: Border.all(
+                      color: const Color(0xFFD8BE83).withValues(alpha: 0.62),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFD8BE83).withValues(alpha: 0.13),
+                        blurRadius: 18,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _sectionPlaceholderIcon(title),
+                    size: 39,
+                    color: const Color(0xFFE8D5A8),
+                  ),
+                ),
+                const SizedBox(height: 18),
                 Text(
                   title,
                   style: const TextStyle(
