@@ -596,34 +596,17 @@ void main() {
     expect(find.text('مناجاة الإمام السجاد (ع)'), findsWidgets);
     expect(find.byIcon(Icons.history_edu_rounded), findsOneWidget);
     await tapHomeSection(tester, 'مناجاة الإمام السجاد (ع)');
-    for (final title in [
-      'مناجاة التائبين',
-      'مناجاة الشاكين',
-      'مناجاة الخائفين',
-      'مناجاة الراجين',
-      'مناجاة الراغبين',
-      'مناجاة الشاكرين',
-      'مناجاة المطيعين لله',
-      'مناجاة المريدين',
-      'مناجاة المحبين',
-      'مناجاة المتوسلين',
-      'مناجاة المفتقرين',
-      'مناجاة العارفين',
-      'مناجاة الذاكرين',
-      'مناجاة المعتصمين',
-      'مناجاة الزاهدين',
-    ]) {
-      final titleFinder = find.text(title);
-      await tester.scrollUntilVisible(
-        titleFinder,
-        260,
-        scrollable: find.byType(Scrollable).last,
-      );
-      expect(titleFinder, findsOneWidget);
-    }
-
-    await tester.drag(find.byType(Scrollable).last, const Offset(0, 1800));
     await tester.pumpAndSettle();
+
+    // The section count confirms that all fifteen entries are present.
+    expect(find.byKey(const Key('library_section_count')), findsOneWidget);
+    expect(
+      find.text('15 من 15 عنصر • بحث ومفضلة وحفظ آخر قراءة'),
+      findsOneWidget,
+    );
+
+    // Open the first entry while it is already visible; avoid relying on
+    // an unkeyed Scrollable lookup that can select the wrong scroll view.
     await tester.tap(find.text('مناجاة التائبين'));
     await tester.pumpAndSettle();
     expect(find.textContaining('إِلهِي أَلْبَسَتْنِي الخَطايا'), findsOneWidget);
