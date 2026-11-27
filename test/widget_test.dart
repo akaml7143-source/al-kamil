@@ -74,6 +74,69 @@ void main() {
     );
   });
 
+  testWidgets('library hub exposes the full set of offline sections',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'المكتبة');
+    await tester.pumpAndSettle();
+
+    for (final title in [
+      'القرآن الكريم',
+      'الزيارات',
+      'الأدعية العامة',
+      'أدعية الأيام',
+      'تعقيبات الصلوات',
+      'الصحيفة السجادية',
+      'نهج البلاغة',
+      'وصايا أهل البيت',
+      'تعليم صلاة الليل',
+      'الصوتيات',
+    ]) {
+      expect(find.text(title), findsAtLeastNWidgets(1));
+    }
+  });
+
+  testWidgets('night prayer library lessons open the dedicated tutorial',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'المكتبة');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تعليم صلاة الليل').first);
+    await tester.pumpAndSettle();
+    expect(find.text('التعريف بصلاة الليل'), findsOneWidget);
+    await tester.tap(find.text('التعريف بصلاة الليل'));
+    await tester.pumpAndSettle();
+    expect(find.text('وقت صلاة الليل'), findsOneWidget);
+    expect(
+      (await SharedPreferences.getInstance()).getString('library_last_read'),
+      'night_overview',
+    );
+  });
+
+  testWidgets('audio library clearly reports that no bundled recordings exist',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const AlKamilApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('تفضّل بالدخول'));
+    await tester.pumpAndSettle();
+    await tapHomeSection(tester, 'المكتبة');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('الصوتيات').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('مكتبة التلاوات والأدعية'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('لا توجد تسجيلات مرفقة'), findsOneWidget);
+  });
+
   testWidgets('verified tawassul prayer text is available offline',
       (tester) async {
     SharedPreferences.setMockInitialValues({});

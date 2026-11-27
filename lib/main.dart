@@ -501,7 +501,10 @@ class LibraryHubScreen extends StatelessWidget {
     _Section('أدعية الأيام', Icons.today_rounded),
     _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
     _Section('الصحيفة السجادية', Icons.article_rounded),
+    _Section('نهج البلاغة', Icons.menu_book_rounded),
     _Section('وصايا أهل البيت', Icons.format_quote_rounded),
+    _Section('تعليم صلاة الليل', Icons.nightlight_round),
+    _Section('الصوتيات', Icons.graphic_eq_rounded),
   ];
 
   void _openCategory(BuildContext context, _Section section) {
@@ -2033,6 +2036,14 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
     await preferences.setString('library_last_read', item.id);
     if (!mounted) return;
     setState(() => _lastReadId = item.id);
+    if (item.id.startsWith('night_')) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const NightPrayerTutorialScreen(),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => _LibraryItemDetail(
@@ -2173,7 +2184,7 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
                                       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
                                       child: Row(
                                         children: [
-                                          const _TwilightGlassOrb(icon: Icons.menu_book_rounded, size: 46),
+                                          _TwilightGlassOrb(icon: _readerItemIcon(item), size: 46),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Column(
@@ -2232,6 +2243,15 @@ class _LibrarySectionScreenState extends State<LibrarySectionScreen> {
 
 IconData _readerItemIcon(_LibraryItem item) {
   final id = item.id.toLowerCase();
+  if (id.startsWith('night_')) {
+    return Icons.nightlight_round;
+  }
+  if (id.startsWith('nahj_')) {
+    return Icons.menu_book_rounded;
+  }
+  if (id.startsWith('audio_')) {
+    return Icons.graphic_eq_rounded;
+  }
   if (id.startsWith('taqib_')) {
     return Icons.self_improvement_rounded;
   }
