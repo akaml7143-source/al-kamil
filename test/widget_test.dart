@@ -5,17 +5,26 @@ import 'package:al_kamil/qibla_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
+Future<void> scrollHomeUntil(WidgetTester tester, Finder target) async {
+  // The home page is a lazy CustomScrollView. Do not ask Flutter's
+  // scrollUntilVisible to select an unkeyed Scrollable: nested routes and
+  // lazy slivers can leave that finder empty or point at the wrong viewport.
+  final homeScroll = find.byType(CustomScrollView);
+  if (homeScroll.evaluate().isEmpty) return;
+
+  for (var attempt = 0; attempt < 14 && target.evaluate().isEmpty; attempt++) {
+    await tester.drag(homeScroll.first, const Offset(0, -420));
+    await tester.pumpAndSettle();
+  }
+}
+
 Future<void> tapHomeSection(WidgetTester tester, String title) async {
-  // Home content is intentionally lazy inside the outer CustomScrollView.
-  // Scroll until the section tile is built before attempting to tap it.
-  final target = find.text(title).first;
-  await tester.scrollUntilVisible(
-    target,
-    260,
-    scrollable: find.byType(Scrollable).first,
-  );
+  final target = find.text(title);
+  await scrollHomeUntil(tester, target);
+  expect(target, findsWidgets);
+  await tester.ensureVisible(target.first);
   await tester.pumpAndSettle();
-  await tester.tap(target);
+  await tester.tap(target.first);
   await tester.pumpAndSettle();
 }
 
@@ -27,6 +36,7 @@ void main() {
     expect(find.text('تفضّل بالدخول'), findsOneWidget);
     await tester.tap(find.text('تفضّل بالدخول'));
     await tester.pumpAndSettle();
+    await scrollHomeUntil(tester, find.text('أقسام الكامل'));
     expect(find.text('أقسام الكامل'), findsOneWidget);
     expect(find.text('القرآن الكريم'), findsOneWidget);
   });
