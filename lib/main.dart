@@ -571,7 +571,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
   static const Map<String, String> _verifiedOccasions = {};
 
   String _dateKey(DateTime date) =>
-      '\${date.year.toString().padLeft(4, '0')}-\${date.month.toString().padLeft(2, '0')}-\${date.day.toString().padLeft(2, '0')}';
+      '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   String _arabicDigits(String value) {
     const digits = '٠١٢٣٤٥٦٧٨٩';
@@ -617,7 +617,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                       Text(_arabicMonths[monthIndex], key: const Key('calendar_month_ar'), style: const TextStyle(color: ivory, fontSize: 19, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
                       Text(_englishMonths[monthIndex], key: const Key('calendar_month_en'), style: const TextStyle(color: mutedIvory, fontSize: 12, letterSpacing: 0.5)),
-                      Text('\${_arabicDigits(_displayedMonth.year.toString())} • \${_displayedMonth.year}', style: const TextStyle(color: turquoise, fontSize: 11)),
+                      Text('${_arabicDigits(_displayedMonth.year.toString())} • ${_displayedMonth.year}', style: const TextStyle(color: turquoise, fontSize: 11)),
                     ])),
                     IconButton(key: const Key('calendar_next_month'), tooltip: 'الشهر التالي',
                       onPressed: () => _changeMonth(1),
@@ -650,7 +650,7 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                       final isSelected = date.year == _selectedDate.year && date.month == _selectedDate.month && date.day == _selectedDate.day;
                       final occasion = _verifiedOccasions.containsKey(_dateKey(date));
                       final numberColor = occasion ? const Color(0xFFFFC66D) : isToday ? ivory : inMonth ? mutedIvory : mutedIvory.withValues(alpha: 0.28);
-                      final accessibleLabel = '\${date.day}/\${date.month}/\${date.year}\${occasion ? '، \${_verifiedOccasions[_dateKey(date)]}' : ''}';
+                      final accessibleLabel = '${date.day}/${date.month}/${date.year}${occasion ? '، ${_verifiedOccasions[_dateKey(date)]}' : ''}';
                       return Semantics(
                         button: true,
                         label: accessibleLabel,
@@ -695,8 +695,8 @@ class _IslamicCalendarScreenState extends State<IslamicCalendarScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   const Text('تفاصيل اليوم / Selected day', style: TextStyle(color: ivory, fontSize: 14, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text('\${_arabicDigits(_selectedDate.day.toString())} \${_arabicMonths[_selectedDate.month - 1]} \${_arabicDigits(_selectedDate.year.toString())}', style: const TextStyle(color: ivory, fontSize: 14)),
-                  Text('\${_englishMonths[_selectedDate.month - 1]} \${_selectedDate.day}, \${_selectedDate.year}', style: const TextStyle(color: mutedIvory, fontSize: 11)),
+                  Text('${_arabicDigits(_selectedDate.day.toString())} ${_arabicMonths[_selectedDate.month - 1]} ${_arabicDigits(_selectedDate.year.toString())}', style: const TextStyle(color: ivory, fontSize: 14)),
+                  Text('${_englishMonths[_selectedDate.month - 1]} ${_selectedDate.day}, ${_selectedDate.year}', style: const TextStyle(color: mutedIvory, fontSize: 11)),
                   const SizedBox(height: 9),
                   if (selectedOccasion != null)
                     Text(selectedOccasion, style: const TextStyle(color: Color(0xFFFFC66D), fontSize: 13, fontWeight: FontWeight.bold))
