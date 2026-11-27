@@ -509,22 +509,25 @@ class _TwilightGlassOrb extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.white.withValues(alpha: 0.23),
-                  const Color(0xFFB7A7FF).withValues(alpha: 0.30),
-                  const Color(0xFF6C5BB5).withValues(alpha: 0.48),
+                  const Color(0xFFF4E9D2).withValues(alpha: 0.25),
+                  const Color(0xFFD8BE83).withValues(alpha: 0.22),
+                  const Color(0xFF39364D).withValues(alpha: 0.88),
                 ],
               ),
-              border: Border.all(color: twilightBorder, width: 1),
+              border: Border.all(
+                color: const Color(0xFFD8BE83).withValues(alpha: 0.68),
+                width: 1.1,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: turquoise.withValues(alpha: 0.13),
-                  blurRadius: 15,
-                  spreadRadius: 0.4,
+                  color: const Color(0xFFD8BE83).withValues(alpha: 0.15),
+                  blurRadius: 17,
+                  spreadRadius: 0.5,
                 ),
               ],
             ),
             alignment: Alignment.center,
-            child: Icon(icon, color: ivory, size: size * 0.56),
+            child: Icon(icon, color: const Color(0xFFF4E9D2), size: size * 0.60),
           ),
         ),
       );
@@ -548,9 +551,17 @@ class _HomeRoundAction extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, color: ivory, size: 23),
-                const SizedBox(height: 3),
-                Text(label, style: const TextStyle(color: mutedIvory, fontSize: 10)),
+                Icon(icon, color: const Color(0xFFE8D5A8), size: 26),
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFFF4F0E7),
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -576,9 +587,16 @@ class _HomePillAction extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, color: ivory, size: 15),
-                const SizedBox(width: 5),
-                Text(label, style: const TextStyle(color: ivory, fontSize: 10)),
+                Icon(icon, color: const Color(0xFFE8D5A8), size: 18),
+                const SizedBox(width: 7),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Color(0xFFF4F0E7),
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -621,16 +639,24 @@ class _HomeNavItem extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, color: selected ? ivory : mutedIvory, size: 21),
-                  const SizedBox(height: 3),
+                  Icon(
+                    icon,
+                    color: selected
+                        ? const Color(0xFFF4E9D2)
+                        : const Color(0xFFD8BE83),
+                    size: 23,
+                  ),
+                  const SizedBox(height: 4),
                   Text(
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: selected ? ivory : mutedIvory,
-                      fontSize: 9,
-                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                      color: selected
+                          ? const Color(0xFFF4F0E7)
+                          : const Color(0xFFCFC8B8),
+                      fontSize: 9.5,
+                      fontWeight: selected ? FontWeight.bold : FontWeight.w500,
                     ),
                   ),
                 ],
