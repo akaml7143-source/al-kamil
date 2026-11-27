@@ -207,13 +207,13 @@ class HomePage extends StatelessWidget {
     _Section('مواقيت الصلاة', Icons.access_time_rounded),
     _Section('الزيارات', Icons.account_balance_rounded),
     _Section('الأدعية العامة', Icons.volunteer_activism_rounded),
-    _Section('أدعية الأيام', Icons.calendar_today_rounded),
+    _Section('أدعية الأيام', Icons.today_rounded),
     _Section('تعليم صلاة الليل', Icons.nightlight_round),
-    _Section('تعقيبات الصلوات', Icons.auto_awesome_rounded),
-    _Section('المسبحة الإلكترونية', Icons.radio_button_checked_rounded),
-    _Section('الصحيفة السجادية', Icons.menu_book_outlined),
-    _Section('وصايا أهل البيت', Icons.diversity_3_rounded),
-    _Section('المناسبات الإسلامية', Icons.event_available_rounded),
+    _Section('تعقيبات الصلوات', Icons.self_improvement_rounded),
+    _Section('المسبحة الإلكترونية', Icons.grain_rounded),
+    _Section('الصحيفة السجادية', Icons.article_rounded),
+    _Section('وصايا أهل البيت', Icons.format_quote_rounded),
+    _Section('المناسبات الإسلامية', Icons.celebration_rounded),
     _Section('القبلة', Icons.explore_rounded),
     _Section('المفضلة', Icons.bookmark_rounded),
     _Section('التنبيهات', Icons.notifications_active_rounded),
@@ -379,20 +379,43 @@ class HomePage extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Container(
-                                width: 62,
-                                height: 62,
+                                width: 68,
+                                height: 68,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: const LinearGradient(
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
-                                    colors: [Color(0xFFD9D0FF), Color(0xFF8069D4)],
+                                    colors: [Color(0xFF45405A), Color(0xFF252943)],
+                                  ),
+                                  border: Border.all(
+                                    color: const Color(0xFFD8BE83).withValues(alpha: 0.72),
+                                    width: 1.2,
                                   ),
                                   boxShadow: [
-                                    BoxShadow(color: turquoise.withValues(alpha: 0.24), blurRadius: 18),
+                                    BoxShadow(
+                                      color: const Color(0xFFD8BE83).withValues(alpha: 0.13),
+                                      blurRadius: 18,
+                                      spreadRadius: 1,
+                                    ),
                                   ],
                                 ),
-                                child: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF30264F), size: 30),
+                                child: const Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Icon(Icons.menu_book_rounded, color: Color(0xFFF1E7D0), size: 37),
+                                    Positioned(
+                                      top: 9,
+                                      right: 12,
+                                      child: Icon(Icons.nightlight_round, color: Color(0xFFD8BE83), size: 17),
+                                    ),
+                                    Positioned(
+                                      bottom: 10,
+                                      left: 13,
+                                      child: Icon(Icons.circle, color: Color(0xFFD8BE83), size: 5),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -670,45 +693,56 @@ class _SectionTile extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: compact ? 34 : 38,
-                    height: compact ? 34 : 38,
+                    width: compact ? 43 : 48,
+                    height: compact ? 43 : 48,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
+                      borderRadius: BorderRadius.circular(15),
+                      gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          turquoise.withValues(alpha: 0.38),
-                          gold.withValues(alpha: 0.16),
+                          Color(0x35F1E7D0),
+                          Color(0x1FD8BE83),
+                          Color(0x222D3152),
                         ],
                       ),
                       border: Border.all(
-                        color: gold.withValues(alpha: 0.48),
-                        width: 0.7,
+                        color: const Color(0xFFD8BE83).withValues(alpha: 0.58),
+                        width: 1,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFD8BE83).withValues(alpha: 0.10),
+                          blurRadius: 12,
+                          spreadRadius: 0.2,
+                        ),
+                      ],
                     ),
                     child: Icon(
                       section.icon,
-                      size: compact ? 17 : 19,
-                      color: ivory,
+                      size: compact ? 25 : 28,
+                      color: const Color(0xFFE8D5A8),
                     ),
                   ),
-                  SizedBox(height: compact ? 3 : 5),
-                  Text(
-                    section.title,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: ivory,
-                      fontSize: compact ? 8.5 : 9.2,
-                      fontWeight: FontWeight.w600,
-                      height: 1.2,
+                  SizedBox(height: compact ? 5 : 7),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 1),
+                    child: Text(
+                      section.title,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: const Color(0xFFF4F0E7),
+                        fontSize: compact ? 9.2 : 10,
+                        fontWeight: FontWeight.w600,
+                        height: 1.25,
+                      ),
                     ),
                   ),
                 ],
