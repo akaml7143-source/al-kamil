@@ -221,7 +221,7 @@ void main() {
     expect(savedOffset, greaterThan(0));
     expect(find.byKey(const Key('reader_progress_percent')), findsOneWidget);
 
-    await tester.pageBack();
+    await tester.tap(find.byTooltip('رجوع').first);
     await tester.pumpAndSettle();
     await tester.tap(find.text('زيارة عاشوراء').first);
     await tester.pumpAndSettle();
