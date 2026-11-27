@@ -2461,10 +2461,13 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
         final restoredOffset = savedOffset.clamp(0.0, maxOffset).toDouble();
         _readerScrollController.jumpTo(restoredOffset);
         _lastPersistedReaderOffset = restoredOffset;
-        _readerProgressPercent = maxOffset <= 0
+        final restoredProgress = maxOffset <= 0
             ? 0
             : ((restoredOffset / maxOffset) * 100).round().clamp(0, 100);
         _restoringReaderPosition = false;
+        if (mounted) {
+          setState(() => _readerProgressPercent = restoredProgress);
+        }
       });
     } catch (_) {
       // Reading remains available if local position storage fails.
@@ -2851,7 +2854,8 @@ class _LibraryItemDetailState extends State<_LibraryItemDetail> {
                   ),
                 ],
               ),
-                ),
+            ),
+                ],
               ),
             ),
           ],
